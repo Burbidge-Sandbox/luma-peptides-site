@@ -90,7 +90,7 @@
   function header(){
     const links=NAV.map(([h,t])=>`<li><a href="${h}" ${page===h?'aria-current="page"':''}>${t}</a></li>`).join("");
     return `<a class="skip" href="#main">Skip to content</a>
-<div class="announce">Free shipping on orders over $${CONFIG.freeShipThreshold} &nbsp;·&nbsp; <b>Every lot third-party tested</b> &nbsp;·&nbsp; Use code <b>WELCOME10</b> for 10% off your first order</div>
+<div class="announce">Free shipping over $${CONFIG.freeShipThreshold} &nbsp;·&nbsp; Every lot third-party tested &nbsp;·&nbsp; <b>WELCOME10</b> for 10% off</div>
 <header class="header" id="header"><div class="wrap nav">
  <a class="logo" href="index.html" aria-label="Luma Peptides Co. home"><span>luma</span><span>peptides</span><span>co.</span></a>
  <ul class="nav-links">${links}</ul>

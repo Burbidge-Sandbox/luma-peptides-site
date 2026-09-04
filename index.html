@@ -36,12 +36,7 @@
     <div><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.2" fill="currentColor"/></svg><span>Discreet Shipping</span></div>
    </div>
   </div>
-  <div class="hero-visual">
-   <svg class="leaf" viewBox="0 0 200 260" fill="currentColor" aria-hidden="true"><path d="M100 10c-40 60-70 120-60 200 30-30 50-80 60-140 10 60 30 110 60 140 10-80-20-140-60-200z" opacity=".55"/><path d="M100 10v230" stroke="currentColor" stroke-width="2" fill="none"/><path d="M100 60c-20 10-35 30-45 60M100 60c20 10 35 30 45 60M100 110c-18 12-30 30-38 60M100 110c18 12 30 30 38 60" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-   <div class="stone"></div>
-   <div class="rock"></div>
-   <div class="hero-vial" id="heroVial"></div>
-  </div>
+  <div class="hero-visual"><img class="hero-scene" src="assets/hero-scene.jpg" srcset="assets/hero-scene.jpg 594w, assets/hero-scene@2x.jpg 1188w" sizes="(max-width:900px) 440px, 600px" width="594" height="590" alt="Luma Peptides BPC-157 vial resting on a travertine stone" fetchpriority="high"></div>
  </div>
 </section>
 
@@ -108,7 +103,7 @@
   <div class="band reveal">
    <svg class="bag" viewBox="0 0 24 24"><path d="M6 7h12l1 14H5z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
    <div><h3>Looking for something else?</h3><a class="btn-ghost" href="shop.html">SHOP ALL TREATMENTS →</a></div>
-   <svg class="leaf" viewBox="0 0 200 260" fill="currentColor" aria-hidden="true"><path d="M100 10c-40 60-70 120-60 200 30-30 50-80 60-140 10 60 30 110 60 140 10-80-20-140-60-200z" opacity=".55"/><path d="M100 10v230" stroke="currentColor" stroke-width="2" fill="none"/><path d="M100 60c-20 10-35 30-45 60M100 60c20 10 35 30 45 60M100 110c-18 12-30 30-38 60M100 110c18 12 30 30 38 60" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+   <img class="leaf-img" src="assets/leaf.png" width="185" height="103" alt="" loading="lazy">
   </div>
  </div>
 </section>
@@ -135,7 +130,6 @@
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
   const P=window.LUMA_PRODUCTS;
-  document.getElementById("heroVial").innerHTML=vialSVG(P.find(p=>p.id==="bpc-157")&&{...P.find(p=>p.id==="bpc-157"),label:["BPC-157","5MG"]});
   const top=["tirzepatide-15","wolverine-stack","cjc-ipamorelin","ghk-cu","glow-klow"].map(id=>P.find(p=>p.id===id));
   document.getElementById("topSellers").innerHTML=top.map(productCard).join("");
   document.querySelectorAll("#topSellers .reveal").forEach(el=>el.classList.add("in"));
