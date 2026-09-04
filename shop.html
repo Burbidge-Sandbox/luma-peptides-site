@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop Treatments — Luma Peptides Co.</title>
+<meta name="description" content="Browse lab-tested peptide protocols for weight, skin, recovery and longevity.">
+<meta name="theme-color" content="#F7F2EC">
+<meta property="og:title" content="Shop Treatments — Luma Peptides Co.">
+<meta property="og:description" content="Browse lab-tested peptide protocols for weight, skin, recovery and longevity.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/products.js" defer></script>
+<script src="js/site.js" defer></script>
+<script src="js/shop.js" defer></script>
+</head>
+<body>
+<main id="main">
+
+<div class="wrap page-head">
+ <div class="breadcrumb"><a href="index.html">Home</a> › Treatments</div>
+ <h1 id="shopTitle">All Treatments</h1>
+ <p>Complete 4-week protocols. Subscribe and save, or buy once. Every lot tested, every certificate published.</p>
+</div>
+<div class="wrap">
+ <div class="shop-toolbar">
+  <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+  <label class="sr-only" for="sort">Sort</label>
+  <select id="sort"><option value="featured">Featured</option><option value="rating">Top rated</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select>
+  <span class="result-count" id="count"></span>
+ </div>
+ <div class="grid grid-4" id="shopGrid" style="padding-bottom:5rem"></div>
+</div>
+
+</main>
+</body>
+</html>
