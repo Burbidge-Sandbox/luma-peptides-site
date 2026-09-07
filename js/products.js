@@ -4,7 +4,7 @@
    ============================================================ */
 window.LUMA_PRODUCTS = [
   {
-    id:"tirzepatide-15", stock:"in", image:"assets/products/tirzepatide-15", imageFocus:"68% 60%", name:"Tirzepatide", label:["TIRZEPATIDE","15MG"], strength:"15mg vial",
+    id:"tirzepatide-15", stock:"in", image:"assets/products/tirzepatide-15", imageFocus:"50% 55%", name:"Tirzepatide", label:["TIRZEPATIDE","15MG"], strength:"15mg vial",
     category:"weight", subscribe:299, once:349, badge:"Best Seller", rating:4.9, reviews:412,
     tagline:"Our most-loved metabolic support protocol.",
     description:"A dual GIP/GLP-1 receptor agonist studied for appetite regulation and metabolic health. Each Luma vial is lyophilized, sealed, and lot-tested for purity and identity before it ships.",
@@ -13,7 +13,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["How do I reconstitute?","Every order includes a step-by-step video and printed card. Add bacteriostatic water slowly down the side of the vial and swirl gently — never shake."],["Can I pause my subscription?","Yes. Pause, skip, or cancel anytime from your account. We remind you 5 days before every charge."]]
   },
   {
-    id:"wolverine-stack", stock:"out", name:"Wolverine Stack", label:["WOLVERINE","STACK"], strength:"5mg blend",
+    id:"wolverine-stack", stock:"out", image:"assets/products/wolverine-stack", imageFocus:"50% 55%", name:"Wolverine Stack", label:["WOLVERINE","STACK"], strength:"5mg blend",
     category:"recovery", subscribe:116, once:139, badge:"Top Rated", rating:4.8, reviews:287,
     tagline:"BPC-157 + TB-500. The recovery classic.",
     description:"Two of the most researched recovery peptides in a single vial. BPC-157 and TB-500 are studied for tissue repair, joint comfort, and mobility.",
@@ -22,7 +22,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["Why combine them?","BPC-157 and TB-500 are studied for complementary mechanisms — one local, one systemic. Combining simplifies your routine to a single daily injection."]]
   },
   {
-    id:"cjc-ipamorelin", stock:"out", name:"CJC-1295 + Ipamorelin", label:["CJC-1295 +","IPAMORELIN"], strength:"5mg blend",
+    id:"cjc-ipamorelin", stock:"out", image:"assets/products/cjc-ipamorelin", imageFocus:"50% 55%", name:"CJC-1295 + Ipamorelin", label:["CJC-1295 +","IPAMORELIN"], strength:"5mg blend",
     category:"longevity", subscribe:116, once:139, rating:4.7, reviews:198,
     tagline:"Sleep deeper. Recover faster.",
     description:"A growth-hormone-releasing blend studied for sleep quality, lean mass, and recovery. Taken before bed to align with your natural hormone rhythm.",
@@ -31,7 +31,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["When should I take it?","Most protocols take it 30 minutes before bed on an empty stomach."]]
   },
   {
-    id:"ghk-cu", stock:"out", name:"GHK-Cu", label:["GHK-CU","5MG"], strength:"5mg vial",
+    id:"ghk-cu", stock:"out", image:"assets/products/ghk-cu", imageFocus:"50% 55%", name:"GHK-Cu", label:["GHK-CU","5MG"], strength:"5mg vial",
     category:"skin", subscribe:99, once:119, rating:4.8, reviews:356,
     tagline:"The copper peptide behind glowing skin.",
     description:"A naturally occurring copper peptide studied for collagen support, skin firmness, and hair health. Our most popular starting point for skin.",
@@ -40,7 +40,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["Is this a cream?","No — this is an injectable peptide protocol. We also offer topical guidance in your welcome kit."]]
   },
   {
-    id:"glow-klow", stock:"in", name:"Glow + Klow", label:["GLOW + KLOW","5MG"], strength:"5mg blend",
+    id:"glow-klow", stock:"in", image:"assets/products/glow-klow", imageFocus:"50% 55%", name:"Glow + Klow", label:["GLOW + KLOW","5MG"], strength:"5mg blend",
     category:"skin", subscribe:149, once:179, badge:"New", rating:4.9, reviews:94,
     tagline:"BPC-157, GHK-Cu and TB-500. Inside-out radiance.",
     description:"Our signature glow blend pairs the copper peptide GHK-Cu with BPC-157 and TB-500 for skin, hair, and recovery in one daily routine.",
@@ -49,7 +49,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["How soon will I notice a difference?","Most members report changes in skin texture around week 4–6. Consistency matters more than dose."]]
   },
   {
-    id:"bpc-157", stock:"in", name:"BPC-157", label:["BPC-157","10MG"], strength:"10mg vial",
+    id:"bpc-157", stock:"in", image:"assets/products/bpc-157", imageFocus:"50% 55%", name:"BPC-157", label:["BPC-157","10MG"], strength:"10mg vial",
     category:"recovery", subscribe:89, once:109, rating:4.8, reviews:521,
     tagline:"Gut and joint support, simplified.",
     description:"A body-protective compound studied for gut lining health, tendon and ligament repair, and inflammation. The first peptide most members try.",
@@ -58,7 +58,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["Oral or injectable?","We ship injectable. Injection near the site of concern is the most-studied route."]]
   },
   {
-    id:"semaglutide-10", stock:"out", name:"Semaglutide", label:["SEMAGLUTIDE","10MG"], strength:"10mg vial",
+    id:"semaglutide-10", stock:"out", image:"assets/products/semaglutide-10", imageFocus:"50% 55%", name:"Semaglutide", label:["SEMAGLUTIDE","10MG"], strength:"10mg vial",
     category:"weight", subscribe:199, once:239, rating:4.7, reviews:264,
     tagline:"The GLP-1 that started it all.",
     description:"A GLP-1 receptor agonist studied for appetite control and metabolic support. A gentle entry point for members new to metabolic peptides.",
@@ -76,7 +76,7 @@ window.LUMA_PRODUCTS = [
     faqs:[]
   },
   {
-    id:"nad-500", stock:"out", name:"NAD+", label:["NAD+","500MG"], strength:"500mg vial",
+    id:"nad-500", stock:"out", image:"assets/products/nad-500", imageFocus:"50% 55%", name:"NAD+", label:["NAD+","500MG"], strength:"500mg vial",
     category:"longevity", subscribe:129, once:149, rating:4.6, reviews:142,
     tagline:"Cellular energy for the long game.",
     description:"Nicotinamide adenine dinucleotide is a coenzyme central to cellular energy. Levels decline with age; our NAD+ is lyophilized for stability.",
@@ -103,7 +103,7 @@ window.LUMA_PRODUCTS = [
     faqs:[]
   },
   {
-    id:"tesamorelin", stock:"out", name:"Tesamorelin", label:["TESAMORELIN","5MG"], strength:"5mg vial",
+    id:"tesamorelin", stock:"out", image:"assets/products/tesamorelin", imageFocus:"50% 55%", name:"Tesamorelin", label:["TESAMORELIN","5MG"], strength:"5mg vial",
     category:"weight", subscribe:139, once:169, rating:4.7, reviews:118,
     tagline:"Targets the stubborn middle.",
     description:"A growth-hormone-releasing hormone analog studied specifically for visceral (abdominal) fat and body composition.",
