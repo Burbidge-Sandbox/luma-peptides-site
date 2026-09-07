@@ -18,32 +18,20 @@
   };
   window.LUMA_CONFIG = CONFIG;
 
-  /* ---------- Vial SVG ---------- */
+  /* One photographic master, with exact catalog typography on the paper label.
+     Keep the legacy helper name for cart/checkout compatibility. */
   function vialSVG(p, opts={}){
-    const [l1,l2] = p.label || [p.name.toUpperCase(),""];
-    const id = "g"+Math.random().toString(36).slice(2,7);
-    return `<svg class="vial" viewBox="0 0 200 330" role="img" aria-label="${p.name} ${p.strength}" xmlns="http://www.w3.org/2000/svg">
-<defs>
- <linearGradient id="${id}c" x1="0" x2="1"><stop offset="0" stop-color="#B9B7B4"/><stop offset=".25" stop-color="#F4F3F1"/><stop offset=".55" stop-color="#D9D7D4"/><stop offset="1" stop-color="#A3A09C"/></linearGradient>
- <linearGradient id="${id}g" x1="0" x2="1"><stop offset="0" stop-color="#D9D6D2"/><stop offset=".18" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#EDEBE8"/><stop offset=".85" stop-color="#F7F6F4"/><stop offset="1" stop-color="#C9C6C2"/></linearGradient>
- <linearGradient id="${id}s" x1="0" x2="1"><stop offset="0" stop-color="#3A3532"/><stop offset=".5" stop-color="#6E6863"/><stop offset="1" stop-color="#2E2A27"/></linearGradient>
-</defs>
-<rect x="58" y="6" width="84" height="34" rx="6" fill="url(#${id}c)"/>
-<rect x="66" y="6" width="68" height="8" rx="3" fill="#EEEDEB"/>
-<rect x="60" y="38" width="80" height="16" fill="url(#${id}s)"/>
-<rect x="63" y="50" width="74" height="12" fill="url(#${id}c)"/>
-<path d="M64 62 h72 v14 q0 8 6 8 h0 v208 q0 18 -18 18 h-48 q-18 0 -18 -18 v-208 q6 0 6 -8z" fill="url(#${id}g)" stroke="#CFCBC6" stroke-width="1"/>
-<rect x="64" y="110" width="72" height="160" fill="#FCFAF7"/>
-<text x="70" y="136" font-family="Cormorant Garamond,Georgia,serif" font-size="17" fill="#B4432C" font-weight="500">luma</text>
-<text x="70" y="153" font-family="Cormorant Garamond,Georgia,serif" font-size="17" fill="#B4432C" font-weight="500">peptides</text>
-<text x="70" y="170" font-family="Cormorant Garamond,Georgia,serif" font-size="17" fill="#B4432C" font-weight="500">co.</text>
-<text x="70" y="205" font-family="Inter,system-ui,sans-serif" font-size="${l1.length>11?7.2:8.5}" font-weight="600" fill="#2A2523" letter-spacing=".3">${l1}</text>
-<text x="70" y="218" font-family="Inter,system-ui,sans-serif" font-size="8.5" font-weight="600" fill="#2A2523" letter-spacing=".3">${l2}</text>
-<text x="70" y="252" font-family="Inter,system-ui,sans-serif" font-size="4.6" font-weight="600" fill="#B4432C" letter-spacing=".4">FOR RESEARCH USE ONLY</text>
-<rect x="64" y="270" width="72" height="18" fill="#B4432C"/>
-<rect x="68" y="80" width="6" height="210" rx="3" fill="#fff" opacity=".55"/>
-<rect x="126" y="80" width="3" height="210" rx="2" fill="#000" opacity=".06"/>
-</svg>`;
+    const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const lines=(p.label || [p.name.toUpperCase()]).filter(Boolean);
+    const photo=p.category==='supplies'?'vial-liquid':'vial-studio';
+    const strength=p.strength.replace(/ vial$/,'').toUpperCase();
+    const labelLines=lines.filter(line=>!/^\d+(?:\.\d+)?(?:MG|ML)$/i.test(line));
+    return `<span class="vial product-photo" role="img" aria-label="${escape(p.name)} — ${escape(p.strength)}, Luma vial product visualization">
+      <img src="assets/products/${photo}-512.jpg" srcset="assets/products/${photo}-512.jpg 512w, assets/products/${photo}-1024.jpg 1024w" sizes="${opts.eager?'(max-width: 900px) 85vw, 520px':'(max-width: 760px) 45vw, 280px'}" width="1024" height="1536" alt="" loading="${opts.eager?'eager':'lazy'}" decoding="async" ${opts.eager?'fetchpriority="high"':''}>
+      <span class="photo-brand" aria-hidden="true">luma<br>peptides<br>co.</span>
+      <span class="photo-product" aria-hidden="true">${labelLines.map(escape).join('<br>')}<span class="photo-strength">${escape(strength)}</span></span>
+      <span class="photo-disclaimer" aria-hidden="true">FOR RESEARCH USE ONLY</span>
+    </span>`;
   }
   window.vialSVG = vialSVG;
 
@@ -90,14 +78,14 @@
   function header(){
     const links=NAV.map(([h,t])=>`<li><a href="${h}" ${page===h?'aria-current="page"':''}>${t}</a></li>`).join("");
     return `<a class="skip" href="#main">Skip to content</a>
-<div class="announce">Free shipping over $${CONFIG.freeShipThreshold} &nbsp;·&nbsp; Every lot third-party tested &nbsp;·&nbsp; <b>WELCOME10</b> for 10% off</div>
+<div class="announce">Storefront preview &nbsp;·&nbsp; Explore the Luma collection</div>
 <header class="header" id="header"><div class="wrap nav">
  <a class="logo" href="index.html" aria-label="Luma Peptides Co. home"><span>luma</span><span>peptides</span><span>co.</span></a>
  <ul class="nav-links">${links}</ul>
  <div class="nav-actions">
   <a class="btn btn-primary btn-sm" href="shop.html">Shop All</a>
   <button class="icon-btn" id="cartBtn" aria-label="Open cart"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span class="cart-count" id="cartCount">0</span></button>
-  <button class="icon-btn burger" id="burger" aria-label="Open menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
  </div>
 </div></header>
 <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
@@ -109,7 +97,7 @@
   function footer(){
     return `<footer class="footer"><div class="wrap">
  <div class="footer-grid">
-  <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">Empowering your health through science. Every lot tested. Every result published.</p></div>
+  <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">A considered approach to peptides. Explore the collection and get to know Luma.</p></div>
   <div><h4>Treatments</h4><ul><li><a href="shop.html">All Treatments</a></li><li><a href="shop.html?cat=weight">Weight & Metabolic</a></li><li><a href="shop.html?cat=skin">Skin & Glow</a></li><li><a href="shop.html?cat=recovery">Recovery</a></li><li><a href="shop.html?cat=longevity">Longevity & Sleep</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="how-it-works.html">How It Works</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
   <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
@@ -123,7 +111,7 @@
  <div class="footer-bottom"><span>© ${new Date().getFullYear()} Luma Peptides Co. All rights reserved.</span><div class="payments"><span>VISA</span><span>MC</span><span>AMEX</span><span>APPLE PAY</span></div></div>
 </div></footer>
 <div class="overlay" id="overlay"></div>
-<aside class="drawer" id="drawer" aria-label="Shopping cart" aria-hidden="true">
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true">
  <div class="drawer-head"><h2>Your cart</h2><button class="icon-btn" id="closeDrawer" aria-label="Close cart"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
  <div class="drawer-body" id="drawerBody"></div>
  <div class="drawer-foot" id="drawerFoot"></div>
@@ -161,8 +149,9 @@
   window.renderCart=render;
 
   /* ---------- Drawer / menu / toast ---------- */
-  function openDrawer(){ $("#drawer").classList.add("open"); $("#overlay").classList.add("show"); $("#drawer").setAttribute("aria-hidden","false"); }
-  function closeDrawer(){ $("#drawer").classList.remove("open"); $("#overlay").classList.remove("show"); $("#drawer").setAttribute("aria-hidden","true"); }
+  let returnFocus=null;
+  function openDrawer(){ returnFocus=document.activeElement; $("#drawer").classList.add("open"); $("#overlay").classList.add("show"); $("#drawer").setAttribute("aria-hidden","false"); document.body.style.overflow="hidden"; $("#closeDrawer").focus(); }
+  function closeDrawer(){ const wasOpen=$("#drawer").classList.contains("open"); $("#drawer").classList.remove("open"); $("#overlay").classList.remove("show"); $("#drawer").setAttribute("aria-hidden","true"); if(wasOpen){document.body.style.overflow="";returnFocus?.focus();} }
   window.openDrawer=openDrawer;
   let toastT;
   function toast(html){ const t=$("#toast"); t.innerHTML=html; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),3200); }
@@ -176,9 +165,18 @@
     $("#cartBtn").addEventListener("click",openDrawer);
     $("#closeDrawer").addEventListener("click",closeDrawer);
     $("#overlay").addEventListener("click",closeDrawer);
-    $("#burger").addEventListener("click",()=>$("#mobileMenu").classList.add("open"));
-    $("#closeMenu").addEventListener("click",()=>$("#mobileMenu").classList.remove("open"));
-    document.addEventListener("keydown",e=>{ if(e.key==="Escape"){closeDrawer(); $("#mobileMenu").classList.remove("open");} });
+    function menu(open){$("#mobileMenu").classList.toggle("open",open);$("#burger").setAttribute("aria-expanded",String(open));document.body.style.overflow=open?"hidden":"";(open?$("#closeMenu"):$("#burger")).focus();}
+    $("#burger").addEventListener("click",()=>menu(true));
+    $("#closeMenu").addEventListener("click",()=>menu(false));
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape"){closeDrawer();if($("#mobileMenu").classList.contains("open"))menu(false);}
+      const panel=$("#drawer").classList.contains("open")?$("#drawer"):$("#mobileMenu").classList.contains("open")?$("#mobileMenu"):null;
+      if(e.key!=="Tab"||!panel)return;
+      const items=[...panel.querySelectorAll('a[href],button,input')].filter(el=>!el.disabled&&el.getClientRects().length);
+      const first=items[0],last=items[items.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    });
     const hdr=$("#header"); const onScroll=()=>hdr.classList.toggle("scrolled",scrollY>8); onScroll(); addEventListener("scroll",onScroll,{passive:true});
 
     /* Delegated cart controls (drawer + cart page share markup) */
@@ -205,17 +203,17 @@
     $$(".reveal").forEach(el=>io.observe(el));
 
     /* Generic newsletter forms */
-    $$("form[data-newsletter]").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault(); toast("Welcome to the list. Check your inbox for 10% off."); f.reset();}));
+    $$("form[data-newsletter]").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault(); toast("Email signup is not connected in this preview.");}));
   });
 
   /* ---------- Product card helper (used by home + shop) ---------- */
   window.productCard = function(p){
     const stars="★".repeat(Math.round(p.rating||5));
     return `<article class="card reveal">
- ${p.badge?`<span class="badge ${p.badge==="New"?"soft":""}">${p.badge}</span>`:""}
+ 
  <a class="stretch" href="product.html?id=${p.id}" aria-label="${p.name}"></a>
  ${vialSVG(p)}
- <div class="rating">${stars}<span>(${p.reviews})</span></div>
+ 
  <h3>${p.name}</h3>
  <div class="strength">${p.strength}</div>
  <div class="price">${p.subscribe?`${money(p.subscribe)} <small>/ month</small>`:`${money(p.once)}`}</div>

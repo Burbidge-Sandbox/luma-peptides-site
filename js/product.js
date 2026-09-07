@@ -6,7 +6,7 @@
   document.title=`${p.name} ${p.strength} — Luma Peptides Co.`;
   document.querySelector('meta[name="description"]')?.setAttribute("content",`${p.name}: ${p.tagline} ${p.description}`);
   document.getElementById("crumbName").textContent=p.name;
-  document.getElementById("gallery").innerHTML=vialSVG(p);
+  document.getElementById("gallery").innerHTML=vialSVG(p,{eager:true});
   const stars="★".repeat(Math.round(p.rating));
   const hasSub=!!p.subscribe;
   document.getElementById("info").innerHTML=`
