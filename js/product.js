@@ -9,12 +9,14 @@
   document.getElementById("gallery").innerHTML=vialSVG(p,{eager:true});
   const stars="★".repeat(Math.round(p.rating));
   const hasSub=!!p.subscribe;
+  const oos=p.stock==="out";
   document.getElementById("info").innerHTML=`
  <span class="eyebrow">${window.LUMA_CATEGORIES[p.category]}</span>
  <h1>${p.name}</h1>
  <div class="sub">${p.strength} · <span class="rating" style="display:inline">${stars}<span>${p.rating} (${p.reviews} reviews)</span></span></div>
  <p style="color:var(--ink-2);font-size:1.05rem">${p.tagline}</p>
  <div class="pdp-price" id="priceLine"></div>
+ ${oos?`<div class="oos-banner"><b>Currently out of stock.</b> Join the waitlist and we'll email you the moment this lot is released. No payment is taken.</div>`:""}
  <form id="buyForm">
   <div class="purchase-options" role="radiogroup" aria-label="Purchase option">
    ${hasSub?`<label class="opt"><input type="radio" name="plan" value="subscribe" checked><div class="opt-body"><b>Subscribe & save <span class="save">Save ${Math.round((1-p.subscribe/p.once)*100)}%</span></b><span>Delivered monthly · pause or cancel anytime · reminder before every charge</span></div><div class="opt-price">${money(p.subscribe)}<small style="font-weight:400;color:var(--muted)">/mo</small></div></label>`:""}
@@ -22,7 +24,7 @@
   </div>
   <div class="buy-row">
    <div class="qty"><button type="button" id="dec" aria-label="Decrease">−</button><input id="qtyInput" type="number" value="1" min="1" max="10" aria-label="Quantity"><button type="button" id="inc" aria-label="Increase">+</button></div>
-   <button type="submit" class="btn btn-primary">Add to cart</button>
+   ${oos?`<button type="button" class="btn btn-primary" data-waitlist="${p.id}">Join the waitlist</button>`:`<button type="submit" class="btn btn-primary">Add to cart</button>`}
   </div>
  </form>
  <div class="pdp-meta">
@@ -49,7 +51,8 @@
   form.addEventListener("change",updPrice); updPrice();
   document.getElementById("inc").onclick=()=>qty.value=Math.min(10,+qty.value+1);
   document.getElementById("dec").onclick=()=>qty.value=Math.max(1,+qty.value-1);
-  form.addEventListener("submit",e=>{e.preventDefault(); Cart.add(p.id,plan(),+qty.value);});
+  form.addEventListener("submit",e=>{e.preventDefault(); if(oos){joinWaitlist(p.id);return;} Cart.add(p.id,plan(),+qty.value);});
+  if(oos){ form.querySelectorAll("input,#inc,#dec").forEach(el=>el.disabled=true); }
   document.querySelector(".tab-list").addEventListener("click",e=>{const b=e.target.closest("[role=tab]"); if(!b) return;
     document.querySelectorAll("[role=tab]").forEach(t=>t.setAttribute("aria-selected",t===b));
     document.querySelectorAll(".tab-panel").forEach(pn=>pn.hidden=pn.id!==b.dataset.tab);});

@@ -46,6 +46,7 @@
     items:()=>cart,
     add(id,plan="once",qty=1){
       const p=byId(id); if(!p) return;
+      if(p.stock==="out"){ toast(`<b>${p.name}</b> is currently out of stock.`); return; }
       if(plan==="subscribe" && !p.subscribe) plan="once";
       const k=lineKey(id,plan);
       const ex=cart.find(l=>l.key===k);
@@ -208,16 +209,26 @@
 
   /* ---------- Product card helper (used by home + shop) ---------- */
   window.productCard = function(p){
-    const stars="★".repeat(Math.round(p.rating||5));
-    return `<article class="card reveal">
- 
+    const oos = p.stock==="out";
+    return `<article class="card reveal${oos?" oos":""}">
+ ${oos?`<span class="badge soft">Waitlist</span>`:(p.badge?`<span class="badge">${p.badge}</span>`:"")}
  <a class="stretch" href="product.html?id=${p.id}" aria-label="${p.name}"></a>
  ${vialSVG(p)}
- 
  <h3>${p.name}</h3>
- <div class="strength">${p.strength}</div>
+ <div class="strength">${p.strength}${oos?' · <span class="oos-text">Out of stock</span>':''}</div>
  <div class="price">${p.subscribe?`${money(p.subscribe)} <small>/ month</small>`:`${money(p.once)}`}</div>
- <div class="card-actions"><button class="btn btn-outline btn-sm" data-add="${p.id}" data-plan="${p.subscribe?"subscribe":"once"}">Add to cart</button></div>
+ <div class="card-actions">${oos?`<button class="btn btn-outline btn-sm" data-waitlist="${p.id}">Join the waitlist</button>`:`<button class="btn btn-outline btn-sm" data-add="${p.id}" data-plan="${p.subscribe?"subscribe":"once"}">Add to cart</button>`}</div>
 </article>`;
   };
+
+  /* ---------- Waitlist (out-of-stock) ---------- */
+  window.joinWaitlist = function(id){
+    const p=byId(id); if(!p) return;
+    const email=prompt(`${p.name} is out of stock. Enter your email and we'll let you know the moment it's back:`);
+    if(email===null) return;
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())){ toast("Please enter a valid email address."); return; }
+    try{ const w=JSON.parse(localStorage.getItem("luma_waitlist")||"[]"); w.push({id,email:email.trim(),at:new Date().toISOString()}); localStorage.setItem("luma_waitlist",JSON.stringify(w)); }catch(e){}
+    toast(`You're on the list for <b>${p.name}</b>. We'll email you when it's back.`);
+  };
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-waitlist]"); if(!b) return; e.preventDefault(); joinWaitlist(b.dataset.waitlist); });
 })();

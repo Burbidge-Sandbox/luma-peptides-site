@@ -485,3 +485,12 @@ p{margin:0 0 1em}
 .editorial-hero video.hero-scene{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;object-position:64% center;max-width:none;background:#e5d7c5}
 @media(max-width:760px){.editorial-hero video.hero-scene{object-position:65% 52%}}
 @media(prefers-reduced-motion:reduce){.motion-toggle{display:flex}}
+
+/* Out of stock / waitlist */
+.card.oos .vial{opacity:.55;filter:grayscale(.35)}
+.card.oos:hover .vial{filter:grayscale(.35)}
+.oos-text{color:var(--terra);font-weight:600}
+.oos-banner{background:var(--terra-soft);color:var(--terra-2);padding:.9rem 1.1rem;border-radius:8px;font-size:.9rem;margin-bottom:1.2rem}
+.purchase-options:has(input:disabled) .opt{opacity:.5;cursor:not-allowed}
+.chip-stock{margin-left:.25rem;border-style:dashed}
+.chip-stock[aria-pressed="true"]{background:var(--terra);border-color:var(--terra);color:#fff}
