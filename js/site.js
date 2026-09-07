@@ -22,7 +22,7 @@
      Keep the legacy helper name for cart/checkout compatibility. */
   function vialSVG(p, opts={}){
     const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    if(p.image){
+    if(p.image && opts.eager){ /* unique render on the product detail page only; grids keep the studio vial */
       return `<span class="vial product-photo has-photo${opts.eager?' photo-full':''}" role="img" aria-label="${escape(p.name)} — ${escape(p.strength)}">
       <img src="${p.image}-800.jpg" srcset="${p.image}-800.jpg 800w, ${p.image}.jpg 1600w" sizes="${opts.eager?'(max-width: 900px) 92vw, 620px':'(max-width: 760px) 45vw, 300px'}" width="1600" height="1200" alt="" style="object-position:${p.imageFocus||'50% 50%'}" loading="${opts.eager?'eager':'lazy'}" decoding="async" ${opts.eager?'fetchpriority="high"':''}></span>`;
     }

@@ -519,3 +519,4 @@ body.gate-open{overflow:hidden}
 @media(max-width:520px){.gate-card{padding:1.8rem 1.4rem 1.4rem}.gate-card h2{font-size:1.6rem}}
 @media(prefers-reduced-motion:reduce){.gate,.gate-card{animation:none}}
 .gate-card .logo span+span{margin-left:.3em}
+.gate[hidden]{display:none!important}
