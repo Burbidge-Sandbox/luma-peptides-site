@@ -121,7 +121,23 @@
  <div class="drawer-body" id="drawerBody"></div>
  <div class="drawer-foot" id="drawerFoot"></div>
 </aside>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>`;
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="gate" id="gate" hidden>
+ <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle" aria-describedby="gateBody">
+  <div class="logo" aria-hidden="true"><span>luma</span><span>peptides co.</span></div>
+  <span class="eyebrow">Before you continue</span>
+  <h2 id="gateTitle">A quick note about what you'll find here.</h2>
+  <div class="gate-body" id="gateBody">
+   <p>Products on this site are supplied <b>for research purposes only</b> and are not intended for human or veterinary use. Nothing here is medical advice, and statements have not been evaluated by the Food and Drug Administration. Products are not intended to diagnose, treat, cure, or prevent any disease.</p>
+   <p>Consult a licensed healthcare provider before beginning any protocol. This is a student project storefront; orders are simulated and no payment is processed.</p>
+  </div>
+  <label class="gate-check"><input type="checkbox" id="gateAgree"><span>I confirm that I am <b>21 years of age or older</b>, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+  <div class="gate-actions">
+   <button class="btn btn-primary" id="gateEnter" disabled>Enter the site</button>
+   <a class="btn btn-outline" href="https://www.google.com" id="gateLeave">Leave</a>
+  </div>
+ </div>
+</div>`;
   }
 
   /* ---------- Rendering ---------- */
@@ -202,6 +218,19 @@
       const qty=+(b.dataset.qty||($("#qtyInput")?.value)||1);
       Cart.add(b.dataset.add,b.dataset.plan||"once",qty);
     });
+
+    /* Entry disclaimer / age gate — remembered for 30 days */
+    (function(){
+      const KEY="luma_gate_ok", DAYS=30, gate=$("#gate");
+      let ok=false; try{ ok = (+localStorage.getItem(KEY)||0) > Date.now(); }catch(e){}
+      if(ok) return;
+      gate.hidden=false; document.body.classList.add("gate-open");
+      const chk=$("#gateAgree"), btn=$("#gateEnter"), ret=document.activeElement;
+      chk.addEventListener("change",()=>btn.disabled=!chk.checked);
+      btn.addEventListener("click",()=>{ try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
+      chk.focus();
+      gate.addEventListener("keydown",e=>{ if(e.key!=="Tab") return; const f=[...gate.querySelectorAll("input,button:not([disabled]),a[href]")]; const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();} else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();} });
+    })();
 
     /* Reveal on scroll */
     const io=new IntersectionObserver(es=>es.forEach(x=>{ if(x.isIntersecting){x.target.classList.add("in"); io.unobserve(x.target);} }),{threshold:.12});

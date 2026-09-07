@@ -499,3 +499,23 @@ p{margin:0 0 1em}
 .product-photo.has-photo>img{object-fit:cover}
 .pdp-gallery .vial.product-photo.photo-full{aspect-ratio:4/3;max-width:none;width:100%}
 .pdp-gallery .vial.product-photo.photo-full>img{object-fit:cover}
+
+/* Entry disclaimer / age gate */
+.gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:1rem;background:rgba(42,37,35,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:gate-in .35s var(--ease)}
+.gate.closing{opacity:0;transition:opacity .3s}
+@keyframes gate-in{from{opacity:0}to{opacity:1}}
+.gate-card{background:var(--paper);border-radius:16px;padding:2.4rem 2.4rem 2rem;width:min(560px,100%);box-shadow:var(--shadow-lg);animation:gate-card .45s var(--ease);max-height:92vh;overflow:auto}
+@keyframes gate-card{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.gate-card .logo{font-size:1.6rem;margin-bottom:1.2rem}
+.gate-card .logo span{display:inline}
+.gate-card h2{font-size:1.9rem;margin-bottom:.8rem}
+.gate-body p{font-size:.92rem;color:var(--ink-2);line-height:1.6}
+.gate-check{display:flex;gap:.8rem;align-items:flex-start;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:1rem;margin:1.2rem 0 1.3rem;font-size:.9rem;cursor:pointer}
+.gate-check input{width:20px;height:20px;accent-color:var(--terra);margin-top:.1rem;flex:none}
+.gate-check a{color:var(--terra);text-decoration:underline}
+.gate-actions{display:flex;gap:.7rem;flex-wrap:wrap}
+.gate-actions .btn{flex:1}
+body.gate-open{overflow:hidden}
+@media(max-width:520px){.gate-card{padding:1.8rem 1.4rem 1.4rem}.gate-card h2{font-size:1.6rem}}
+@media(prefers-reduced-motion:reduce){.gate,.gate-card{animation:none}}
+.gate-card .logo span+span{margin-left:.3em}
