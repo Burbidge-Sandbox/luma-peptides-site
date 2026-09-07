@@ -520,3 +520,7 @@ body.gate-open{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.gate,.gate-card{animation:none}}
 .gate-card .logo span+span{margin-left:.3em}
 .gate[hidden]{display:none!important}
+#gateEnter:not(.is-ready){opacity:.55}
+#gateEnter:not(.is-ready):hover{opacity:.75}
+.gate-check.nudge{border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft);animation:nudge .4s}
+@keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}

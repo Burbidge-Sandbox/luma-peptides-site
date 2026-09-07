@@ -133,7 +133,7 @@
   </div>
   <label class="gate-check"><input type="checkbox" id="gateAgree"><span>I confirm that I am <b>21 years of age or older</b>, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
   <div class="gate-actions">
-   <button class="btn btn-primary" id="gateEnter" disabled>Enter the site</button>
+   <button class="btn btn-primary" id="gateEnter" type="button">Enter the site</button>
    <a class="btn btn-outline" href="https://www.google.com" id="gateLeave">Leave</a>
   </div>
  </div>
@@ -226,8 +226,9 @@
       if(ok) return;
       gate.hidden=false; document.body.classList.add("gate-open");
       const chk=$("#gateAgree"), btn=$("#gateEnter"), ret=document.activeElement;
-      chk.addEventListener("change",()=>btn.disabled=!chk.checked);
-      btn.addEventListener("click",()=>{ try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
+      const box=chk.closest(".gate-check");
+      chk.addEventListener("change",()=>{ btn.classList.toggle("is-ready",chk.checked); box.classList.remove("nudge"); });
+      btn.addEventListener("click",()=>{ if(!chk.checked){ box.classList.remove("nudge"); void box.offsetWidth; box.classList.add("nudge"); chk.focus(); return; } try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
       chk.focus();
       gate.addEventListener("keydown",e=>{ if(e.key!=="Tab") return; const f=[...gate.querySelectorAll("input,button:not([disabled]),a[href]")]; const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();} else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();} });
     })();
