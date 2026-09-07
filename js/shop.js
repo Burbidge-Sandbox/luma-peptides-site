@@ -21,7 +21,7 @@
     const u=new URL(location); cat==="all"?u.searchParams.delete("cat"):u.searchParams.set("cat",cat); order==="featured"?u.searchParams.delete("sort"):u.searchParams.set("sort",order); inOnly?u.searchParams.set("stock","in"):u.searchParams.delete("stock"); history.replaceState(null,"",u);
     document.getElementById("shopTitle").textContent = cat==="all"?"All Treatments":C[cat];
   }
-  chips.addEventListener("click",e=>{const b=e.target.closest(".chip"); if(!b) return; cat=b.dataset.cat; chips.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b)); draw();});
+  chips.addEventListener("click",e=>{const b=e.target.closest(".chip[data-cat]"); if(!b) return; cat=b.dataset.cat; chips.querySelectorAll(".chip[data-cat]").forEach(c=>c.setAttribute("aria-pressed",c===b)); draw();});
   sort.addEventListener("change",()=>{order=sort.value; draw();});
   draw();
 })();
