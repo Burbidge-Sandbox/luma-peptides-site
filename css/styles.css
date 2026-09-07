@@ -494,3 +494,8 @@ p{margin:0 0 1em}
 .purchase-options:has(input:disabled) .opt{opacity:.5;cursor:not-allowed}
 .chip-stock{margin-left:.25rem;border-style:dashed}
 .chip-stock[aria-pressed="true"]{background:var(--terra);border-color:var(--terra);color:#fff}
+
+/* Real product photography */
+.product-photo.has-photo>img{object-fit:cover}
+.pdp-gallery .vial.product-photo.photo-full{aspect-ratio:4/3;max-width:none;width:100%}
+.pdp-gallery .vial.product-photo.photo-full>img{object-fit:cover}

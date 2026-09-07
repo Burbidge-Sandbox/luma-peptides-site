@@ -22,6 +22,10 @@
      Keep the legacy helper name for cart/checkout compatibility. */
   function vialSVG(p, opts={}){
     const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    if(p.image){
+      return `<span class="vial product-photo has-photo${opts.eager?' photo-full':''}" role="img" aria-label="${escape(p.name)} — ${escape(p.strength)}">
+      <img src="${p.image}-800.jpg" srcset="${p.image}-800.jpg 800w, ${p.image}.jpg 1600w" sizes="${opts.eager?'(max-width: 900px) 92vw, 620px':'(max-width: 760px) 45vw, 300px'}" width="1600" height="1200" alt="" style="object-position:${p.imageFocus||'50% 50%'}" loading="${opts.eager?'eager':'lazy'}" decoding="async" ${opts.eager?'fetchpriority="high"':''}></span>`;
+    }
     const lines=(p.label || [p.name.toUpperCase()]).filter(Boolean);
     const photo=p.category==='supplies'?'vial-liquid':'vial-studio';
     const strength=p.strength.replace(/ vial$/,'').toUpperCase();

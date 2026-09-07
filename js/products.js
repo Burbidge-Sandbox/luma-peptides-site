@@ -4,7 +4,7 @@
    ============================================================ */
 window.LUMA_PRODUCTS = [
   {
-    id:"tirzepatide-15", stock:"in", name:"Tirzepatide", label:["TIRZEPATIDE","15MG"], strength:"15mg vial",
+    id:"tirzepatide-15", stock:"in", image:"assets/products/tirzepatide-15", imageFocus:"68% 60%", name:"Tirzepatide", label:["TIRZEPATIDE","15MG"], strength:"15mg vial",
     category:"weight", subscribe:299, once:349, badge:"Best Seller", rating:4.9, reviews:412,
     tagline:"Our most-loved metabolic support protocol.",
     description:"A dual GIP/GLP-1 receptor agonist studied for appetite regulation and metabolic health. Each Luma vial is lyophilized, sealed, and lot-tested for purity and identity before it ships.",
@@ -67,7 +67,7 @@ window.LUMA_PRODUCTS = [
     faqs:[["Semaglutide or tirzepatide?","Semaglutide is typically the gentler starting point. Our care team can help you decide."]]
   },
   {
-    id:"retatrutide-15", stock:"in", name:"Retatrutide", label:["RETATRUTIDE","15MG"], strength:"15mg vial",
+    id:"retatrutide-15", stock:"in", image:"assets/products/retatrutide-15", imageFocus:"50% 55%", name:"Retatrutide", label:["RETATRUTIDE","15MG"], strength:"15mg vial",
     category:"weight", subscribe:329, once:379, badge:"Premium", rating:4.9, reviews:87,
     tagline:"Next-generation triple-agonist support.",
     description:"A triple GIP/GLP-1/glucagon receptor agonist at the leading edge of metabolic research. Reserved for members with prior GLP-1 experience.",
@@ -122,7 +122,8 @@ window.LUMA_PRODUCTS = [
   }
 ];
 
-/* stock: "in" = purchasable, "out" = shows "Join the waitlist" instead of Add to cart */
+/* image: base path (no extension) for a real product photo — expects <base>.jpg (1600w) and <base>-800.jpg. imageFocus: object-position for cropped views.
+   stock: "in" = purchasable, "out" = shows "Join the waitlist" instead of Add to cart */
 window.LUMA_CATEGORIES = {
   all:"All", weight:"Weight & Metabolic", recovery:"Recovery", skin:"Skin & Glow", longevity:"Longevity & Sleep", supplies:"Supplies"
 };
