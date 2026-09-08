@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /compliant/
 Sitemap: https://lumaresearchco.com/sitemap.xml
