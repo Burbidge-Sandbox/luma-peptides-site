@@ -1,2 +1,4 @@
-https://lumaresearchco.com/compliant/* /404.html 404
-https://www.lumaresearchco.com/compliant/* /404.html 404
+# /compliant is blocked on lumaresearchco.com by a Cloudflare WAF custom rule
+# ("Block /compliant on live domain"), not here — Pages _redirects cannot match
+# on hostname, so the rule lives at the zone level. It stays reachable on
+# luma-peptides-site.pages.dev for A/B review.
