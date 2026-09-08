@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Received — Luma Peptides Co.</title>
+<meta name="description" content="Order confirmation.">
+<meta name="theme-color" content="#F7F2EC">
+<meta property="og:title" content="Order Received — Luma Peptides Co.">
+<meta property="og:description" content="Order confirmation.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=20260907e">
+<script src="js/products.js?v=20260907e" defer></script>
+<script src="js/site.js?v=20260907e" defer></script>
+<script src="js/confirmation.js?v=20260907e" defer></script>
+
+</head>
+<body>
+<main id="main">
+
+<div class="wrap confirm">
+ <div class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+ <span class="eyebrow">Order received</span>
+ <h1 style="font-size:clamp(2.2rem,4vw,3.2rem)">Thank you for your order.</h1>
+ <p style="color:var(--ink-2)">Order <b id="orderId"></b> has entered the lab-release queue. A confirmation with the lot numbers and certificate links will be sent to <b id="orderEmail"></b> when it ships.</p>
+ <div class="order-box" id="orderBox"></div>
+ <p style="font-size:.8rem;color:var(--muted);margin-top:1.5rem">For laboratory research use only. Not for human or animal use. All sales final once shipped.</p>
+ <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1rem;flex-wrap:wrap"><a class="btn btn-primary" href="shop.html">Back to catalog</a><a class="btn btn-outline" href="verify.html">Verify a lot</a></div>
+</div>
+
+</main>
+</body>
+</html>
