@@ -524,3 +524,6 @@ body.gate-open{overflow:hidden}
 #gateEnter:not(.is-ready):hover{opacity:.75}
 .gate-check.nudge{border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft);animation:nudge .4s}
 @keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* Subtle shade over the hero video */
+.editorial-hero .hero-visual::after{content:"";position:absolute;inset:0;background:rgba(42,37,35,.07);pointer-events:none;z-index:1}
+.editorial-hero .hero-visual figcaption,.editorial-hero .motion-toggle{z-index:2}
