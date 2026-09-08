@@ -44,24 +44,31 @@
   let cart = [];
   try{ cart = JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ cart=[]; }
   const save = ()=>{ try{localStorage.setItem(KEY,JSON.stringify(cart));}catch(e){} render(); };
-  function lineKey(id,plan){return id+"|"+plan;}
-  function unitPrice(p,plan){ return plan==="subscribe" && p.subscribe ? p.subscribe : p.once; }
+  /* Resolve a dosage variant (or the product's own fields when it has none) */
+  function variantOf(p,key){
+    if(!p) return null;
+    if(p.variants&&p.variants.length){ return p.variants.find(v=>v.key===key)||p.variants[0]; }
+    return {key:null,label:p.strength,strength:p.strength,subscribe:p.subscribe,once:p.once,stock:p.stock};
+  }
+  function lineKey(id,plan,variant){return id+"|"+plan+(variant?"|"+variant:"");}
+  function unitPrice(p,plan,variant){ const v=variantOf(p,variant); return plan==="subscribe" && v.subscribe ? v.subscribe : v.once; }
   const Cart = {
     items:()=>cart,
-    add(id,plan="once",qty=1){
+    add(id,plan="once",qty=1,variant=null){
       const p=byId(id); if(!p) return;
-      if(p.stock==="out"){ toast(`<b>${p.name}</b> is currently out of stock.`); return; }
-      if(plan==="subscribe" && !p.subscribe) plan="once";
-      const k=lineKey(id,plan);
+      const v=variantOf(p,variant); variant=v.key;
+      if(p.stock==="out"||v.stock==="out"){ toast(`<b>${p.name}${v.key?" "+v.label:""}</b> is currently out of stock.`); return; }
+      if(plan==="subscribe" && !v.subscribe) plan="once";
+      const k=lineKey(id,plan,variant);
       const ex=cart.find(l=>l.key===k);
-      if(ex) ex.qty=Math.min(10,ex.qty+qty); else cart.push({key:k,id,plan,qty});
-      save(); toast(`<b>${p.name}</b> added to your cart. <a href="cart.html">View cart</a>`); openDrawer();
+      if(ex) ex.qty=Math.min(10,ex.qty+qty); else cart.push({key:k,id,plan,qty,variant});
+      save(); toast(`<b>${p.name}${v.key?" "+v.label:""}</b> added to your cart. <a href="cart.html">View cart</a>`); openDrawer();
     },
     setQty(key,qty){ const l=cart.find(l=>l.key===key); if(!l) return; l.qty=Math.max(0,Math.min(10,qty|0)); if(!l.qty) cart=cart.filter(x=>x.key!==key); save(); },
     remove(key){ cart=cart.filter(l=>l.key!==key); save(); },
     clear(){ cart=[]; save(); },
     count:()=>cart.reduce((a,l)=>a+l.qty,0),
-    subtotal:()=>cart.reduce((a,l)=>{const p=byId(l.id);return a+(p?unitPrice(p,l.plan)*l.qty:0);},0),
+    subtotal:()=>cart.reduce((a,l)=>{const p=byId(l.id);return a+(p?unitPrice(p,l.plan,l.variant)*l.qty:0);},0),
     promo(){ try{return localStorage.getItem("luma_promo")||"";}catch(e){return "";} },
     setPromo(code){ code=(code||"").trim().toUpperCase(); if(code && !CONFIG.promos[code]) return false; try{localStorage.setItem("luma_promo",code);}catch(e){} render(); return true; },
     totals(shipMethod="standard"){
@@ -73,7 +80,7 @@
       const tax=(sub-discount)*CONFIG.taxRate;
       return {sub,discount,ship,tax,total:sub-discount+ship+tax,code,promo};
     },
-    unitPrice, byId, money
+    unitPrice, variantOf, byId, money
   };
   window.Cart=Cart;
 
@@ -143,10 +150,10 @@
   /* ---------- Rendering ---------- */
   function lineHTML(l){
     const p=byId(l.id); if(!p) return "";
-    const price=unitPrice(p,l.plan);
+    const price=unitPrice(p,l.plan,l.variant); const v=variantOf(p,l.variant);
     return `<div class="line" data-key="${l.key}">
  <div class="thumb">${vialSVG(p)}</div>
- <div><h4><a href="product.html?id=${p.id}">${p.name}</a></h4><div class="variant">${p.strength} · ${l.plan==="subscribe"?"Monthly subscription":"One-time"}</div>
+ <div><h4><a href="product.html?id=${p.id}${v.key?"&dose="+v.key:""}">${p.name}</a></h4><div class="variant">${v.strength} · ${l.plan==="subscribe"?"Monthly subscription":"One-time"}</div>
   <div class="qty"><button data-dec aria-label="Decrease">−</button><input type="number" value="${l.qty}" min="1" max="10" aria-label="Quantity"><button data-inc aria-label="Increase">+</button></div></div>
  <div class="line-price">${money(price*l.qty)}<button class="remove" data-remove>Remove</button></div>
 </div>`;
@@ -216,7 +223,7 @@
     document.addEventListener("click",e=>{
       const b=e.target.closest("[data-add]"); if(!b) return; e.preventDefault();
       const qty=+(b.dataset.qty||($("#qtyInput")?.value)||1);
-      Cart.add(b.dataset.add,b.dataset.plan||"once",qty);
+      Cart.add(b.dataset.add,b.dataset.plan||"once",qty,b.dataset.variant||null);
     });
 
     /* Entry disclaimer / age gate — remembered for 30 days */

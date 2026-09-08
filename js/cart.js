@@ -5,9 +5,9 @@
   function draw(){
     const items=Cart.items();
     if(!items.length){ list.innerHTML=`<div class="empty-cart"><p>Your cart is empty.</p><a class="btn btn-primary" href="shop.html">Shop treatments</a></div>`; sum.innerHTML=""; return; }
-    list.innerHTML=items.map(l=>{const p=Cart.byId(l.id); const price=Cart.unitPrice(p,l.plan); return `<div class="line" data-key="${l.key}">
+    list.innerHTML=items.map(l=>{const p=Cart.byId(l.id); const price=Cart.unitPrice(p,l.plan,l.variant); const v=Cart.variantOf(p,l.variant); return `<div class="line" data-key="${l.key}">
  <div class="thumb">${vialSVG(p)}</div>
- <div><h4><a href="product.html?id=${p.id}">${p.name}</a></h4><div class="variant">${p.strength} · ${l.plan==="subscribe"?"Monthly subscription":"One-time"} · ${money(price)} each</div>
+ <div><h4><a href="product.html?id=${p.id}${v.key?"&dose="+v.key:""}">${p.name}</a></h4><div class="variant">${v.strength} · ${l.plan==="subscribe"?"Monthly subscription":"One-time"} · ${money(price)} each</div>
   <div class="qty"><button data-dec aria-label="Decrease">−</button><input type="number" value="${l.qty}" min="1" max="10" aria-label="Quantity"><button data-inc aria-label="Increase">+</button></div></div>
  <div class="line-price">${money(price*l.qty)}<button class="remove" data-remove>Remove</button></div></div>`;}).join("");
     const t=Cart.totals();

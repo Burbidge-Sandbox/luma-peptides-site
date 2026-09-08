@@ -11,7 +11,7 @@
     const t=Cart.totals(ship);
     document.getElementById("ship-standard").textContent = (t.sub-t.discount>=CFG.freeShipThreshold||t.promo?.type==="ship")?"Free":money(CFG.shipping.standard.price);
     document.getElementById("ship-express").textContent = money(CFG.shipping.express.price);
-    sum.innerHTML=Cart.items().map(l=>{const p=Cart.byId(l.id);return `<div class="mini-line"><div class="thumb">${vialSVG(p)}<i>${l.qty}</i></div><div class="grow"><b>${p.name}</b><small>${p.strength} · ${l.plan==="subscribe"?"Monthly":"One-time"}</small></div><b>${money(Cart.unitPrice(p,l.plan)*l.qty)}</b></div>`;}).join("")+
+    sum.innerHTML=Cart.items().map(l=>{const p=Cart.byId(l.id); const v=Cart.variantOf(p,l.variant);return `<div class="mini-line"><div class="thumb">${vialSVG(p)}<i>${l.qty}</i></div><div class="grow"><b>${p.name}</b><small>${v.strength} · ${l.plan==="subscribe"?"Monthly":"One-time"}</small></div><b>${money(Cart.unitPrice(p,l.plan,l.variant)*l.qty)}</b></div>`;}).join("")+
     `<div class="promo"><input id="promoIn" placeholder="Promo code" value="${t.code}" aria-label="Promo code"><button type="button" class="btn btn-dark btn-sm" id="promoBtn">Apply</button></div><div class="promo-msg" id="promoMsg"></div>
 <div class="totals"><div><span>Subtotal</span><b>${money(t.sub)}</b></div>${t.discount?`<div class="discount"><span>Discount (${t.code})</span><b>−${money(t.discount)}</b></div>`:""}<div><span>Shipping</span><b>${t.ship?money(t.ship):"Free"}</b></div>${t.tax?`<div><span>Tax</span><b>${money(t.tax)}</b></div>`:""}<div class="grand"><span>Total</span><b>${money(t.total)}</b></div></div>`;
     document.getElementById("promoBtn").onclick=()=>{const ok=Cart.setPromo(document.getElementById("promoIn").value); if(!ok){const m=document.getElementById("promoMsg"); m.textContent="That code isn't valid."; m.className="promo-msg err";} else drawSummary();};
@@ -48,7 +48,7 @@
     const t=Cart.totals(ship);
     const order={ id:"LP-"+Math.random().toString(36).slice(2,8).toUpperCase(), date:new Date().toISOString(),
       email:form.email.value, name:`${form.first.value} ${form.last.value}`, address:`${form.address.value}${form.apt.value?", "+form.apt.value:""}, ${form.city.value}, ${form.state.value} ${form.zip.value}`,
-      ship:CFG.shipping[ship].label, items:Cart.items().map(l=>{const p=Cart.byId(l.id);return {name:p.name,strength:p.strength,plan:l.plan,qty:l.qty,price:Cart.unitPrice(p,l.plan)};}),
+      ship:CFG.shipping[ship].label, items:Cart.items().map(l=>{const p=Cart.byId(l.id); const v=Cart.variantOf(p,l.variant);return {name:p.name,strength:v.strength,plan:l.plan,qty:l.qty,price:Cart.unitPrice(p,l.plan,l.variant)};}),
       totals:{sub:t.sub,discount:t.discount,ship:t.ship,tax:t.tax,total:t.total,code:t.code}, last4:form.card.value.replace(/\s/g,"").slice(-4) };
     setTimeout(()=>{ try{ sessionStorage.setItem("luma_order",JSON.stringify(order)); }catch(e){} Cart.clear(); Cart.setPromo(""); location.href="confirmation.html?order="+order.id; },900);
   }

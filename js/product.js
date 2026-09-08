@@ -1,26 +1,34 @@
-/* Product detail page */
+/* Product detail page — with dosage (variant) selector */
 (function(){
-  const id=new URLSearchParams(location.search).get("id");
+  const params=new URLSearchParams(location.search);
+  const id=params.get("id");
   const P=window.LUMA_PRODUCTS; const p=P.find(x=>x.id===id)||P[0];
   const money=Cart.money;
-  document.title=`${p.name} ${p.strength} — Luma Peptides Co.`;
+  const variants=p.variants||null;
+  let dose=variants?(variants.find(v=>v.key===params.get("dose"))||variants[0]).key:null;
+  const stars="★".repeat(Math.round(p.rating));
   document.querySelector('meta[name="description"]')?.setAttribute("content",`${p.name}: ${p.tagline} ${p.description}`);
   document.getElementById("crumbName").textContent=p.name;
   document.getElementById("gallery").innerHTML=vialSVG(p,{eager:true});
-  const stars="★".repeat(Math.round(p.rating));
-  const hasSub=!!p.subscribe;
-  const oos=p.stock==="out";
-  document.getElementById("info").innerHTML=`
+
+  function render(){
+    const v=Cart.variantOf(p,dose);
+    const hasSub=!!v.subscribe;
+    const oos=p.stock==="out"||v.stock==="out";
+    document.title=`${p.name} ${v.strength} — Luma Peptides Co.`;
+    if(variants){ const u=new URL(location); u.searchParams.set("dose",v.key); history.replaceState(null,"",u); }
+    document.getElementById("info").innerHTML=`
  <span class="eyebrow">${window.LUMA_CATEGORIES[p.category]}</span>
  <h1>${p.name}</h1>
- <div class="sub">${p.strength} · <span class="rating" style="display:inline">${stars}<span>${p.rating} (${p.reviews} reviews)</span></span></div>
+ <div class="sub">${v.strength} · <span class="rating" style="display:inline">${stars}<span>${p.rating} (${p.reviews} reviews)</span></span></div>
  <p style="color:var(--ink-2);font-size:1.05rem">${p.tagline}</p>
  <div class="pdp-price" id="priceLine"></div>
+ ${variants?`<div class="dose-picker"><div class="dose-label">Dosage</div><div class="dose-options" role="radiogroup" aria-label="Dosage">${variants.map(x=>`<button type="button" class="dose${x.key===v.key?" is-selected":""}${x.stock==="out"?" is-out":""}" data-dose="${x.key}" role="radio" aria-checked="${x.key===v.key}">${x.label}${x.stock==="out"?'<small>Waitlist</small>':''}</button>`).join("")}</div></div>`:""}
  ${oos?`<div class="oos-banner"><b>Currently out of stock.</b> Join the waitlist and we'll email you the moment this lot is released. No payment is taken.</div>`:""}
  <form id="buyForm">
   <div class="purchase-options" role="radiogroup" aria-label="Purchase option">
-   ${hasSub?`<label class="opt"><input type="radio" name="plan" value="subscribe" checked><div class="opt-body"><b>Subscribe & save <span class="save">Save ${Math.round((1-p.subscribe/p.once)*100)}%</span></b><span>Delivered monthly · pause or cancel anytime · reminder before every charge</span></div><div class="opt-price">${money(p.subscribe)}<small style="font-weight:400;color:var(--muted)">/mo</small></div></label>`:""}
-   <label class="opt"><input type="radio" name="plan" value="once" ${hasSub?"":"checked"}><div class="opt-body"><b>One-time purchase</b><span>Single ${hasSub?"4-week protocol":"vial"}, no commitment</span></div><div class="opt-price">${money(p.once)}</div></label>
+   ${hasSub?`<label class="opt"><input type="radio" name="plan" value="subscribe" checked><div class="opt-body"><b>Subscribe & save <span class="save">Save ${Math.round((1-v.subscribe/v.once)*100)}%</span></b><span>Delivered monthly · pause or cancel anytime · reminder before every charge</span></div><div class="opt-price">${money(v.subscribe)}<small style="font-weight:400;color:var(--muted)">/mo</small></div></label>`:""}
+   <label class="opt"><input type="radio" name="plan" value="once" ${hasSub?"":"checked"}><div class="opt-body"><b>One-time purchase</b><span>Single ${hasSub?"4-week protocol":"vial"}, no commitment</span></div><div class="opt-price">${money(v.once)}</div></label>
   </div>
   <div class="buy-row">
    <div class="qty"><button type="button" id="dec" aria-label="Decrease">−</button><input id="qtyInput" type="number" value="1" min="1" max="10" aria-label="Quantity"><button type="button" id="inc" aria-label="Increase">+</button></div>
@@ -40,22 +48,26 @@
    ${p.faqs.length?`<button role="tab" aria-selected="false" data-tab="t4">FAQ</button>`:""}
   </div>
   <div class="tab-panel" id="t1"><p>${p.description}</p><p>Every Luma protocol arrives in our signature magnetic-closure box with a reconstitution guide, a QR code linking to this lot's certificate of analysis, and everything you need for the month.</p></div>
-  <div class="tab-panel" id="t2" hidden><p>${p.inside}</p><table class="spec">${Object.entries(p.specs).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table></div>
+  <div class="tab-panel" id="t2" hidden><p>${p.inside}</p><table class="spec">${Object.entries({...p.specs,"Vial size":v.strength.replace(" vial","")}).map(([k,val])=>`<tr><td>${k}</td><td>${val}</td></tr>`).join("")}</table></div>
   <div class="tab-panel" id="t3" hidden><p>Each lot is sent to an independent U.S. laboratory for purity, identity, and net-content testing before release. Scan the QR code on your box or <a href="verify.html" style="color:var(--terra);text-decoration:underline">look up your lot number</a> to see the full certificate.</p><p><b>Latest lot purity:</b> ${p.specs["Purity (last lot)"]||"—"}</p></div>
   ${p.faqs.length?`<div class="tab-panel" id="t4" hidden>${p.faqs.map(([q,a])=>`<p><b>${q}</b><br>${a}</p>`).join("")}</div>`:""}
  </div>`;
-  const priceLine=document.getElementById("priceLine");
-  const form=document.getElementById("buyForm"), qty=document.getElementById("qtyInput");
-  function plan(){return form.plan.value;}
-  function updPrice(){ const pl=plan(); priceLine.innerHTML = pl==="subscribe" ? `${money(p.subscribe)} <small>/ month</small> <s>${money(p.once)}</s>` : `${money(p.once)} <small>one-time</small>`; }
-  form.addEventListener("change",updPrice); updPrice();
-  document.getElementById("inc").onclick=()=>qty.value=Math.min(10,+qty.value+1);
-  document.getElementById("dec").onclick=()=>qty.value=Math.max(1,+qty.value-1);
-  form.addEventListener("submit",e=>{e.preventDefault(); if(oos){joinWaitlist(p.id);return;} Cart.add(p.id,plan(),+qty.value);});
-  if(oos){ form.querySelectorAll("input,#inc,#dec").forEach(el=>el.disabled=true); }
-  document.querySelector(".tab-list").addEventListener("click",e=>{const b=e.target.closest("[role=tab]"); if(!b) return;
-    document.querySelectorAll("[role=tab]").forEach(t=>t.setAttribute("aria-selected",t===b));
-    document.querySelectorAll(".tab-panel").forEach(pn=>pn.hidden=pn.id!==b.dataset.tab);});
+    const priceLine=document.getElementById("priceLine");
+    const form=document.getElementById("buyForm"), qty=document.getElementById("qtyInput");
+    const plan=()=>form.plan.value;
+    const updPrice=()=>{ priceLine.innerHTML = plan()==="subscribe" ? `${money(v.subscribe)} <small>/ month</small> <s>${money(v.once)}</s>` : `${money(v.once)} <small>one-time</small>`; };
+    form.addEventListener("change",updPrice); updPrice();
+    document.getElementById("inc").onclick=()=>qty.value=Math.min(10,+qty.value+1);
+    document.getElementById("dec").onclick=()=>qty.value=Math.max(1,+qty.value-1);
+    form.addEventListener("submit",e=>{e.preventDefault(); if(oos){joinWaitlist(p.id);return;} Cart.add(p.id,plan(),+qty.value,dose);});
+    if(oos){ form.querySelectorAll("input,#inc,#dec").forEach(el=>el.disabled=true); }
+    document.querySelector(".tab-list").addEventListener("click",e=>{const b=e.target.closest("[role=tab]"); if(!b) return;
+      document.querySelectorAll("[role=tab]").forEach(t=>t.setAttribute("aria-selected",t===b));
+      document.querySelectorAll(".tab-panel").forEach(pn=>pn.hidden=pn.id!==b.dataset.tab);});
+    document.querySelectorAll(".dose").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.dose===dose) return; dose=b.dataset.dose; render(); document.getElementById("priceLine").scrollIntoView({block:"nearest"}); }));
+  }
+  render();
+
   /* Related */
   const rel=P.filter(x=>x.id!==p.id&&x.category===p.category).concat(P.filter(x=>x.id!==p.id&&x.category!==p.category)).slice(0,4);
   document.getElementById("related").innerHTML=rel.map(productCard).join("");
