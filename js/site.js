@@ -14,7 +14,9 @@
     freeShipThreshold:150,
     shipping:{standard:{label:"Standard (3–5 days)",price:8},express:{label:"Express (1–2 days)",price:24}},
     promos:{GLOW15:{type:"pct",value:15,label:"15% off"},WELCOME10:{type:"pct",value:10,label:"10% off"},FREESHIP:{type:"ship",value:0,label:"Free shipping"}},
-    taxRate:0 /* set e.g. 0.07 for demo tax */
+    taxRate:0, /* set e.g. 0.07 for demo tax */
+    venmo:{handle:"LumaResearchCo",profile:"https://www.venmo.com/u/LumaResearchCo"},
+    orderEmail:"orders@lumapeptides.co" /* where the customer's "email order details" goes — CHANGE to the real inbox */
   };
   window.LUMA_CONFIG = CONFIG;
 
@@ -120,7 +122,7 @@
   </div></div>
  </div>
  <p class="disclaimer">These statements have not been evaluated by the Food and Drug Administration. Products are not intended to diagnose, treat, cure, or prevent any disease. Consult a licensed healthcare provider before beginning any peptide protocol. This is a student project storefront.</p>
- <div class="footer-bottom"><span>© ${new Date().getFullYear()} Luma Peptides Co. All rights reserved.</span><div class="payments"><span>VISA</span><span>MC</span><span>AMEX</span><span>APPLE PAY</span></div></div>
+ <div class="footer-bottom"><span>© ${new Date().getFullYear()} Luma Peptides Co. All rights reserved.</span><div class="payments"><span class="venmo-badge">VENMO</span></div></div>
 </div></footer>
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true">

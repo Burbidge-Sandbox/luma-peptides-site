@@ -543,3 +543,17 @@ body.gate-open{overflow:hidden}
 .gate-card .gate-check span{font-size:.86rem;line-height:1.5}
 .field .gate-check{cursor:pointer}
 .field.invalid .gate-check{border-color:var(--terra)}
+
+/* Venmo payment */
+.venmo-mark{display:inline-block;background:#008CFF;color:#fff;font-weight:700;letter-spacing:-.02em;padding:.15rem .55rem;border-radius:6px;font-size:.85rem;text-transform:lowercase}
+.venmo-badge{background:#008CFF!important;color:#fff!important;border-color:#008CFF!important}
+.pay-venmo{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:1.1rem 1.2rem}
+.pay-venmo-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.5rem}
+.pay-venmo p{font-size:.9rem;color:var(--ink-2);margin:0 0 .9rem}
+.pay-box{background:var(--paper);border:1.5px solid var(--terra);border-radius:var(--radius);padding:1.4rem 1.5rem;text-align:left;margin-top:2rem;display:grid;gap:1.2rem}
+.pay-step{display:grid;grid-template-columns:34px 1fr;gap:.9rem;align-items:start}
+.pay-step .step-n{width:30px;height:30px;border-radius:50%;background:var(--terra);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.9rem;margin-top:.1rem}
+.pay-step b{font-size:1.05rem}
+.pay-step p{font-size:.92rem;color:var(--ink-2);margin:.25rem 0 .8rem}
+.pay-step .btn{margin-right:.4rem}
+.pay-fine{font-size:.8rem;color:var(--muted);margin:0;border-top:1px dashed var(--line);padding-top:.9rem}

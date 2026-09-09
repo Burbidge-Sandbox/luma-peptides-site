@@ -14,7 +14,9 @@
     freeShipThreshold:150,
     shipping:{standard:{label:"Standard (3–5 days)",price:8},express:{label:"Express (1–2 days)",price:24}},
     promos:{GLOW15:{type:"pct",value:15,label:"15% off"},WELCOME10:{type:"pct",value:10,label:"10% off"},FREESHIP:{type:"ship",value:0,label:"Free shipping"}},
-    taxRate:0 /* set e.g. 0.07 for demo tax */
+    taxRate:0, /* set e.g. 0.07 for demo tax */
+    venmo:{handle:"LumaResearchCo",profile:"https://www.venmo.com/u/LumaResearchCo"},
+    orderEmail:"orders@lumapeptides.co" /* where the customer's "email order details" goes — CHANGE to the real inbox */
   };
   window.LUMA_CONFIG = CONFIG;
 
@@ -123,7 +125,7 @@
   </div></div>
  </div>
  <p class="disclaimer"><b>All products on this site are sold for laboratory research and analytical purposes only. They are not for human or animal use, consumption, or administration of any kind.</b> Bodily introduction of any kind into humans or animals is strictly forbidden by law. Products are not drugs, foods, cosmetics, or medical devices and may not be represented as such. Luma Peptides Co. is a chemical supplier. It is not a pharmacy, a compounding pharmacy, or an outsourcing facility, and it does not provide medical, therapeutic, or usage guidance of any kind. Statements on this website have not been evaluated by the U.S. Food and Drug Administration. Products are not intended to diagnose, treat, cure, or prevent any disease. Purchasers must be 21 years of age or older and affiliated with a laboratory, institution, or research organization; see the Terms of Service. Student project storefront: no payments are processed.</p>
- <div class="footer-bottom"><span>© ${new Date().getFullYear()} Luma Peptides Co. All rights reserved. &nbsp;·&nbsp; <a href="../" style="text-decoration:underline">Compare with original site</a></span><div class="payments"><span>VISA</span><span>MC</span><span>AMEX</span><span>APPLE PAY</span></div></div>
+ <div class="footer-bottom"><span>© ${new Date().getFullYear()} Luma Peptides Co. All rights reserved. &nbsp;·&nbsp; <a href="../" style="text-decoration:underline">Compare with original site</a></span><div class="payments"><span class="venmo-badge">VENMO</span></div></div>
 </div></footer>
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true">
