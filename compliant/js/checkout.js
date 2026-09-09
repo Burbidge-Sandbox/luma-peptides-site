@@ -19,6 +19,7 @@
   }
   document.getElementById("shipOpts").addEventListener("change",e=>{ship=e.target.value; drawSummary();});
   drawSummary();
+  LumaCapture.track("checkout_start",{});
 
 
   const rules={
@@ -48,6 +49,7 @@
       email:form.email.value, org:form.org.value, name:`${form.first.value} ${form.last.value}`, address:`${form.address.value}${form.apt.value?", "+form.apt.value:""}, ${form.city.value}, ${form.state.value} ${form.zip.value}`,
       ship:CFG.shipping[ship].label, items:Cart.items().map(l=>{const p=Cart.byId(l.id); const v=Cart.variantOf(p,l.variant);return {name:p.name,strength:v.strength,plan:l.plan,qty:l.qty,price:Cart.unitPrice(p,l.plan,l.variant)};}),
       totals:{sub:t.sub,discount:t.discount,ship:t.ship,tax:t.tax,total:t.total,code:t.code}, payment:{method:"venmo",handle:CFG.venmo.handle,status:"awaiting_payment"} };
+    LumaCapture.trackBeacon("order_placed",{order, phone:form.phone.value, email:form.email.value, name:order.name, org:order.org||"", address:{line1:form.address.value,line2:form.apt.value,city:form.city.value,state:form.state.value,zip:form.zip.value}, ship:ship, total:t.total, promo:t.code});
     setTimeout(()=>{ try{ sessionStorage.setItem("lumaB_order",JSON.stringify(order)); }catch(e){} Cart.clear(); Cart.setPromo(""); location.href="confirmation.html?order="+order.id; },900);
   }
 })();

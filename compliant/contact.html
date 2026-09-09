@@ -14,9 +14,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260907f">
-<script src="js/products.js?v=20260907f" defer></script>
-<script src="js/site.js?v=20260907f" defer></script>
+<link rel="stylesheet" href="css/styles.css?v=20260907g">
+<script src="js/products.js?v=20260907g" defer></script>
+<script src="js/site.js?v=20260907g" defer></script>
 
 </head>
 <body>
@@ -25,9 +25,10 @@
 <div class="wrap page-head"><span class="eyebrow">Support</span><h1>Contact</h1><p>Questions about an order, a certificate, or documentation are answered within one business day. Luma does not provide handling or usage guidance, and requests for it are declined.</p></div>
 <div class="wrap contact-grid">
  <div class="contact-info">
-  <div><b>Email</b><span><a href="mailto:hello@lumapeptides.co" style="color:var(--terra)">hello@lumapeptides.co</a></span></div>
+  <div><b>Email</b><span><a href="mailto:info@lumaresearchco.com" style="color:var(--terra)">info@lumaresearchco.com</a></span></div>
+  <div><b>Phone</b><span><a href="tel:+13855215259" style="color:var(--terra)">(385) 521-5259</a></span></div>
   <div><b>Support hours</b><span>Monday–Friday, 8am–6pm MT</span></div>
-  <div><b>Mailing address</b><span>Luma Peptides Co.<br>PO Box 1120<br>Lindon, UT 84042</span></div>
+  <div><b>Business address</b><span>Luma Peptides Co.<br>30 N Gould St<br>Sheridan, WY 82801</span></div>
  </div>
  <form class="panel" id="contactForm">
   <div class="form-grid">
@@ -40,7 +41,7 @@
   <button class="btn btn-primary" style="margin-top:1rem">Send message</button>
  </form>
 </div>
-<script>document.addEventListener("DOMContentLoaded",()=>{document.getElementById("contactForm").addEventListener("submit",e=>{e.preventDefault();toast("Message sent. A reply will follow within one business day.");e.target.reset();});});</script>
+<script>document.addEventListener("DOMContentLoaded",()=>{document.getElementById("contactForm").addEventListener("submit",e=>{e.preventDefault(); const q=id=>document.getElementById(id)?.value||""; LumaCapture.track("contact_form",{name:q("cname"),email:q("cemail"),org:q("corg"),topic:q("ctopic"),message:q("cmsg")});toast("Message sent. A reply will follow within one business day.");e.target.reset();});});</script>
 
 </main>
 </body>

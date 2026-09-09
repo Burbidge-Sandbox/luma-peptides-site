@@ -16,9 +16,57 @@
     promos:{GLOW15:{type:"pct",value:15,label:"15% off"},WELCOME10:{type:"pct",value:10,label:"10% off"},FREESHIP:{type:"ship",value:0,label:"Free shipping"}},
     taxRate:0, /* set e.g. 0.07 for demo tax */
     venmo:{handle:"LumaResearchCo",profile:"https://www.venmo.com/u/LumaResearchCo"},
-    orderEmail:"orders@lumapeptides.co" /* where the customer's "email order details" goes — CHANGE to the real inbox */
+    orderEmail:"info@lumaresearchco.com",
+    captureEndpoint:"" /* paste the Google Apps Script web-app URL (or Formspree endpoint) here — see backend/README.md */
   };
   window.LUMA_CONFIG = CONFIG;
+
+  /* ============================================================
+     Capture: records customer input and marketing attribution.
+     Every event is POSTed as JSON to CONFIG.captureEndpoint (Google
+     Apps Script web app, Formspree, or any URL that accepts POST).
+     Until an endpoint is set, events queue in localStorage and flush
+     later. See backend/README.md.
+     ============================================================ */
+  const CAP = (function(){
+    const QKEY="luma_capture_queue", VKEY="luma_visitor", AKEY="luma_first_touch";
+    const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+    let visitor=null; try{ visitor=localStorage.getItem(VKEY); if(!visitor){visitor=uid(); localStorage.setItem(VKEY,visitor);} }catch(e){ visitor="anon"; }
+    let session=null; try{ session=sessionStorage.getItem("luma_session"); if(!session){session=uid(); sessionStorage.setItem("luma_session",session);} }catch(e){ session="s"; }
+    const params=new URLSearchParams(location.search);
+    const utm={}; ["utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","ref"].forEach(k=>{ if(params.get(k)) utm[k]=params.get(k); });
+    let first=null; try{ first=JSON.parse(localStorage.getItem(AKEY)||"null"); if(!first){ first={ts:new Date().toISOString(),landing:location.pathname+location.search,referrer:document.referrer||"",utm}; localStorage.setItem(AKEY,JSON.stringify(first)); } }catch(e){}
+    const VARIANT = location.pathname.includes("/compliant/") ? "B-compliant" : "A-original";
+    function envelope(event,data){
+      return { event, ts:new Date().toISOString(), variant:VARIANT, visitor, session,
+        page:location.pathname, url:location.href, referrer:document.referrer||"", utm, first_touch:first,
+        device:{ua:navigator.userAgent, lang:navigator.language, screen:`${screen.width}x${screen.height}`, mobile:/Mobi|Android/i.test(navigator.userAgent)},
+        cart:{count:Cart.count(), subtotal:Cart.subtotal(), items:Cart.items().map(l=>({id:l.id,plan:l.plan,qty:l.qty,variant:l.variant}))},
+        data:data||{} };
+    }
+    function queue(){ try{ return JSON.parse(localStorage.getItem(QKEY)||"[]"); }catch(e){ return []; } }
+    function setQueue(q){ try{ localStorage.setItem(QKEY,JSON.stringify(q.slice(-200))); }catch(e){} }
+    async function send(payload){
+      const url=CONFIG.captureEndpoint; if(!url) return false;
+      try{ await fetch(url,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify(payload)}); return true; }
+      catch(e){ return false; }
+    }
+    async function flush(){ const q=queue(); if(!q.length||!CONFIG.captureEndpoint) return; setQueue([]); for(const p of q){ if(!(await send(p))){ setQueue(queue().concat([p])); } } }
+    async function track(event,data){
+      const p=envelope(event,data);
+      if(!(await send(p))) setQueue(queue().concat([p]));
+      return p;
+    }
+    /* Beacon variant for events fired right before navigation */
+    function trackBeacon(event,data){
+      const p=envelope(event,data); const url=CONFIG.captureEndpoint;
+      if(url && navigator.sendBeacon){ try{ if(navigator.sendBeacon(url,new Blob([JSON.stringify(p)],{type:"text/plain"}))) return p; }catch(e){} }
+      if(url){ send(p); } else setQueue(queue().concat([p]));
+      return p;
+    }
+    return {track,trackBeacon,flush,visitor,session,variant:VARIANT,queue};
+  })();
+  window.LumaCapture=CAP;
 
   /* One photographic master, with exact catalog typography on the paper label.
      Keep the legacy helper name for cart/checkout compatibility. */
@@ -64,7 +112,7 @@
       const k=lineKey(id,plan,variant);
       const ex=cart.find(l=>l.key===k);
       if(ex) ex.qty=Math.min(10,ex.qty+qty); else cart.push({key:k,id,plan,qty,variant});
-      save(); toast(`<b>${p.name}${v.key?" "+v.label:""}</b> added to your cart. <a href="cart.html">View cart</a>`); openDrawer();
+      save(); CAP.track("add_to_cart",{id,name:p.name,variant,plan,qty,price:unitPrice(p,plan,variant)}); toast(`<b>${p.name}${v.key?" "+v.label:""}</b> added to your cart. <a href="cart.html">View cart</a>`); openDrawer();
     },
     setQty(key,qty){ const l=cart.find(l=>l.key===key); if(!l) return; l.qty=Math.max(0,Math.min(10,qty|0)); if(!l.qty) cart=cart.filter(x=>x.key!==key); save(); },
     remove(key){ cart=cart.filter(l=>l.key!==key); save(); },
@@ -111,14 +159,14 @@
   function footer(){
     return `<footer class="footer"><div class="wrap">
  <div class="footer-grid">
-  <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">A considered approach to peptides. Explore the collection and get to know Luma.</p></div>
+  <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">A considered approach to peptides. Explore the collection and get to know Luma.</p><p class="tag biz"><a href="mailto:info@lumaresearchco.com">info@lumaresearchco.com</a><br><a href="tel:+13855215259">(385) 521-5259</a><br>30 N Gould St<br>Sheridan, WY 82801</p></div>
   <div><h4>Treatments</h4><ul><li><a href="shop.html">All Treatments</a></li><li><a href="shop.html?cat=weight">Weight & Metabolic</a></li><li><a href="shop.html?cat=skin">Skin & Glow</a></li><li><a href="shop.html?cat=recovery">Recovery</a></li><li><a href="shop.html?cat=longevity">Longevity & Sleep</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="how-it-works.html">How It Works</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
   <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
   <div><h4>Follow Us</h4><div class="social">
    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg></a>
    <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8a1 1 0 0 1 1-1z"/></svg></a>
-   <a href="mailto:hello@lumapeptides.co" aria-label="Email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
+   <a href="mailto:info@lumaresearchco.com" aria-label="Email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
   </div></div>
  </div>
  <p class="disclaimer">These statements have not been evaluated by the Food and Drug Administration. Products are not intended to diagnose, treat, cure, or prevent any disease. Consult a licensed healthcare provider before beginning any peptide protocol. This is a student project storefront.</p>
@@ -192,6 +240,7 @@
     document.body.insertAdjacentHTML("afterbegin",header());
     document.body.insertAdjacentHTML("beforeend",footer());
     render();
+    CAP.flush(); CAP.track("page_view",{title:document.title});
     $("#cartBtn").addEventListener("click",openDrawer);
     $("#closeDrawer").addEventListener("click",closeDrawer);
     $("#overlay").addEventListener("click",closeDrawer);
@@ -237,7 +286,7 @@
       const chk=$("#gateAgree"), btn=$("#gateEnter"), ret=document.activeElement;
       const box=chk.closest(".gate-check");
       chk.addEventListener("change",()=>{ btn.classList.toggle("is-ready",chk.checked); box.classList.remove("nudge"); });
-      btn.addEventListener("click",()=>{ if(!chk.checked){ box.classList.remove("nudge"); void box.offsetWidth; box.classList.add("nudge"); chk.focus(); return; } try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
+      btn.addEventListener("click",()=>{ if(!chk.checked){ box.classList.remove("nudge"); void box.offsetWidth; box.classList.add("nudge"); chk.focus(); return; } try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} CAP.track("gate_accept",{}); gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
       chk.focus();
       gate.addEventListener("keydown",e=>{ if(e.key!=="Tab") return; const f=[...gate.querySelectorAll("input,button:not([disabled]),a[href]")]; const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();} else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();} });
     })();
@@ -247,7 +296,7 @@
     $$(".reveal").forEach(el=>io.observe(el));
 
     /* Generic newsletter forms */
-    $$("form[data-newsletter]").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault(); toast("Email signup is not connected in this preview.");}));
+    $$("form[data-newsletter]").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault(); const em=f.querySelector("input[type=email]")?.value||""; CAP.track("newsletter_signup",{email:em}); toast("Thanks — you're on the list."); f.reset();}));
   });
 
   /* ---------- Product card helper (used by home + shop) ---------- */
@@ -271,6 +320,7 @@
     if(email===null) return;
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())){ toast("Please enter a valid email address."); return; }
     try{ const w=JSON.parse(localStorage.getItem("luma_waitlist")||"[]"); w.push({id,email:email.trim(),at:new Date().toISOString()}); localStorage.setItem("luma_waitlist",JSON.stringify(w)); }catch(e){}
+    CAP.track("waitlist_join",{id,name:p.name,email:email.trim()});
     toast(`You're on the list for <b>${p.name}</b>. We'll email you when it's back.`);
   };
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-waitlist]"); if(!b) return; e.preventDefault(); joinWaitlist(b.dataset.waitlist); });
