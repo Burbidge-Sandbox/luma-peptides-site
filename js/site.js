@@ -17,7 +17,7 @@
     taxRate:0, /* set e.g. 0.07 for demo tax */
     venmo:{handle:"LumaResearchCo",profile:"https://www.venmo.com/u/LumaResearchCo"},
     orderEmail:"info@lumaresearchco.com",
-    captureEndpoint:"", /* Google Apps Script web-app URL — see backend/README.md */
+    captureEndpoint:"https://script.google.com/macros/s/AKfycbwGmMOSE5FLR4tHlP205R2EevkX-4Cni87wH_KHMXtCTiUgR0vQ0NeawH3R7_exk_W_/exec", /* Google Apps Script web-app URL — see backend/README.md */
     captureKey:"luma-2026-9f3k",   /* shared secret; must match SECRET in backend/Code.gs */
     siteUrl:"https://lumaresearchco.com",
     legalName:"Luma Peptides Co.", marketingName:"Luma Research Co",
