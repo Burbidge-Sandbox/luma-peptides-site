@@ -68,7 +68,7 @@
 
   /* Structured data for search engines */
   try{
-    const v0=Cart.variantOf(p,dose); const ld={"@context":"https://schema.org","@type":"Product","name":`${p.name} ${v0.strength}`,"sku":p.id,"brand":{"@type":"Brand","name":"Luma Research Co"},"description":p.tagline+" For laboratory research use only.","url":window.LUMA_CONFIG.siteUrl+"/product.html?id="+p.id,"offers":{"@type":"Offer","priceCurrency":"USD","price":v0.once,"availability":(p.stock==="out"||v0.stock==="out")?"https://schema.org/OutOfStock":"https://schema.org/InStock","url":window.LUMA_CONFIG.siteUrl+"/product.html?id="+p.id}};
+    const v0=Cart.variantOf(p,dose); const ld={"@context":"https://schema.org","@type":"Product","name":`${p.name} ${v0.strength}`,"sku":p.id,"brand":{"@type":"Brand","name":"Luma Research Co"},"description":p.tagline+" For laboratory research use only.","url":window.LUMA_CONFIG.siteUrl+"/product?id="+p.id,"offers":{"@type":"Offer","priceCurrency":"USD","price":v0.once,"availability":(p.stock==="out"||v0.stock==="out")?"https://schema.org/OutOfStock":"https://schema.org/InStock","url":window.LUMA_CONFIG.siteUrl+"/product?id="+p.id}};
     if(p.image) ld.image=window.LUMA_CONFIG.siteUrl+"/"+p.image+".jpg";
     const sc=document.createElement("script"); sc.type="application/ld+json"; sc.textContent=JSON.stringify(ld); document.head.appendChild(sc);
     let can=document.querySelector('link[rel=canonical]'); if(!can){can=document.createElement("link"); can.rel="canonical"; document.head.appendChild(can);} can.href=ld.url;
