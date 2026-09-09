@@ -539,6 +539,11 @@ body.gate-open{overflow:hidden}
 .dose.is-out.is-selected{background:var(--ink-2);border-color:var(--ink-2)}
 .dose small{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;opacity:.85}
 
+/* Variant B: research-catalog adjustments */
+.gate-card .gate-check span{font-size:.86rem;line-height:1.5}
+.field .gate-check{cursor:pointer}
+.field.invalid .gate-check{border-color:var(--terra)}
+
 /* Venmo payment */
 .venmo-mark{display:inline-block;background:#008CFF;color:#fff;font-weight:700;letter-spacing:-.02em;padding:.15rem .55rem;border-radius:6px;font-size:.85rem;text-transform:lowercase}
 .venmo-badge{background:#008CFF!important;color:#fff!important;border-color:#008CFF!important}
@@ -552,3 +557,15 @@ body.gate-open{overflow:hidden}
 .pay-step p{font-size:.92rem;color:var(--ink-2);margin:.25rem 0 .8rem}
 .pay-step .btn{margin-right:.4rem}
 .pay-fine{font-size:.8rem;color:var(--muted);margin:0;border-top:1px dashed var(--line);padding-top:.9rem}
+
+/* Venmo QR */
+.pay-row{display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap}
+.pay-qr{width:132px;height:132px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px;flex:none}
+.pay-qr svg{width:100%;height:100%}
+.pay-qr-hint{font-size:.78rem;color:var(--muted);margin:.5rem 0 0}
+/* Order status */
+.status-box{max-width:560px;margin:0 auto}
+.status-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;font-size:.75rem;text-align:center;color:var(--muted);margin-top:1.2rem}
+.status-steps div::before{content:"";display:block;height:5px;background:var(--line);border-radius:3px;margin-bottom:.5rem}
+.status-steps div.done::before{background:var(--terra)}
+.status-steps div.done{color:var(--ink);font-weight:600}

@@ -1,142 +1,141 @@
 /* ============================================================
-   Product catalog — edit prices, copy, and categories here.
-   `subscribe` = monthly subscription price; `once` = one-time price.
+   Compliant catalog (variant B).
+   Rules applied: compound + mass naming; third-person study language;
+   no outcomes, no "you", no dosing, no supply/protocol/month; one-time
+   per-vial pricing with volume tiers; GLP-1 compounds coded; research-
+   neutral category names. Prices carried over from variant A.
    ============================================================ */
 window.LUMA_PRODUCTS = [
   {
-    id:"tirzepatide-15", stock:"in",
-    /* Dosage options. PLACEHOLDER 30mg prices — confirm before launch. */
-    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",subscribe:299,once:349,stock:"in",sku:"TR15"},{key:"30mg",label:"30mg",strength:"30mg vial",subscribe:399,once:459,stock:"in",sku:"TR30"}], image:"assets/products/tirzepatide-15", imageFocus:"50% 55%", name:"Tirzepatide", label:["TIRZEPATIDE","15MG"], strength:"15mg vial",
-    category:"weight", subscribe:299, once:349, badge:"Best Seller", rating:4.9, reviews:412,
-    tagline:"Our most-loved metabolic support protocol.",
-    description:"A dual GIP/GLP-1 receptor agonist studied for appetite regulation and metabolic health. Each Luma vial is lyophilized, sealed, and lot-tested for purity and identity before it ships.",
-    inside:"Tirzepatide 15mg, lyophilized. Ships with bacteriostatic water, alcohol prep pads, and insulin syringes.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 15mg","Purity (last lot)":"99.4%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["How do I reconstitute?","Every order includes a step-by-step video and printed card. Add bacteriostatic water slowly down the side of the vial and swirl gently — never shake."],["Can I pause my subscription?","Yes. Pause, skip, or cancel anytime from your account. We remind you 5 days before every charge."]]
-  },
-  {
-    id:"wolverine-stack", stock:"out", image:"assets/products/wolverine-stack", imageFocus:"50% 55%", name:"Wolverine Stack", label:["WOLVERINE","STACK"], strength:"5mg blend",
-    category:"recovery", subscribe:116, once:139, badge:"Top Rated", rating:4.8, reviews:287,
-    tagline:"BPC-157 + TB-500. The recovery classic.",
-    description:"Two of the most researched recovery peptides in a single vial. BPC-157 and TB-500 are studied for tissue repair, joint comfort, and mobility.",
-    inside:"BPC-157 5mg + TB-500 5mg, lyophilized. Ships with bacteriostatic water and supplies.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 10mg total","Purity (last lot)":"99.1%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["Why combine them?","BPC-157 and TB-500 are studied for complementary mechanisms — one local, one systemic. Combining simplifies your routine to a single daily injection."]]
-  },
-  {
-    id:"cjc-ipamorelin", stock:"out", image:"assets/products/cjc-ipamorelin", imageFocus:"50% 55%", name:"CJC-1295 + Ipamorelin", label:["CJC-1295 +","IPAMORELIN"], strength:"5mg blend",
-    category:"longevity", subscribe:116, once:139, rating:4.7, reviews:198,
-    tagline:"Sleep deeper. Recover faster.",
-    description:"A growth-hormone-releasing blend studied for sleep quality, lean mass, and recovery. Taken before bed to align with your natural hormone rhythm.",
-    inside:"CJC-1295 (no DAC) 2.5mg + Ipamorelin 2.5mg, lyophilized.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 5mg","Purity (last lot)":"99.2%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["When should I take it?","Most protocols take it 30 minutes before bed on an empty stomach."]]
-  },
-  {
-    id:"ghk-cu", stock:"out", image:"assets/products/ghk-cu", imageFocus:"50% 55%", name:"GHK-Cu", label:["GHK-CU","5MG"], strength:"5mg vial",
-    category:"skin", subscribe:99, once:119, rating:4.8, reviews:356,
-    tagline:"The copper peptide behind glowing skin.",
-    description:"A naturally occurring copper peptide studied for collagen support, skin firmness, and hair health. Our most popular starting point for skin.",
-    inside:"GHK-Cu 5mg, lyophilized. Ships with bacteriostatic water and supplies.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 5mg","Purity (last lot)":"99.6%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["Is this a cream?","No — this is an injectable peptide protocol. We also offer topical guidance in your welcome kit."]]
-  },
-  {
-    id:"glow-klow", stock:"in", image:"assets/products/glow-klow", imageFocus:"50% 55%", name:"Glow + Klow", label:["GLOW + KLOW","5MG"], strength:"5mg blend",
-    category:"skin", subscribe:149, once:179, badge:"New", rating:4.9, reviews:94,
-    tagline:"BPC-157, GHK-Cu and TB-500. Inside-out radiance.",
-    description:"Our signature glow blend pairs the copper peptide GHK-Cu with BPC-157 and TB-500 for skin, hair, and recovery in one daily routine.",
-    inside:"BPC-157 + GHK-Cu + TB-500 blend, lyophilized.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 5mg","Purity (last lot)":"99.0%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["How soon will I notice a difference?","Most members report changes in skin texture around week 4–6. Consistency matters more than dose."]]
-  },
-  {
-    id:"bpc-157", stock:"in", image:"assets/products/bpc-157", imageFocus:"50% 55%", name:"BPC-157", label:["BPC-157","10MG"], strength:"10mg vial",
-    category:"recovery", subscribe:89, once:109, rating:4.8, reviews:521,
-    tagline:"Gut and joint support, simplified.",
-    description:"A body-protective compound studied for gut lining health, tendon and ligament repair, and inflammation. The first peptide most members try.",
-    inside:"BPC-157 10mg, lyophilized. Ships with bacteriostatic water and supplies.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 10mg","Purity (last lot)":"99.5%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["Oral or injectable?","We ship injectable. Injection near the site of concern is the most-studied route."]]
-  },
-  {
-    id:"semaglutide-10", stock:"out", image:"assets/products/semaglutide-10", imageFocus:"50% 55%", name:"Semaglutide", label:["SEMAGLUTIDE","10MG"], strength:"10mg vial",
-    category:"weight", subscribe:199, once:239, rating:4.7, reviews:264,
-    tagline:"The GLP-1 that started it all.",
-    description:"A GLP-1 receptor agonist studied for appetite control and metabolic support. A gentle entry point for members new to metabolic peptides.",
-    inside:"Semaglutide 10mg, lyophilized. Ships with bacteriostatic water and supplies.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 10mg","Purity (last lot)":"99.3%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
-    faqs:[["Semaglutide or tirzepatide?","Semaglutide is typically the gentler starting point. Our care team can help you decide."]]
-  },
-  {
-    id:"retatrutide-15", stock:"in",
-    /* Dosage options. PLACEHOLDER 30mg prices — confirm before launch. */
-    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",subscribe:329,once:379,stock:"in",sku:"RT15"},{key:"30mg",label:"30mg",strength:"30mg vial",subscribe:449,once:519,stock:"in",sku:"RT30"}], image:"assets/products/retatrutide-15", imageFocus:"50% 55%", name:"Retatrutide", label:["RETATRUTIDE","15MG"], strength:"15mg vial",
-    category:"weight", subscribe:329, once:379, badge:"Premium", rating:4.9, reviews:87,
-    tagline:"Next-generation triple-agonist support.",
-    description:"A triple GIP/GLP-1/glucagon receptor agonist at the leading edge of metabolic research. Reserved for members with prior GLP-1 experience.",
-    inside:"Retatrutide 15mg, lyophilized. Ships with bacteriostatic water and supplies.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 15mg","Purity (last lot)":"99.2%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
+    id:"glp-2-t", stock:"in", name:"GLP-2 T", label:["GLP-2 T","15MG"], strength:"15mg vial",
+    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",once:349,stock:"in",sku:"TR15"},{key:"30mg",label:"30mg",strength:"30mg vial",once:459,stock:"in",sku:"TR30"}],
+    category:"metabolic", once:349, subscribe:null, badge:null,
+    tagline:"Dual GIP/GLP-1 receptor agonist analog. Lyophilized.",
+    description:"A synthetic 39-amino-acid peptide analog that has been characterized in the literature as a dual agonist at the GIP and GLP-1 receptors. Preclinical studies have examined receptor binding kinetics, incretin signaling pathways, and downstream effects on glucose homeostasis in rodent models. Supplied as a lyophilized powder for in-vitro and analytical research.",
+    inside:"Single lyophilized peptide, sealed under inert gas. No excipients other than mannitol.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.4%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"2023788-19-2"},
     faqs:[]
   },
   {
-    id:"nad-500", stock:"out", image:"assets/products/nad-500", imageFocus:"50% 55%", name:"NAD+", label:["NAD+","500MG"], strength:"500mg vial",
-    category:"longevity", subscribe:129, once:149, rating:4.6, reviews:142,
-    tagline:"Cellular energy for the long game.",
-    description:"Nicotinamide adenine dinucleotide is a coenzyme central to cellular energy. Levels decline with age; our NAD+ is lyophilized for stability.",
-    inside:"NAD+ 500mg, lyophilized.",
-    specs:{"Form":"Lyophilized powder","Vial size":"5ml, 500mg","Purity (last lot)":"99.7%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
+    id:"glp-3-rt", stock:"in", name:"GLP-3 RT", label:["GLP-3 RT","15MG"], strength:"15mg vial",
+    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",once:379,stock:"in",sku:"RT15"},{key:"30mg",label:"30mg",strength:"30mg vial",once:519,stock:"in",sku:"RT30"}],
+    category:"metabolic", once:379, subscribe:null, badge:null,
+    tagline:"Triple GIP/GLP-1/glucagon receptor agonist analog. Lyophilized.",
+    description:"A synthetic peptide analog described in the literature as an agonist at the GIP, GLP-1, and glucagon receptors. Published preclinical work has investigated receptor selectivity, energy expenditure pathways, and hepatic lipid signaling in animal models. Supplied as a lyophilized powder for in-vitro and analytical research.",
+    inside:"Single lyophilized peptide, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.2%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"2381089-83-2"},
+    faqs:[]
+  },
+  {
+    id:"glp-1-sm", stock:"out", name:"GLP-1 SM", label:["GLP-1 SM","10MG"], strength:"10mg vial",
+    category:"metabolic", once:239, subscribe:null,
+    tagline:"Long-acting GLP-1 receptor agonist analog. Lyophilized.",
+    description:"A synthetic acylated GLP-1 analog that has been studied for receptor binding affinity, albumin association, and extended half-life in preclinical pharmacokinetic models. Supplied as a lyophilized powder for in-vitro and analytical research.",
+    inside:"Single lyophilized peptide, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.3%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"910463-68-2"},
+    faqs:[]
+  },
+  {
+    id:"tesamorelin", stock:"out", name:"Tesamorelin", label:["TESAMORELIN","5MG"], strength:"5mg vial",
+    category:"metabolic", once:169, subscribe:null, image:"assets/products/tesamorelin", imageFocus:"50% 55%",
+    tagline:"Stabilized GHRH (1-44) analog. Lyophilized.",
+    description:"A synthetic analog of growth-hormone-releasing hormone with an N-terminal trans-3-hexenoic acid modification. Published research has examined its stability against dipeptidyl peptidase cleavage and its activity at the GHRH receptor in cell-based assays. Supplied as a lyophilized powder for in-vitro research.",
+    inside:"Single lyophilized peptide, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.3%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"218949-48-5"},
+    faqs:[]
+  },
+  {
+    id:"bpc-157", stock:"in", name:"BPC-157", label:["BPC-157","10MG"], strength:"10mg vial",
+    category:"tissue", once:109, subscribe:null, image:"assets/products/bpc-157", imageFocus:"50% 55%",
+    tagline:"Pentadecapeptide, gastric-juice derived sequence. Lyophilized.",
+    description:"A 15-amino-acid synthetic peptide with a sequence derived from a protein found in gastric juice. Rodent studies have investigated its influence on angiogenic signaling, nitric-oxide pathway modulation, and tendon fibroblast migration under controlled conditions. Supplied as a lyophilized powder for in-vitro research.",
+    inside:"Single lyophilized peptide, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.5%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"137525-51-0"},
+    faqs:[]
+  },
+  {
+    id:"wolverine-stack", stock:"out", name:"BPC-157 + TB-500 Blend", label:["BPC-157 +","TB-500 BLEND"], strength:"5mg + 5mg vial",
+    category:"tissue", once:139, subscribe:null, image:"assets/products/wolverine-stack", imageFocus:"50% 55%",
+    tagline:"Co-lyophilized pentadecapeptide and thymosin β4 fragment.",
+    description:"A co-lyophilized preparation of BPC-157 and TB-500, a synthetic fragment of thymosin β4. The two peptides have been studied separately in animal models for angiogenic signaling and actin-sequestration activity; the blend is supplied for researchers characterizing the compounds in combination. Lyophilized powder for in-vitro research.",
+    inside:"Two co-lyophilized peptides, 5mg each, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.1%","Identity":"LC-MS confirmed, both components","Storage":"−20 °C, desiccated, protected from light"},
+    faqs:[]
+  },
+  {
+    id:"cjc-ipamorelin", stock:"out", name:"CJC-1295 (no DAC) + Ipamorelin Blend", label:["CJC-1295 +","IPAMORELIN"], strength:"2.5mg + 2.5mg vial",
+    category:"longevity", once:139, subscribe:null, image:"assets/products/cjc-ipamorelin", imageFocus:"50% 55%",
+    tagline:"Co-lyophilized GHRH analog and GHS-R agonist.",
+    description:"A co-lyophilized preparation of a modified GHRH (1-29) analog and the pentapeptide ipamorelin, a selective ghrelin-receptor agonist. Each has been studied in cell-based and animal models for growth-hormone secretagogue activity. Supplied for researchers characterizing the compounds in combination. Lyophilized powder for in-vitro research.",
+    inside:"Two co-lyophilized peptides, 2.5mg each, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.2%","Identity":"LC-MS confirmed, both components","Storage":"−20 °C, desiccated, protected from light"},
+    faqs:[]
+  },
+  {
+    id:"ghk-cu", stock:"out", name:"GHK-Cu", label:["GHK-CU","5MG"], strength:"5mg vial",
+    category:"dermal", once:119, subscribe:null, image:"assets/products/ghk-cu", imageFocus:"50% 55%",
+    tagline:"Copper tripeptide complex. Lyophilized.",
+    description:"A naturally occurring tripeptide (glycyl-L-histidyl-L-lysine) complexed with copper(II). In-vitro studies have examined its effects on collagen and glycosaminoglycan synthesis in fibroblast cultures and its role in copper transport. Supplied as a lyophilized powder for in-vitro research.",
+    inside:"Single lyophilized copper-peptide complex, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.6%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"89030-95-5"},
+    faqs:[]
+  },
+  {
+    id:"glow-klow", stock:"in", name:"BPC-157 + GHK-Cu + TB-500 Blend", label:["BPC + GHK-CU","+ TB-500"], strength:"5mg blend vial",
+    category:"dermal", once:179, subscribe:null, image:"assets/products/glow-klow", imageFocus:"50% 55%",
+    tagline:"Three-peptide co-lyophilized preparation.",
+    description:"A co-lyophilized preparation of BPC-157, the copper tripeptide GHK-Cu, and TB-500. Each component has been independently characterized in the literature; the blend is supplied for researchers studying the compounds together in cell-based assays. Lyophilized powder for in-vitro research.",
+    inside:"Three co-lyophilized peptides, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.0%","Identity":"LC-MS confirmed, all components","Storage":"−20 °C, desiccated, protected from light"},
+    faqs:[]
+  },
+  {
+    id:"nad-500", stock:"out", name:"NAD+", label:["NAD+","500MG"], strength:"500mg vial",
+    category:"longevity", once:149, subscribe:null, image:"assets/products/nad-500", imageFocus:"50% 55%",
+    tagline:"Nicotinamide adenine dinucleotide, oxidized form. Lyophilized.",
+    description:"A coenzyme present in all living cells and central to redox reactions and sirtuin activity. Widely used as a reagent in enzymology and cell-metabolism assays. Supplied as a lyophilized powder for in-vitro research.",
+    inside:"Lyophilized NAD+ disodium salt.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.7%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"53-84-9"},
     faqs:[]
   },
   {
     id:"mots-c", stock:"out", name:"MOTS-c", label:["MOTS-C","10MG"], strength:"10mg vial",
-    category:"longevity", subscribe:119, once:139, rating:4.7, reviews:76,
-    tagline:"The mitochondrial peptide.",
-    description:"A mitochondrial-derived peptide studied for metabolic flexibility, exercise capacity, and healthy aging.",
-    inside:"MOTS-c 10mg, lyophilized.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 10mg","Purity (last lot)":"99.1%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
+    category:"longevity", once:139, subscribe:null,
+    tagline:"Mitochondrial-derived 16-amino-acid peptide. Lyophilized.",
+    description:"A peptide encoded within the mitochondrial 12S rRNA gene. Published research has investigated its role in AMPK signaling and folate-methionine metabolism in cell culture and rodent models. Supplied as a lyophilized powder for in-vitro research.",
+    inside:"Single lyophilized peptide, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.1%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"1627580-64-6"},
     faqs:[]
   },
   {
     id:"epithalon", stock:"out", name:"Epithalon", label:["EPITHALON","10MG"], strength:"10mg vial",
-    category:"longevity", subscribe:109, once:129, rating:4.6, reviews:63,
-    tagline:"Telomere support, four times a year.",
-    description:"A synthetic tetrapeptide studied for telomerase activity and sleep regulation. Typically run as a 10–20 day cycle a few times a year.",
-    inside:"Epithalon 10mg, lyophilized.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 10mg","Purity (last lot)":"99.4%","Storage":"Refrigerate after reconstitution","Supply":"1 cycle"},
-    faqs:[]
-  },
-  {
-    id:"tesamorelin", stock:"out", image:"assets/products/tesamorelin", imageFocus:"50% 55%", name:"Tesamorelin", label:["TESAMORELIN","5MG"], strength:"5mg vial",
-    category:"weight", subscribe:139, once:169, rating:4.7, reviews:118,
-    tagline:"Targets the stubborn middle.",
-    description:"A growth-hormone-releasing hormone analog studied specifically for visceral (abdominal) fat and body composition.",
-    inside:"Tesamorelin 5mg, lyophilized.",
-    specs:{"Form":"Lyophilized powder","Vial size":"3ml, 5mg","Purity (last lot)":"99.3%","Storage":"Refrigerate after reconstitution","Supply":"4-week protocol"},
+    category:"longevity", once:129, subscribe:null,
+    tagline:"Synthetic tetrapeptide Ala-Glu-Asp-Gly. Lyophilized.",
+    description:"A synthetic tetrapeptide originally derived from a pineal extract. In-vitro studies have examined its effect on telomerase expression in human fibroblast cultures. Supplied as a lyophilized powder for in-vitro research.",
+    inside:"Single lyophilized peptide, sealed under inert gas.",
+    specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.4%","Identity":"LC-MS confirmed","Storage":"−20 °C, desiccated, protected from light","CAS":"307297-39-8"},
     faqs:[]
   },
   {
     id:"bac-water", stock:"in", name:"Bacteriostatic Water", label:["BAC WATER","10ML"], strength:"10ml vial",
-    category:"supplies", subscribe:null, once:12, rating:4.9, reviews:640,
-    tagline:"For reconstitution. One included with every protocol.",
-    description:"Sterile water with 0.9% benzyl alcohol for reconstituting lyophilized peptides. One vial is included in every protocol order; grab extras here.",
-    inside:"Bacteriostatic water 10ml.",
-    specs:{"Form":"Liquid","Vial size":"10ml","Storage":"Room temperature","Supply":"—"},
+    category:"supplies", once:12, subscribe:null,
+    tagline:"Sterile water, 0.9% benzyl alcohol. Laboratory solvent.",
+    description:"Sterile water containing 0.9% benzyl alcohol as a bacteriostatic preservative. A general-purpose laboratory solvent for preparing peptide solutions for analytical work. Sold separately; not included with any peptide.",
+    inside:"10ml sterile water, 0.9% benzyl alcohol.",
+    specs:{"Form":"Liquid","Volume":"10ml","Storage":"Room temperature"},
     faqs:[]
   }
 ];
 
-/* variants: optional list of dosage options shown on the product page; each carries its own strength, prices and stock.
-   image: base path (no extension) for a real product photo — expects <base>.jpg (1600w) and <base>-800.jpg. imageFocus: object-position for cropped views.
-   stock: "in" = purchasable, "out" = shows "Join the waitlist" instead of Add to cart */
-window.LUMA_CATEGORIES = {
-  all:"All", weight:"Weight & Metabolic", recovery:"Recovery", skin:"Skin & Glow", longevity:"Longevity & Sleep", supplies:"Supplies"
-};
+/* Research-neutral category names */
+window.LUMA_CATEGORIES = { all:"All compounds", metabolic:"Metabolic Research", tissue:"Tissue Research", dermal:"Dermal Research", longevity:"Longevity Research", supplies:"Lab Supplies" };
 
-/* Demo COA lot database for the Verify page. Replace with a real lookup. */
+/* Volume pricing tiers applied at cart level (per line quantity) */
+window.LUMA_VOLUME_TIERS = [{min:3,pct:5},{min:5,pct:10},{min:10,pct:15}];
+
 window.LUMA_LOTS = {
-  "LP-2609-TZ15":{product:"Tirzepatide 15mg",lab:"Freedom Diagnostics",tested:"2026-08-18",purity:"99.4%",identity:"Confirmed (LC-MS)",netContent:"15.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
-  "LP-2609-GLOW":{product:"Glow + Klow 5mg",lab:"Freedom Diagnostics",tested:"2026-08-18",purity:"99.0%",identity:"Confirmed (LC-MS)",netContent:"5.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
+  "LP-2609-TZ15":{product:"GLP-2 T 15mg",lab:"Freedom Diagnostics",tested:"2026-08-18",purity:"99.4%",identity:"Confirmed (LC-MS)",netContent:"15.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
+  "LP-2609-GLOW":{product:"BPC-157 + GHK-Cu + TB-500 Blend 5mg",lab:"Freedom Diagnostics",tested:"2026-08-18",purity:"99.0%",identity:"Confirmed (LC-MS)",netContent:"5.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
   "LP-2608-GHK5":{product:"GHK-Cu 5mg",lab:"Freedom Diagnostics",tested:"2026-07-30",purity:"99.6%",identity:"Confirmed (HPLC)",netContent:"5.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"},
-  "LP-2608-BPC5":{product:"BPC-157 5mg",lab:"Freedom Diagnostics",tested:"2026-07-30",purity:"99.5%",identity:"Confirmed (HPLC)",netContent:"5.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"}
+  "LP-2608-BPC5":{product:"BPC-157 10mg",lab:"Freedom Diagnostics",tested:"2026-07-30",purity:"99.5%",identity:"Confirmed (HPLC)",netContent:"10.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"}
 };

@@ -7,7 +7,7 @@
     code=code.trim().toUpperCase(); if(!code) return;
     if(!/^[A-Z0-9-]{1,60}$/.test(code)){out.textContent="Enter a lot code using letters, numbers, and hyphens.";return;}
     const lot=LOTS[code]; window.LumaCapture&&LumaCapture.track("lot_lookup",{code,found:!!lot});
-    if(!lot){ out.innerHTML=`<div class="coa-card"><div class="coa-badge fail">✕ &nbsp;Lot not found</div><p style="margin:0;color:var(--ink-2)">We don't have a record of <b>${code}</b>. Double-check the code printed under the QR on your box, or <a href="contact.html" style="color:var(--terra);text-decoration:underline">contact our care team</a> — if a lot you received isn't listed here, we want to know.</p></div>`; return; }
+    if(!lot){ out.innerHTML=`<div class="coa-card"><div class="coa-badge fail">✕ &nbsp;Lot not found</div><p style="margin:0;color:var(--ink-2)">We don't have a record of <b>${code}</b>. Double-check the code printed under the QR on the carton, or <a href="contact.html" style="color:var(--terra);text-decoration:underline">contact support</a> — a lot that is not listed here should be reported.</p></div>`; return; }
     out.innerHTML=`<div class="coa-card">
  <div class="coa-badge">Sample record · ${lot.status}</div>
  <div class="coa-head"><div><b style="font-size:1.15rem">${lot.product}</b><br><span style="font-size:.85rem;color:var(--muted)">Lot ${code}</span></div><span class="coa-stamp">TESTED</span></div>

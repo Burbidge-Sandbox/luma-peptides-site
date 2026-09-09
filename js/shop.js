@@ -17,9 +17,9 @@
     if(order==="rating") list.sort((a,b)=>b.rating-a.rating);
     grid.innerHTML=list.length?list.map(productCard).join(""):`<div class="empty">Nothing here yet.</div>`;
     grid.querySelectorAll(".reveal").forEach(el=>el.classList.add("in"));
-    count.textContent=`${list.length} treatment${list.length===1?"":"s"}`;
+    count.textContent=`${list.length} compound${list.length===1?"":"s"}`;
     const u=new URL(location); cat==="all"?u.searchParams.delete("cat"):u.searchParams.set("cat",cat); order==="featured"?u.searchParams.delete("sort"):u.searchParams.set("sort",order); inOnly?u.searchParams.set("stock","in"):u.searchParams.delete("stock"); history.replaceState(null,"",u);
-    document.getElementById("shopTitle").textContent = cat==="all"?"All Treatments":C[cat];
+    document.getElementById("shopTitle").textContent = cat==="all"?"All compounds":C[cat];
   }
   chips.addEventListener("click",e=>{const b=e.target.closest(".chip[data-cat]"); if(!b) return; cat=b.dataset.cat; chips.querySelectorAll(".chip[data-cat]").forEach(c=>c.setAttribute("aria-pressed",c===b)); draw();});
   sort.addEventListener("change",()=>{order=sort.value; draw();});
