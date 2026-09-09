@@ -28,3 +28,6 @@ Create a form at formspree.io, set `captureEndpoint` to its URL. You get an emai
 
 ## Privacy
 Update the Privacy Policy if you add analytics or ad pixels. The capture layer stores only what the visitor typed plus standard web attribution; no card data is ever collected.
+
+## Handling resources in the order email
+The customer order email includes an optional "Laboratory handling resources" section: a third-party reconstitution video and links to alcohol prep pads and syringes, marked as unaffiliated. These appear only in the email, never on the website. Edit or blank the `VIDEO_URL`, `PADS_URL`, `SYRINGE_URL` values at the top of `Code.gs` to change or remove them.

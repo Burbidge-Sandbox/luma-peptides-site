@@ -24,6 +24,10 @@ var SITE_URL     = "https://lumaresearchco.com";
 var VENMO_HANDLE = "LumaResearchCo";
 var ADDRESS      = "30 N Gould St, Sheridan, WY 82801";
 var PHONE        = "(385) 521-5259";
+/* Optional third-party handling resources shown ONLY in the order email. No affiliation. Set any to "" to hide. */
+var VIDEO_URL    = "https://www.youtube.com/watch?v=n8vk8DfwRHg";
+var PADS_URL     = "https://www.amazon.com/dp/B06XS38XH6";
+var SYRINGE_URL  = "https://www.amazon.com/dp/B0DR85YJF1";
 
 function ss_(){ return SpreadsheetApp.openById(SHEET_ID); }
 function sheet_(name, header){ var ss=ss_(), sh=ss.getSheetByName(name); if(!sh){ sh=ss.insertSheet(name); sh.appendRow(header); sh.setFrozenRows(1); } return sh; }
@@ -131,6 +135,7 @@ function emailCustomerOrder_(b){
   +'<td width="150" style="padding:18px 18px 18px 0;vertical-align:top;text-align:center"><img src="'+qrUrl_(pay)+'" width="132" height="132" alt="QR code: pay on Venmo" style="display:block;border:1px solid #E6DCD2;border-radius:8px;margin:0 auto 6px"><div style="font-size:11px;color:#7C736E;line-height:1.4">Reading this on a computer? Scan with your phone.</div></td></tr></table></td></tr>'
   +'<tr><td style="padding:24px 36px 6px"><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7C736E;font-weight:bold;margin-bottom:8px">Order summary</div>'+orderTable_(o)+'</td></tr>'
   +'<tr><td style="padding:12px 36px 0;font-size:14px;line-height:1.6;color:#4F4744"><b style="color:#2A2523">Ships to</b><br>'+(d.name||"")+(d.org?"<br>"+d.org:"")+'<br>'+g_(d,"address.line1")+(g_(d,"address.line2")?", "+g_(d,"address.line2"):"")+'<br>'+g_(d,"address.city")+', '+g_(d,"address.state")+' '+g_(d,"address.zip")+'</td></tr>'
+  +'<tr><td style="padding:22px 36px 0"><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7C736E;font-weight:bold;margin-bottom:8px">Laboratory handling resources</div><p style="font-size:14px;line-height:1.7;color:#4F4744;margin:0">Optional third-party resources, listed for convenience only. Luma has no affiliation with any of them and receives nothing from these links.</p><ul style="font-size:14px;line-height:1.8;color:#4F4744;margin:8px 0 0;padding-left:18px"><li><a href="'+VIDEO_URL+'" style="color:#B4432C">Reconstitution overview</a> (video)</li><li><a href="'+PADS_URL+'" style="color:#B4432C">Alcohol prep pads</a></li><li><a href="'+SYRINGE_URL+'" style="color:#B4432C">Syringes</a></li></ul></td></tr>'
   +'<tr><td style="padding:22px 36px 26px;font-size:13px;color:#7C736E;line-height:1.6">Track this order anytime at <a href="'+SITE_URL+'/status?order='+o.id+'" style="color:#B4432C">'+SITE_URL.replace("https://","")+'/status</a>. Reply to this email with any question about the order. All sales are final once shipped; damaged or incorrect items are replaced when reported within 7 days with photos.</td></tr>';
   MailApp.sendEmail({to:d.email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Order "+o.id+" reserved — pay "+money_(total)+" by Venmo to complete",htmlBody:layout_("Order reserved · payment pending",body)});
 }
