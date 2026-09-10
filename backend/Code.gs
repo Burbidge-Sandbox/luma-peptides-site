@@ -60,6 +60,12 @@ function doGet(e){
   if(p.order && p.key===SECRET){
     var row=findOrder_(String(p.order).toUpperCase());
     if(row){ out={found:true,id:row.order_id,status:row.status,ts:row.ts,total:row.total,items:row.items,tracking:row.tracking}; }
+  } else if(p.email && p.key===SECRET){
+    var em=String(p.email).trim().toLowerCase(), zip=String(p.zip||"").trim().slice(0,5);
+    var sh=sheet_("orders",ORDER_HEADER), vals=sh.getDataRange().getValues(), hdr=vals[0], hits=[];
+    for(var r=1;r<vals.length;r++){ var o={}; hdr.forEach(function(h,i){ o[h]=vals[r][i]; });
+      if(String(o.email).trim().toLowerCase()===em && String(o.zip).trim().slice(0,5)===zip){ hits.push({id:o.order_id,status:o.status,ts:o.ts,total:o.total}); } }
+    out={found:hits.length>0,orders:hits.reverse().slice(0,10)};
   } else if(!p.order){ out={ok:true,message:"Luma capture endpoint is live."}; }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }

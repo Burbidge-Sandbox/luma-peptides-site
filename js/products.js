@@ -118,7 +118,7 @@ window.LUMA_PRODUCTS = [
   },
   {
     id:"bac-water", stock:"in", name:"Bacteriostatic Water", label:["BAC WATER","10ML"], strength:"10ml vial",
-    category:"supplies", once:12, subscribe:null,
+    category:"supplies", once:10, subscribe:null,
     tagline:"Sterile water, 0.9% benzyl alcohol. Laboratory solvent.",
     description:"Sterile water containing 0.9% benzyl alcohol as a bacteriostatic preservative. A general-purpose laboratory solvent for preparing peptide solutions for analytical work. Sold separately; not included with any peptide.",
     inside:"10ml sterile water, 0.9% benzyl alcohol.",

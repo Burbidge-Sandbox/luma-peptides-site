@@ -12,6 +12,8 @@
   /* ---------- Config (edit freely) ---------- */
   const CONFIG = {
     freeShipThreshold:150,
+    /* Home-page promise strip. Set freeShipAlways:true or deliveryPromiseDays:5 once those policies are approved. */
+    promises:{shipDays:1, freeShipAlways:false, deliveryPromiseDays:0},
     shipping:{standard:{label:"Standard (3–5 days)",price:8},express:{label:"Express (1–2 days)",price:24}},
     promos:{GLOW15:{type:"pct",value:15,label:"15% off"},WELCOME10:{type:"pct",value:10,label:"10% off"},FREESHIP:{type:"ship",value:0,label:"Free shipping"}},
     taxRate:0, /* set e.g. 0.07 for demo tax */
@@ -170,11 +172,11 @@
 
   /* ---------- Header / footer ---------- */
   const page = location.pathname.split("/").pop() || "index.html";
-  const NAV=[["index.html","Home"],["shop.html","Catalog"],["how-it-works.html","Ordering"],["verify.html","Verify a Lot"],["about.html","About"],["contact.html","Contact"]];
+  const NAV=[["index.html","Home"],["shop.html","Catalog"],["faq.html","FAQ"],["verify.html","Verify a Lot"],["status.html","Track Order"],["contact.html","Contact"]];
   function header(){
     const links=NAV.map(([h,t])=>`<li><a href="${h}" ${page===h?'aria-current="page"':''}>${t}</a></li>`).join("");
     return `<a class="skip" href="#main">Skip to content</a>
-<div class="announce">For laboratory research use only &nbsp;·&nbsp; Not for human or animal use &nbsp;·&nbsp; Every lot independently tested</div>
+<div class="announce"><span class="full">For laboratory research use only &nbsp;·&nbsp; Not for human or animal use &nbsp;·&nbsp; Every lot independently tested</span><span class="short">For laboratory research use only · Not for human use</span></div>
 <header class="header" id="header"><div class="wrap nav">
  <a class="logo" href="index.html" aria-label="Luma Peptides Co. home"><span>luma</span><span>peptides</span><span>co.</span></a>
  <ul class="nav-links">${links}</ul>
@@ -195,7 +197,7 @@
  <div class="footer-grid">
   <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">Research-grade peptides, independently tested by lot. For laboratory research use only.</p><p class="tag biz"><a href="mailto:info@lumaresearchco.com">info@lumaresearchco.com</a><br><a href="tel:+13855215259">(385) 521-5259</a><br>30 N Gould St<br>Sheridan, WY 82801</p></div>
   <div><h4>Catalog</h4><ul><li><a href="shop.html">All compounds</a></li><li><a href="shop.html?cat=metabolic">Metabolic Research</a></li><li><a href="shop.html?cat=tissue">Tissue Research</a></li><li><a href="shop.html?cat=dermal">Dermal Research</a></li><li><a href="shop.html?cat=longevity">Longevity Research</a></li><li><a href="shop.html?cat=supplies">Lab Supplies</a></li></ul></div>
-  <div><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="how-it-works.html">Ordering</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="how-it-works.html">How ordering works</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
   <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="status.html">Order status</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
   <div><h4>Follow Us</h4><div class="social">
    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg></a>

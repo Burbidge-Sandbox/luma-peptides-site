@@ -20,10 +20,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260908b">
-<script src="js/products.js?v=20260908b" defer></script>
-<script src="js/site.js?v=20260908b" defer></script>
-<script src="js/status.js?v=20260908b" defer></script>
+<link rel="stylesheet" href="css/styles.css?v=20260910a">
+<script src="js/products.js?v=20260910a" defer></script>
+<script src="js/site.js?v=20260910a" defer></script>
+<script src="js/status.js?v=20260910a" defer></script>
 
 </head>
 <body>
@@ -32,7 +32,9 @@
 <div class="wrap page-head" style="text-align:center"><span class="eyebrow">Orders</span><h1>Order status</h1><p style="margin-inline:auto">Enter the order number from the confirmation page or email (it looks like LP-XXXXXX).</p></div>
 <div class="wrap" style="padding-bottom:5rem">
  <div class="verify-box">
-  <form id="statusForm"><label class="sr-only" for="orderInput">Order number</label><input id="orderInput" placeholder="LP-ABC123" autocomplete="off" spellcheck="false"><button class="btn btn-primary">Check status</button></form>
+  <div class="status-tabs" role="tablist"><button type="button" class="chip" id="tabOrder" aria-pressed="true">Order number</button><button type="button" class="chip" id="tabEmail" aria-pressed="false">Email + ZIP</button></div>
+  <form id="statusForm"><label class="sr-only" for="orderInput">Order number</label><input id="orderInput" placeholder="LP-XXXXXX" autocomplete="off" spellcheck="false"><button class="btn btn-primary">Look up</button></form>
+  <form id="emailForm" hidden><label class="sr-only" for="emailInput">Email</label><input id="emailInput" type="email" placeholder="Email used at checkout" autocomplete="email"><label class="sr-only" for="zipInput">ZIP</label><input id="zipInput" inputmode="numeric" placeholder="Shipping ZIP" autocomplete="postal-code" style="max-width:150px"><button class="btn btn-primary">Find orders</button></form>
   <p class="verify-hint">Questions about an order? <a href="contact.html" style="color:var(--terra);text-decoration:underline">Contact support</a>.</p>
  </div>
  <div class="coa-result status-box" id="statusResult" aria-live="polite"></div>
