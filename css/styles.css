@@ -745,3 +745,12 @@ body.gate-open{overflow:hidden}
 .card-size.is-on{background:var(--terra);border-color:var(--terra);color:#fff}
 .card-size.is-out{border-style:dashed;color:var(--muted)}
 .card .card-vial{display:contents}
+/* Phone hero v3: photo height scales with width so the vial always stays above the headline */
+@media(max-width:760px){
+  .editorial-hero .hero-visual{height:118vw;max-height:600px}
+  .editorial-hero .hero-scene{object-position:56% 0}
+  .editorial-hero .hero-visual::before{height:38%;background:linear-gradient(to bottom,rgba(238,229,218,0) 0%,rgba(238,229,218,.75) 55%,#EEE5DA 100%)}
+  .hero-copy{margin-top:-14vw;padding-top:0}
+  .editorial-hero .eyebrow{margin-bottom:8px}
+  .editorial-hero h1{font-size:2.5rem}
+}
