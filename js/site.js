@@ -101,6 +101,21 @@
 
   /* One photographic master, with exact catalog typography on the paper label.
      Keep the legacy helper name for cart/checkout compatibility. */
+
+  /* Label text on a cylinder: each line follows a shallow arc, lowest at the vial's centre. */
+  function labelSVG(lines, strength){
+    const L=30, R=70, X0=34.5, SAG=1.25;          /* label edges, text start, arc depth (viewBox units) */
+    const arc=(y,id)=>`<path id="${id}" d="M${L},${y} Q50,${y+SAG*2} ${R},${y}" fill="none"/>`;
+    const txt=(id,str,fs,fam,w,fill,ls)=>`<text font-size="${fs}" font-family="${fam}" font-weight="${w}" fill="${fill}" letter-spacing="${ls||0}"><textPath href="#${id}" startOffset="${((X0-L)/(R-L)*100).toFixed(1)}%">${str}</textPath></text>`;
+    const uid="l"+Math.random().toString(36).slice(2,7);
+    const serif="Cormorant Garamond, Georgia, serif", sans="Inter, system-ui, sans-serif";
+    let ys=[69.6,76.6,83.5], defs="", body="";
+    ["luma","peptides","co."].forEach((t,i)=>{ defs+=arc(ys[i],uid+"b"+i); body+=txt(uid+"b"+i,t,8,serif,500,"#a23f25","-0.25"); });
+    let y=92.3; lines.forEach((t,i)=>{ defs+=arc(y,uid+"p"+i); body+=txt(uid+"p"+i,t,lines.length>1&&t.length>13?2.5:2.85,sans,600,"#292721","-0.05"); y+=3.6; });
+    y+=0.8; defs+=arc(y,uid+"s"); body+=txt(uid+"s",strength,2.6,sans,500,"#292721","0");
+    defs+=arc(108,uid+"d"); body+=txt(uid+"d","FOR RESEARCH USE ONLY",1.25,sans,500,"#a23f25","-0.02");
+    return `<svg class="photo-label" viewBox="0 0 100 150" aria-hidden="true"><defs>${defs}<linearGradient id="${uid}g" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".10"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient></defs><rect x="${L}" y="58" width="${R-L}" height="55" fill="url(#${uid}g)"/>${body}</svg>`;
+  }
   function vialSVG(p, opts={}){
     const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     if(p.image && opts.eager){ /* unique render on the product detail page only; grids keep the studio vial */
@@ -113,9 +128,7 @@
     const labelLines=lines.filter(line=>!/^\d+(?:\.\d+)?(?:MG|ML)$/i.test(line));
     return `<span class="vial product-photo" role="img" aria-label="${escape(p.name)} — ${escape(p.strength)}, Luma vial product visualization">
       <img src="assets/products/${photo}-512.jpg" srcset="assets/products/${photo}-512.jpg 512w, assets/products/${photo}-1024.jpg 1024w" sizes="${opts.eager?'(max-width: 900px) 85vw, 520px':'(max-width: 760px) 45vw, 280px'}" width="1024" height="1536" alt="" loading="${opts.eager?'eager':'lazy'}" decoding="async" ${opts.eager?'fetchpriority="high"':''}>
-      <span class="photo-brand" aria-hidden="true">luma<br>peptides<br>co.</span>
-      <span class="photo-product" aria-hidden="true">${labelLines.map(escape).join('<br>')}<span class="photo-strength">${escape(strength)}</span></span>
-      <span class="photo-disclaimer" aria-hidden="true">FOR RESEARCH USE ONLY</span>
+      ${labelSVG(labelLines.map(escape), escape(strength))}
     </span>`;
   }
   window.vialSVG = vialSVG;
