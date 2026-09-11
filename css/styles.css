@@ -713,3 +713,6 @@ body.gate-open{overflow:hidden}
 #detailsForm.acct-card{display:grid}
 
 @media(max-width:600px){.acct-head{flex-direction:column;align-items:flex-start;gap:.3rem}.acct-head h2{font-size:1.4rem}}
+
+/* Phone: no announcement bar (statement already sits on the home hero and in the footer) */
+@media(max-width:760px){.announce{display:none}}
