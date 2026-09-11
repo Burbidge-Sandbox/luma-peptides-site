@@ -769,3 +769,9 @@ body.gate-open{overflow:hidden}
   .hero-copy>*{position:relative;z-index:2}
   .editorial-hero h1{position:absolute}
 }
+/* Phone product page: smaller studio vial */
+@media(max-width:760px){
+  .pdp-gallery{padding:1.2rem 0;background:transparent;min-height:0}
+  .pdp-gallery .vial.product-photo:not(.photo-full){width:58%;max-width:250px;margin:0 auto;border-radius:6px}
+  .pdp-gallery .vial.product-photo.photo-full{width:100%}
+}
