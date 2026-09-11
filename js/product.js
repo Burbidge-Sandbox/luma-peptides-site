@@ -25,9 +25,6 @@
  ${variants?`<div class="dose-picker"><div class="dose-label">Vial size</div><div class="dose-options" role="radiogroup" aria-label="Dosage">${variants.map(x=>`<button type="button" class="dose${x.key===v.key?" is-selected":""}${x.stock==="out"?" is-out":""}" data-dose="${x.key}" role="radio" aria-checked="${x.key===v.key}">${x.label}${x.stock==="out"?'<small>Waitlist</small>':''}</button>`).join("")}</div></div>`:""}
  ${oos?`<div class="oos-banner"><b>Currently out of stock.</b> Join the waitlist to be notified when the next tested lot is released. No payment is taken.</div>`:""}
  <form id="buyForm">
-  <div class="purchase-options" role="radiogroup" aria-label="Purchase option">
-   <label class="opt"><input type="radio" name="plan" value="once" checked><div class="opt-body"><b>Per vial</b><span>Volume pricing: 3+ vials save 5% · 5+ save 10% · 10+ save 15%</span></div><div class="opt-price">${money(v.once)}</div></label>
-  </div>
   <div class="buy-row">
    <div class="qty"><button type="button" id="dec" aria-label="Decrease">−</button><input id="qtyInput" type="number" value="1" min="1" max="10" aria-label="Quantity"><button type="button" id="inc" aria-label="Increase">+</button></div>
    ${oos?`<button type="button" class="btn btn-primary" data-waitlist="${p.id}">Join the waitlist</button>`:`<button type="submit" class="btn btn-primary">Add to cart</button>`}
@@ -52,7 +49,7 @@
  </div>`;
     const priceLine=document.getElementById("priceLine");
     const form=document.getElementById("buyForm"), qty=document.getElementById("qtyInput");
-    const plan=()=>form.plan.value;
+    const plan=()=>"once";
     const updPrice=()=>{ priceLine.innerHTML = `${money(v.once)} <small>per vial</small>`; };
     form.addEventListener("change",updPrice); updPrice();
     document.getElementById("inc").onclick=()=>qty.value=Math.min(10,+qty.value+1);
