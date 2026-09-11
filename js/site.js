@@ -350,16 +350,34 @@
   /* ---------- Product card helper (used by home + shop) ---------- */
   window.productCard = function(p){
     const oos = p.stock==="out";
-    return `<article class="card reveal${oos?" oos":""}">
+    const v0 = p.variants&&p.variants.length ? p.variants[0] : null;
+    const price = v0 ? v0.once : p.once, strength = v0 ? v0.strength : p.strength;
+    const sizes = v0 ? `<div class="card-sizes" role="group" aria-label="Vial size">${p.variants.map((v,i)=>`<button type="button" class="card-size${i===0?" is-on":""}${v.stock==="out"?" is-out":""}" data-size="${v.key}" aria-pressed="${i===0}">${v.label}</button>`).join("")}</div>` : "";
+    return `<article class="card reveal${oos?" oos":""}" data-pid="${p.id}"${v0?` data-variant="${v0.key}"`:""}>
  ${oos?`<span class="badge soft">Waitlist</span>`:(p.badge?`<span class="badge">${p.badge}</span>`:"")}
- <a class="stretch" href="product.html?id=${p.id}" aria-label="${p.name}"></a>
- ${vialSVG(p)}
+ <a class="stretch" href="product.html?id=${p.id}${v0?"&dose="+v0.key:""}" aria-label="${p.name}"></a>
+ <div class="card-vial">${vialSVG(v0?{...p,strength:strength,label:[p.label[0],v0.key.toUpperCase()]}:p)}</div>
  <h3>${p.name}</h3>
- <div class="strength">${p.strength}${oos?' · <span class="oos-text">Out of stock</span>':''}</div>
- <div class="price">${money(p.once)} <small>/ vial</small></div>
- <div class="card-actions">${oos?`<button class="btn btn-outline btn-sm" data-waitlist="${p.id}">Join the waitlist</button>`:`<button class="btn btn-outline btn-sm" data-add="${p.id}" data-plan="once">Add to cart</button>`}</div>
+ <div class="strength"><span class="card-strength">${strength}</span>${oos?' · <span class="oos-text">Out of stock</span>':''}</div>
+ ${sizes}
+ <div class="price"><span class="card-price">${money(price)}</span> <small>/ vial</small></div>
+ <div class="card-actions">${oos?`<button class="btn btn-outline btn-sm" data-waitlist="${p.id}">Join the waitlist</button>`:`<button class="btn btn-outline btn-sm" data-add="${p.id}" data-plan="once"${v0?` data-variant="${v0.key}"`:""}>Add to cart</button>`}</div>
 </article>`;
   };
+  /* Vial-size toggle on catalog cards */
+  document.addEventListener("click",e=>{
+    const b=e.target.closest(".card-size"); if(!b) return; e.preventDefault(); e.stopPropagation();
+    const card=b.closest(".card"), p=byId(card.dataset.pid); if(!p||!p.variants) return;
+    const v=p.variants.find(x=>x.key===b.dataset.size); if(!v) return;
+    card.dataset.variant=v.key;
+    card.querySelectorAll(".card-size").forEach(x=>{ const on=x===b; x.classList.toggle("is-on",on); x.setAttribute("aria-pressed",on); });
+    card.querySelector(".card-price").textContent=money(v.once);
+    card.querySelector(".card-strength").textContent=v.strength;
+    card.querySelector(".card-vial").innerHTML=vialSVG({...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]});
+    const add=card.querySelector("[data-add]"); if(add){ add.dataset.variant=v.key; add.disabled=v.stock==="out"; add.textContent=v.stock==="out"?"Out of stock":"Add to cart"; }
+    card.querySelector("a.stretch").href=`product.html?id=${p.id}&dose=${v.key}`;
+  });
+
 
   /* ---------- Waitlist (out-of-stock) ---------- */
   window.joinWaitlist = function(id){

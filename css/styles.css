@@ -737,3 +737,11 @@ body.gate-open{overflow:hidden}
   .editorial-hero .hero-scene{object-position:56% 0}
   .hero-copy{margin-top:-125px}
 }
+
+/* Vial-size toggle on cards */
+.card-sizes{position:relative;z-index:2;display:flex;gap:.4rem;margin:.1rem 0 .7rem}
+.card-size{padding:.32rem .7rem;border:1.5px solid var(--line);border-radius:999px;background:#fff;font-size:.78rem;font-weight:600;color:var(--ink-2);transition:all .15s}
+.card-size:hover{border-color:var(--terra);color:var(--terra)}
+.card-size.is-on{background:var(--terra);border-color:var(--terra);color:#fff}
+.card-size.is-out{border-style:dashed;color:var(--muted)}
+.card .card-vial{display:contents}
