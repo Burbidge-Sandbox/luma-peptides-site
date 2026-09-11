@@ -190,7 +190,7 @@ function accountLogin_(email){
   var link=loginLink_(email,"link");
   var body='<tr><td style="padding:10px 36px 26px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Your sign-in link.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 20px">Use the button below to open your Luma account: order history, tracking, certificates for your lots, and saved details. The link works for '+LINK_MINUTES+' minutes and only on this device\'s browser once opened.</p>'+btn_(link,"Open my account")+'<p style="font-size:13px;color:#7C736E;line-height:1.6;margin:22px 0 0">If you did not request this, ignore this email. Nothing changes unless the link is opened.</p></td></tr>';
   MailApp.sendEmail({to:email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Your Luma sign-in link",htmlBody:layout_("Sign in",body)});
-  return {ok:true};
+  return {ok:true,sent:true};
 }
 function accountSession_(token){
   var t=findToken_(token); if(!t||t.used||new Date(t.expires)<new Date()||(t.type!=="link"&&t.type!=="email")) return {ok:false,error:"invalid_link"};

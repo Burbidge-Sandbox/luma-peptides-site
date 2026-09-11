@@ -15,8 +15,8 @@
  <form id="loginForm"><label class="sr-only" for="loginEmail">Email</label><input id="loginEmail" type="email" required placeholder="Email used at checkout" autocomplete="email"><button class="btn btn-primary">Email me a sign-in link</button></form>
  <p class="acct-fine">Looking for a single order? <a href="status.html">Track it by order number</a> without signing in.</p></div>`;
     document.getElementById("loginForm").addEventListener("submit",async e=>{ e.preventDefault(); const em=document.getElementById("loginEmail").value.trim(); const btn=e.target.querySelector("button"); btn.disabled=true; btn.textContent="Sending…";
-      try{ const j=await api(`action=login&email=${encodeURIComponent(em)}`); if(j.ok){ view.innerHTML=`<div class="acct-card acct-login"><div class="coa-badge">✓ &nbsp;Link sent</div><p style="margin:0;color:var(--ink-2)">Check <b>${esc(em)}</b> for an email from Luma Research Co and open the link on this device. It expires in 15 minutes. If it doesn't arrive in a couple of minutes, check spam.</p></div>`; LumaCapture.track("account_login_sent",{email:em}); }
-        else loginForm(j.error==="rate_limit"?"Too many links requested. Wait an hour and try again.":"Enter a valid email address."); }
+      try{ const j=await api(`action=login&email=${encodeURIComponent(em)}`); if(j.ok&&j.sent){ view.innerHTML=`<div class="acct-card acct-login"><div class="coa-badge">✓ &nbsp;Link sent</div><p style="margin:0;color:var(--ink-2)">Check <b>${esc(em)}</b> for an email from Luma Research Co and open the link on this device. It expires in 15 minutes. If it doesn't arrive in a couple of minutes, check spam.</p></div>`; LumaCapture.track("account_login_sent",{email:em}); }
+        else loginForm(j.error==="rate_limit"?"Too many links requested. Wait an hour and try again.":j.error==="invalid_email"?"Enter a valid email address.":"Sign-in isn't switched on yet. Use <a href=\"status.html\">Track order</a> with your order number for now."); }
       catch(err){ loginForm("Couldn't reach the account system. Try again in a minute."); } });
   }
 
