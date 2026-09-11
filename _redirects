@@ -2,3 +2,6 @@
 # ("Block /compliant on live domain"), not here — Pages _redirects cannot match
 # on hostname, so the rule lives at the zone level. It stays reachable on
 # luma-peptides-site.pages.dev for A/B review.
+
+/how-it-works /faq 301
+/how-it-works.html /faq 301

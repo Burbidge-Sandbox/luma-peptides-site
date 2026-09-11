@@ -197,8 +197,8 @@
  <div class="footer-grid">
   <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">Research-grade peptides, independently tested by lot. For laboratory research use only.</p><p class="tag biz"><a href="mailto:info@lumaresearchco.com">info@lumaresearchco.com</a><br><a href="tel:+13855215259">(385) 521-5259</a><br>30 N Gould St<br>Sheridan, WY 82801</p></div>
   <div><h4>Catalog</h4><ul><li><a href="shop.html">All compounds</a></li><li><a href="shop.html?cat=metabolic">Metabolic Research</a></li><li><a href="shop.html?cat=tissue">Tissue Research</a></li><li><a href="shop.html?cat=dermal">Dermal Research</a></li><li><a href="shop.html?cat=longevity">Longevity Research</a></li><li><a href="shop.html?cat=supplies">Lab Supplies</a></li></ul></div>
-  <div><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="how-it-works.html">How ordering works</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-  <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="status.html">Order status</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+  <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="status.html">Track order</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
   <div><h4>Follow Us</h4><div class="social">
    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg></a>
    <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8a1 1 0 0 1 1-1z"/></svg></a>
@@ -219,12 +219,11 @@
  <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle" aria-describedby="gateBody">
   <div class="logo" aria-hidden="true"><span>luma</span><span>peptides co.</span></div>
   <span class="eyebrow">Before you continue</span>
-  <h2 id="gateTitle">Research materials. Please confirm before entering.</h2>
+  <h2 id="gateTitle">Research materials only.</h2>
   <div class="gate-body" id="gateBody">
-   <p>Every product on this site is supplied <b>for laboratory research use only</b>. Products are not for human or animal use, consumption, or administration of any kind, and are not intended to diagnose, treat, cure, or prevent any disease. Statements have not been evaluated by the Food and Drug Administration.</p>
-   <p>Luma Peptides Co. is a chemical supplier, not a pharmacy or clinic, and does not provide usage guidance.</p>
+   <p>Everything here is supplied <b>for laboratory research use only</b>: not for human or animal use, and not intended to diagnose, treat, cure, or prevent any disease. Statements have not been evaluated by the FDA. Luma Peptides Co. is a chemical supplier, not a pharmacy or clinic, and provides no usage guidance.</p>
   </div>
-  <p class="gate-affirm">By entering, I confirm that I am <b>21 years of age or older</b>, that I am purchasing on behalf of a laboratory, institution, or research organization, that products will be used <b>for in-vitro research only</b> and never administered to any human or animal, and that I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  <p class="gate-affirm">By entering I confirm I am <b>21 or older</b>, ordering for a laboratory or research organization, will use products <b>for in-vitro research only</b> and never administer them to any human or animal, and accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
   <div class="gate-actions">
    <button class="btn btn-primary is-ready" id="gateEnter" type="button">I'm 21+ and agree · Enter</button>
    <a class="btn btn-outline" href="https://www.google.com" id="gateLeave">Leave</a>

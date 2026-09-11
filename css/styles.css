@@ -627,3 +627,18 @@ body.gate-open{overflow:hidden}
 .gate-actions .btn-primary.is-ready{opacity:1}
 /* Mobile header: cart and menu on the right */
 @media(max-width:900px){.nav{justify-content:space-between}.nav-actions{margin-left:auto;gap:.4rem}}
+
+/* Compact gate: button visible without scrolling on phones */
+.gate-card{display:flex;flex-direction:column}
+.gate-actions{position:sticky;bottom:-2rem;background:var(--paper);padding-top:.6rem;margin-bottom:-.4rem}
+@media(max-width:520px){
+  .gate{padding:.6rem;align-items:end}
+  .gate-card{padding:1.2rem 1.1rem 1rem;max-height:94vh;border-radius:14px}
+  .gate-card .logo{font-size:1.3rem;margin-bottom:.6rem}
+  .gate-card .eyebrow{font-size:.62rem;margin-bottom:.4rem}
+  .gate-card h2{font-size:1.35rem;margin-bottom:.5rem}
+  .gate-body p{font-size:.84rem;line-height:1.5;margin:0 0 .6rem}
+  .gate-affirm{font-size:.78rem;line-height:1.45;padding:.7rem .8rem;margin:.6rem 0 .8rem}
+  .gate-actions{bottom:-1rem;padding-top:.4rem}
+  .gate-actions .btn{min-height:44px;padding:.7rem 1rem;font-size:.78rem}
+}

@@ -8,8 +8,8 @@
 window.LUMA_PRODUCTS = [
   {
     id:"glp-2-t", stock:"in", name:"GLP-2 T", label:["GLP-2 T","15MG"], strength:"15mg vial",
-    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",once:349,stock:"in",sku:"TR15"},{key:"30mg",label:"30mg",strength:"30mg vial",once:459,stock:"in",sku:"TR30"}],
-    category:"metabolic", once:349, subscribe:null, badge:null,
+    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",once:120,stock:"in",sku:"TR15"},{key:"30mg",label:"30mg",strength:"30mg vial",once:170,stock:"in",sku:"TR30"}],
+    category:"metabolic", once:120, subscribe:null, badge:null,
     tagline:"Dual GIP/GLP-1 receptor agonist analog. Lyophilized.",
     description:"A synthetic 39-amino-acid peptide analog that has been characterized in the literature as a dual agonist at the GIP and GLP-1 receptors. Preclinical studies have examined receptor binding kinetics, incretin signaling pathways, and downstream effects on glucose homeostasis in rodent models. Supplied as a lyophilized powder for in-vitro and analytical research.",
     inside:"Single lyophilized peptide, sealed under inert gas. No excipients other than mannitol.",
@@ -18,8 +18,8 @@ window.LUMA_PRODUCTS = [
   },
   {
     id:"glp-3-rt", stock:"in", name:"GLP-3 RT", label:["GLP-3 RT","15MG"], strength:"15mg vial",
-    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",once:379,stock:"in",sku:"RT15"},{key:"30mg",label:"30mg",strength:"30mg vial",once:519,stock:"in",sku:"RT30"}],
-    category:"metabolic", once:379, subscribe:null, badge:null,
+    variants:[{key:"15mg",label:"15mg",strength:"15mg vial",once:145,stock:"in",sku:"RT15"},{key:"30mg",label:"30mg",strength:"30mg vial",once:230,stock:"in",sku:"RT30"}],
+    category:"metabolic", once:145, subscribe:null, badge:null,
     tagline:"Triple GIP/GLP-1/glucagon receptor agonist analog. Lyophilized.",
     description:"A synthetic peptide analog described in the literature as an agonist at the GIP, GLP-1, and glucagon receptors. Published preclinical work has investigated receptor selectivity, energy expenditure pathways, and hepatic lipid signaling in animal models. Supplied as a lyophilized powder for in-vitro and analytical research.",
     inside:"Single lyophilized peptide, sealed under inert gas.",
@@ -128,7 +128,7 @@ window.LUMA_PRODUCTS = [
 ];
 
 /* Research-neutral category names */
-window.LUMA_CATEGORIES = { all:"All compounds", metabolic:"Metabolic Research", tissue:"Tissue Research", dermal:"Dermal Research", longevity:"Longevity Research", supplies:"Lab Supplies" };
+window.LUMA_CATEGORIES = { all:"All compounds", metabolic:"Metabolic Research", tissue:"Tissue Research", dermal:"Dermal Research", longevity:"Longevity Research", supplies:"Solvents" };
 
 /* Volume pricing tiers applied at cart level (per line quantity) */
 window.LUMA_VOLUME_TIERS = [{min:3,pct:5},{min:5,pct:10},{min:10,pct:15}];
