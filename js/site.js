@@ -224,9 +224,9 @@
    <p>Every product on this site is supplied <b>for laboratory research use only</b>. Products are not for human or animal use, consumption, or administration of any kind, and are not intended to diagnose, treat, cure, or prevent any disease. Statements have not been evaluated by the Food and Drug Administration.</p>
    <p>Luma Peptides Co. is a chemical supplier, not a pharmacy or clinic, and does not provide usage guidance.</p>
   </div>
-  <label class="gate-check"><input type="checkbox" id="gateAgree"><span>I confirm that I am <b>21 years of age or older</b>, that I am purchasing on behalf of a laboratory, institution, or research organization, that products will be used <b>for in-vitro research only</b> and never administered to any human or animal, and that I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+  <p class="gate-affirm">By entering, I confirm that I am <b>21 years of age or older</b>, that I am purchasing on behalf of a laboratory, institution, or research organization, that products will be used <b>for in-vitro research only</b> and never administered to any human or animal, and that I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
   <div class="gate-actions">
-   <button class="btn btn-primary" id="gateEnter" type="button">Enter the site</button>
+   <button class="btn btn-primary is-ready" id="gateEnter" type="button">I'm 21+ and agree · Enter</button>
    <a class="btn btn-outline" href="https://www.google.com" id="gateLeave">Leave</a>
   </div>
  </div>
@@ -319,11 +319,9 @@
       let ok=false; try{ ok = (+localStorage.getItem(KEY)||0) > Date.now(); }catch(e){}
       if(ok) return;
       gate.hidden=false; document.body.classList.add("gate-open");
-      const chk=$("#gateAgree"), btn=$("#gateEnter"), ret=document.activeElement;
-      const box=chk.closest(".gate-check");
-      chk.addEventListener("change",()=>{ btn.classList.toggle("is-ready",chk.checked); box.classList.remove("nudge"); });
-      btn.addEventListener("click",()=>{ if(!chk.checked){ box.classList.remove("nudge"); void box.offsetWidth; box.classList.add("nudge"); chk.focus(); return; } try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} CAP.track("gate_accept",{}); gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
-      chk.focus();
+      const btn=$("#gateEnter"), ret=document.activeElement;
+      btn.addEventListener("click",()=>{ try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} CAP.track("gate_accept",{}); gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
+      btn.focus();
       gate.addEventListener("keydown",e=>{ if(e.key!=="Tab") return; const f=[...gate.querySelectorAll("input,button:not([disabled]),a[href]")]; const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();} else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();} });
     })();
 
