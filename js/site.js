@@ -104,7 +104,7 @@
 
   /* Label text on a cylinder: each line follows a shallow arc, lowest at the vial's centre. */
   function labelSVG(lines, strength){
-    const L=30, R=70, X0=34.5, SAG=1.25;          /* label edges, text start, arc depth (viewBox units) */
+    const L=30, R=70, X0=34.5, SAG=0.45;          /* label edges, text start, arc depth (viewBox units) */
     const arc=(y,id)=>`<path id="${id}" d="M${L},${y} Q50,${y+SAG*2} ${R},${y}" fill="none"/>`;
     const txt=(id,str,fs,fam,w,fill,ls)=>`<text font-size="${fs}" font-family="${fam}" font-weight="${w}" fill="${fill}" letter-spacing="${ls||0}"><textPath href="#${id}" startOffset="${((X0-L)/(R-L)*100).toFixed(1)}%">${str}</textPath></text>`;
     const uid="l"+Math.random().toString(36).slice(2,7);
@@ -114,7 +114,7 @@
     let y=92.3; lines.forEach((t,i)=>{ defs+=arc(y,uid+"p"+i); body+=txt(uid+"p"+i,t,lines.length>1&&t.length>13?2.5:2.85,sans,600,"#292721","-0.05"); y+=3.6; });
     y+=0.8; defs+=arc(y,uid+"s"); body+=txt(uid+"s",strength,2.6,sans,500,"#292721","0");
     defs+=arc(108,uid+"d"); body+=txt(uid+"d","FOR RESEARCH USE ONLY",1.25,sans,500,"#a23f25","-0.02");
-    return `<svg class="photo-label" viewBox="0 0 100 150" aria-hidden="true"><defs>${defs}<linearGradient id="${uid}g" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".10"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient></defs><rect x="${L}" y="58" width="${R-L}" height="55" fill="url(#${uid}g)"/>${body}</svg>`;
+    return `<svg class="photo-label" viewBox="0 0 100 150" aria-hidden="true"><defs>${defs}<linearGradient id="${uid}g" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".06"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".07"/></linearGradient></defs><rect x="${L}" y="58" width="${R-L}" height="55" fill="url(#${uid}g)"/>${body}</svg>`;
   }
   function vialSVG(p, opts={}){
     const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
