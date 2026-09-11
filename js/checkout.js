@@ -23,6 +23,8 @@
   /* Abandoned-checkout capture: record the email as soon as it's entered */
   let lastEmail=""; form.email.addEventListener("change",()=>{ const em=form.email.value.trim(); if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)&&em!==lastEmail){ lastEmail=em; LumaCapture.track("checkout_email",{email:em,first:form.first.value,last:form.last.value}); } });
   form.phone.addEventListener("change",()=>{ if(lastEmail) LumaCapture.track("checkout_contact",{email:lastEmail,phone:form.phone.value,first:form.first.value,last:form.last.value}); });
+  /* Prefill from a signed-in account's saved details */
+  try{ const d=JSON.parse(localStorage.getItem("luma_account_details")||"null"); if(d){ const map={email:d.email,org:d.org,phone:d.phone,first:(d.name||"").split(" ")[0],last:(d.name||"").split(" ").slice(1).join(" "),address:d.address1,apt:d.address2,city:d.city,state:d.state,zip:d.zip}; Object.keys(map).forEach(k=>{ if(form[k]&&!form[k].value&&map[k]) form[k].value=map[k]; }); if(form.state.value){ Cart.taxState=form.state.value; } } }catch(e){}
   drawSummary();
   LumaCapture.track("checkout_start",{}); LumaPixels.checkout(Cart.totals(ship).total);
 
@@ -52,7 +54,7 @@
     const t=Cart.totals(ship);
     const order={ id:"LP-"+Math.random().toString(36).slice(2,8).toUpperCase(), date:new Date().toISOString(),
       email:form.email.value, org:form.org.value, name:`${form.first.value} ${form.last.value}`, address:`${form.address.value}${form.apt.value?", "+form.apt.value:""}, ${form.city.value}, ${form.state.value} ${form.zip.value}`,
-      ship:CFG.shipping[ship].label, items:Cart.items().map(l=>{const p=Cart.byId(l.id); const v=Cart.variantOf(p,l.variant);return {name:p.name,strength:v.strength,plan:l.plan,qty:l.qty,price:Cart.unitPrice(p,l.plan,l.variant)};}),
+      ship:CFG.shipping[ship].label, items:Cart.items().map(l=>{const p=Cart.byId(l.id); const v=Cart.variantOf(p,l.variant);return {id:p.id,variant:l.variant||"",name:p.name,strength:v.strength,plan:l.plan,qty:l.qty,price:Cart.unitPrice(p,l.plan,l.variant)};}),
       totals:{sub:t.sub,discount:t.discount,ship:t.ship,tax:t.tax,taxRate:t.taxRate,total:t.total,code:t.code}, payment:{method:"venmo",handle:CFG.venmo.handle,status:"awaiting_payment"} };
     LumaPixels.purchase(order);
     LumaCapture.trackBeacon("order_placed",{order, phone:form.phone.value, email:form.email.value, name:order.name, org:order.org||"", address:{line1:form.address.value,line2:form.apt.value,city:form.city.value,state:form.state.value,zip:form.zip.value}, ship:ship, total:t.total, promo:t.code});

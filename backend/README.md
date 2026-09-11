@@ -28,3 +28,6 @@ Create a form at formspree.io, set `captureEndpoint` to its URL. You get an emai
 
 ## Privacy
 Update the Privacy Policy if you add analytics or ad pixels. The capture layer stores only what the visitor typed plus standard web attribution; no card data is ever collected.
+
+## Accounts
+Passwordless: `action=login` emails a 15-minute link, `action=session` exchanges it for a 30-day session, `action=account` returns orders, details and waitlist, `action=logout` ends it. Sessions live in the `sessions` tab, saved details in `customers`. Order emails carry a 30-day "View your orders" link. Fill the `lot_numbers` column on an order (comma separated) and those certificates appear in the customer's account.

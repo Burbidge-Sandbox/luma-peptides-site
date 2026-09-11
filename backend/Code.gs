@@ -30,11 +30,18 @@ function sheet_(name, header){ var ss=ss_(), sh=ss.getSheetByName(name); if(!sh)
 function g_(o,path){ return path.split(".").reduce(function(a,k){ return (a&&a[k]!==undefined&&a[k]!==null)?a[k]:""; },o); }
 function money_(n){ n=Number(n)||0; return "$"+n.toFixed(n%1?2:0); }
 
-var ORDER_HEADER=["ts","order_id","status","tracking","name","org","email","phone","address1","address2","city","state","zip","shipping","items","subtotal","discount","promo","tax","ship_cost","total","venmo_note","visitor","first_utm_source","first_landing","paid_email_sent","shipped_email_sent"];
+var ORDER_HEADER=["ts","order_id","status","tracking","name","org","email","phone","address1","address2","city","state","zip","shipping","items","subtotal","discount","promo","tax","ship_cost","total","venmo_note","visitor","first_utm_source","first_landing","paid_email_sent","shipped_email_sent","lot_numbers","items_json"];
+var SESSION_HEADER=["ts","email","token","type","expires","used"];
+var CUSTOMER_HEADER=["email","name","org","phone","address1","address2","city","state","zip","updated"];
+var LINK_MINUTES=15, SESSION_DAYS=30, EMAIL_LINK_DAYS=30;
+/* Adds any header columns that are missing from an existing tab (safe to run repeatedly). */
+function ensureHeader_(name, header){ var sh=sheet_(name,header); var cur=sh.getRange(1,1,1,Math.max(sh.getLastColumn(),1)).getValues()[0]; header.forEach(function(h,i){ if(cur.indexOf(h)<0){ sh.getRange(1,cur.length+1).setValue(h); cur.push(h); } }); return sh; }
 
 function setup(){
   sheet_("events",["ts","event","variant","visitor","session","page","referrer","utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","first_landing","first_referrer","first_utm_source","mobile","lang","screen","cart_count","cart_subtotal","data_json"]);
-  sheet_("orders",ORDER_HEADER);
+  ensureHeader_("orders",ORDER_HEADER);
+  sheet_("sessions",SESSION_HEADER);
+  sheet_("customers",CUSTOMER_HEADER);
   sheet_("contacts",["ts","type","email","name","org","phone","topic","message","product","visitor","first_utm_source","first_landing"]);
   ScriptApp.getProjectTriggers().forEach(function(t){ if(t.getHandlerFunction()==="onOrderEdit") ScriptApp.deleteTrigger(t); });
   ScriptApp.newTrigger("onOrderEdit").forSpreadsheet(SHEET_ID).onEdit().create();
@@ -46,9 +53,12 @@ function doPost(e){
   try{
     var b=JSON.parse(e.postData.contents);
     if(b.key!==SECRET) return ContentService.createTextOutput("forbidden");
+    if(b.data&&b.data.session){ b=JSON.parse(JSON.stringify(b)); var sessTok=b.data.session; b.data.session="[redacted]"; b.data._session=sessTok; }
     appendEvent_(b);
+    if(b.data&&b.data._session){ b.data.session=b.data._session; delete b.data._session; }
     if(b.event==="order_placed"){ appendOrder_(b); emailOwnerOrder_(b); emailCustomerOrder_(b); }
     else if(["contact_form","waitlist_join","newsletter_signup","checkout_email","checkout_contact"].indexOf(b.event)>=0){ appendContact_(b); if(b.event==="contact_form") emailOwnerContact_(b); }
+    else if(b.event==="account_update"||b.event==="waitlist_remove"){ var em=sessionEmail_(g_(b,"data.session")); if(!em) return ContentService.createTextOutput("forbidden"); if(b.event==="account_update") saveCustomer_(em,b.data.details||{}); else sheet_("contacts",[]).appendRow([b.ts,"waitlist_remove",em,"","","","","",b.data.id||"",b.visitor,"",""]); }
     return ContentService.createTextOutput("ok");
   }catch(err){ return ContentService.createTextOutput("error: "+err); }
 }
@@ -57,7 +67,13 @@ function doPost(e){
 function doGet(e){
   var p=(e&&e.parameter)||{};
   var out={found:false};
-  if(p.order && p.key===SECRET){
+  if(p.action && p.key===SECRET){
+    if(p.action==="login") out=accountLogin_(p.email||"");
+    else if(p.action==="session") out=accountSession_(p.token||"");
+    else if(p.action==="account"){ var aem=sessionEmail_(p.session||""); out=aem?accountData_(aem):{ok:false,error:"signed_out"}; }
+    else if(p.action==="logout"){ var lt=findToken_(p.session||""); if(lt) sheet_("sessions",SESSION_HEADER).getRange(lt.row,6).setValue("used"); out={ok:true}; }
+    else out={ok:false,error:"unknown_action"};
+  } else if(p.order && p.key===SECRET){
     var row=findOrder_(String(p.order).toUpperCase());
     if(row){ out={found:true,id:row.order_id,status:row.status,ts:row.ts,total:row.total,items:row.items,tracking:row.tracking}; }
   } else if(p.email && p.key===SECRET){
@@ -82,7 +98,7 @@ function appendEvent_(b){
 function itemsText_(o){ return (o.items||[]).map(function(i){ return i.qty+" × "+i.name+" "+i.strength+" @ "+money_(i.price); }).join("\n"); }
 function appendOrder_(b){
   var d=b.data, o=d.order||{};
-  sheet_("orders",ORDER_HEADER).appendRow([b.ts,o.id,"awaiting_payment","",d.name,d.org,d.email,d.phone,g_(d,"address.line1"),g_(d,"address.line2"),g_(d,"address.city"),g_(d,"address.state"),g_(d,"address.zip"),o.ship,itemsText_(o),g_(o,"totals.sub"),g_(o,"totals.discount"),g_(o,"totals.code"),g_(o,"totals.tax"),g_(o,"totals.ship"),g_(o,"totals.total"),"Order "+o.id,b.visitor,g_(b,"first_touch.utm.utm_source"),g_(b,"first_touch.landing"),"",""]);
+  sheet_("orders",ORDER_HEADER).appendRow([b.ts,o.id,"awaiting_payment","",d.name,d.org,d.email,d.phone,g_(d,"address.line1"),g_(d,"address.line2"),g_(d,"address.city"),g_(d,"address.state"),g_(d,"address.zip"),o.ship,itemsText_(o),g_(o,"totals.sub"),g_(o,"totals.discount"),g_(o,"totals.code"),g_(o,"totals.tax"),g_(o,"totals.ship"),g_(o,"totals.total"),"Order "+o.id,b.visitor,g_(b,"first_touch.utm.utm_source"),g_(b,"first_touch.landing"),"","","",JSON.stringify((o.items||[]).map(function(i){ return {id:i.id||"",variant:i.variant||"",qty:i.qty,name:i.name,strength:i.strength,price:i.price}; }))]);
 }
 function appendContact_(b){
   var d=b.data||{};
@@ -137,15 +153,16 @@ function emailCustomerOrder_(b){
   +'<td width="150" style="padding:18px 18px 18px 0;vertical-align:top;text-align:center"><img src="'+qrUrl_(pay)+'" width="132" height="132" alt="QR code: pay on Venmo" style="display:block;border:1px solid #E6DCD2;border-radius:8px;margin:0 auto 6px"><div style="font-size:11px;color:#7C736E;line-height:1.4">Reading this on a computer? Scan with your phone.</div></td></tr></table></td></tr>'
   +'<tr><td style="padding:24px 36px 6px"><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7C736E;font-weight:bold;margin-bottom:8px">Order summary</div>'+orderTable_(o)+'</td></tr>'
   +'<tr><td style="padding:12px 36px 0;font-size:14px;line-height:1.6;color:#4F4744"><b style="color:#2A2523">Ships to</b><br>'+(d.name||"")+(d.org?"<br>"+d.org:"")+'<br>'+g_(d,"address.line1")+(g_(d,"address.line2")?", "+g_(d,"address.line2"):"")+'<br>'+g_(d,"address.city")+', '+g_(d,"address.state")+' '+g_(d,"address.zip")+'</td></tr>'
+  +'<tr><td style="padding:18px 36px 0">'+btn_(loginLink_(d.email,"email",EMAIL_LINK_DAYS),"View your orders")+'</td></tr>'
   +'<tr><td style="padding:22px 36px 26px;font-size:13px;color:#7C736E;line-height:1.6">Track this order anytime at <a href="'+SITE_URL+'/status?order='+o.id+'" style="color:#B4432C">'+SITE_URL.replace("https://","")+'/status</a>. Reply to this email with any question about the order. All sales are final once shipped; damaged or incorrect items are replaced when reported within 7 days with photos.</td></tr>';
   MailApp.sendEmail({to:d.email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Order "+o.id+" reserved — pay "+money_(total)+" by Venmo to complete",htmlBody:layout_("Order reserved · payment pending",body)});
 }
 function emailCustomerPaid_(o){
-  var body='<tr><td style="padding:10px 36px 6px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Payment received. Thank you.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 18px">Order <b>'+o.order_id+'</b> is paid and in the lab-release queue. A shipping notice with tracking follows once it leaves.</p><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7C736E;font-weight:bold;margin-bottom:8px">Items</div><p style="font-size:14px;white-space:pre-line;color:#4F4744;margin:0 0 18px">'+o.items+'</p><p style="font-size:14px;margin:0 0 10px"><b>Total paid:</b> '+money_(o.total)+'</p>'+btn_(SITE_URL+"/status?order="+o.order_id,"View order status")+'</td></tr>';
+  var body='<tr><td style="padding:10px 36px 6px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Payment received. Thank you.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 18px">Order <b>'+o.order_id+'</b> is paid and in the lab-release queue. A shipping notice with tracking follows once it leaves.</p><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7C736E;font-weight:bold;margin-bottom:8px">Items</div><p style="font-size:14px;white-space:pre-line;color:#4F4744;margin:0 0 18px">'+o.items+'</p><p style="font-size:14px;margin:0 0 10px"><b>Total paid:</b> '+money_(o.total)+'</p>'+btn_(loginLink_(o.email,"email",EMAIL_LINK_DAYS),"View your orders")+'</td></tr>';
   MailApp.sendEmail({to:o.email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Payment received for order "+o.order_id,htmlBody:layout_("Payment received",body)});
 }
 function emailCustomerShipped_(o){
-  var body='<tr><td style="padding:10px 36px 6px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Order '+o.order_id+' has shipped.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 18px">Tracking number: <b>'+o.tracking+'</b><br>Shipping method: '+o.shipping+'<br>Plain outer packaging with a cold pack. Store at −20 °C on receipt.</p>'+btn_(SITE_URL+"/status?order="+o.order_id,"View order status")+'</td></tr>';
+  var body='<tr><td style="padding:10px 36px 6px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Order '+o.order_id+' has shipped.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 18px">Tracking number: <b>'+o.tracking+'</b><br>Shipping method: '+o.shipping+'<br>Plain outer packaging with a cold pack. Store at −20 °C on receipt.</p>'+btn_(loginLink_(o.email,"email",EMAIL_LINK_DAYS),"View your orders")+'</td></tr>';
   MailApp.sendEmail({to:o.email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Order "+o.order_id+" shipped — tracking "+o.tracking,htmlBody:layout_("Shipped",body)});
 }
 function emailOwnerOrder_(b){
@@ -156,4 +173,45 @@ function emailOwnerOrder_(b){
 function emailOwnerContact_(b){
   var d=b.data||{};
   MailApp.sendEmail({to:ORDER_EMAIL,name:"Luma website",replyTo:d.email||ORDER_EMAIL,subject:"Contact form: "+(d.topic||"Message")+" — "+(d.name||""),body:"From: "+d.name+" <"+d.email+">\nOrganization: "+(d.org||"")+"\nTopic: "+(d.topic||"")+"\n\n"+(d.message||"")+"\n\nReply to this email to answer."});
+}
+
+
+/* ---------- Accounts: passwordless sign-in links ---------- */
+function token_(){ var s="",c="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; for(var i=0;i<40;i++) s+=c.charAt(Math.floor(Math.random()*c.length)); return s; }
+function newToken_(email,type,ms){ var t=token_(); sheet_("sessions",SESSION_HEADER).appendRow([new Date().toISOString(),String(email).toLowerCase(),t,type,new Date(Date.now()+ms).toISOString(),""]); return t; }
+function findToken_(t){ if(!t) return null; var sh=sheet_("sessions",SESSION_HEADER), vals=sh.getDataRange().getValues(); for(var r=1;r<vals.length;r++){ if(vals[r][2]===t) return {row:r+1,ts:vals[r][0],email:vals[r][1],type:vals[r][3],expires:vals[r][4],used:vals[r][5]}; } return null; }
+function sessionEmail_(s){ var t=findToken_(s); if(!t||t.type!=="session"||t.used||new Date(t.expires)<new Date()) return null; return t.email; }
+function loginLink_(email,type,days){ return SITE_URL+"/account?token="+newToken_(email,type||"link",days?days*864e5:LINK_MINUTES*6e4); }
+function accountLogin_(email){
+  email=String(email).trim().toLowerCase(); if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return {ok:false,error:"invalid_email"};
+  var sh=sheet_("sessions",SESSION_HEADER), vals=sh.getDataRange().getValues(), n=0, hour=Date.now()-36e5;
+  for(var r=1;r<vals.length;r++){ if(vals[r][1]===email&&vals[r][3]==="link"&&new Date(vals[r][0]).getTime()>hour) n++; }
+  if(n>=5) return {ok:false,error:"rate_limit"};
+  var link=loginLink_(email,"link");
+  var body='<tr><td style="padding:10px 36px 26px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Your sign-in link.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 20px">Use the button below to open your Luma account: order history, tracking, certificates for your lots, and saved details. The link works for '+LINK_MINUTES+' minutes and only on this device\'s browser once opened.</p>'+btn_(link,"Open my account")+'<p style="font-size:13px;color:#7C736E;line-height:1.6;margin:22px 0 0">If you did not request this, ignore this email. Nothing changes unless the link is opened.</p></td></tr>';
+  MailApp.sendEmail({to:email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Your Luma sign-in link",htmlBody:layout_("Sign in",body)});
+  return {ok:true};
+}
+function accountSession_(token){
+  var t=findToken_(token); if(!t||t.used||new Date(t.expires)<new Date()||(t.type!=="link"&&t.type!=="email")) return {ok:false,error:"invalid_link"};
+  if(t.type==="link") sheet_("sessions",SESSION_HEADER).getRange(t.row,6).setValue("used");
+  return {ok:true,session:newToken_(t.email,"session",SESSION_DAYS*864e5),email:t.email};
+}
+function accountData_(email){
+  var sh=ensureHeader_("orders",ORDER_HEADER), vals=sh.getDataRange().getValues(), hdr=vals[0], orders=[];
+  for(var r=1;r<vals.length;r++){ var o={}; hdr.forEach(function(h,i){ o[h]=vals[r][i]; }); if(String(o.email).trim().toLowerCase()!==email) continue;
+    var items=[]; try{ items=JSON.parse(o.items_json||"[]"); }catch(e){}
+    orders.push({id:o.order_id,ts:o.ts,status:o.status,tracking:o.tracking,shipping:o.shipping,items_text:o.items,items:items,sub:o.subtotal,discount:o.discount,promo:o.promo,tax:o.tax,ship_cost:o.ship_cost,total:o.total,lots:String(o.lot_numbers||"").split(/[,\s]+/).filter(String),name:o.name,org:o.org,address:{line1:o.address1,line2:o.address2,city:o.city,state:o.state,zip:o.zip},phone:o.phone}); }
+  orders.reverse();
+  var cs=sheet_("customers",CUSTOMER_HEADER), cv=cs.getDataRange().getValues(), details=null;
+  for(var c=1;c<cv.length;c++){ if(String(cv[c][0]).toLowerCase()===email){ details={name:cv[c][1],org:cv[c][2],phone:cv[c][3],address1:cv[c][4],address2:cv[c][5],city:cv[c][6],state:cv[c][7],zip:cv[c][8]}; } }
+  if(!details && orders.length){ var l=orders[0]; details={name:l.name,org:l.org,phone:l.phone,address1:l.address.line1,address2:l.address.line2,city:l.address.city,state:l.address.state,zip:l.address.zip}; }
+  var ct=sheet_("contacts",[]), tv=ct.getDataRange().getValues(), wl={}, order=[];
+  for(var k=1;k<tv.length;k++){ if(String(tv[k][2]).toLowerCase()!==email) continue; var type=tv[k][1], pid=tv[k][8]; if(type==="waitlist_join"){ if(!wl[pid]) order.push(pid); wl[pid]={id:pid,ts:tv[k][0]}; } if(type==="waitlist_remove"){ delete wl[pid]; } }
+  return {ok:true,email:email,orders:orders,details:details||{},waitlist:order.filter(function(p){ return wl[p]; }).map(function(p){ return wl[p]; })};
+}
+function saveCustomer_(email,d){
+  var sh=sheet_("customers",CUSTOMER_HEADER), vals=sh.getDataRange().getValues(), row=[email,d.name||"",d.org||"",d.phone||"",d.address1||"",d.address2||"",d.city||"",d.state||"",d.zip||"",new Date().toISOString()];
+  for(var r=1;r<vals.length;r++){ if(String(vals[r][0]).toLowerCase()===email){ sh.getRange(r+1,1,1,row.length).setValues([row]); return; } }
+  sh.appendRow(row);
 }

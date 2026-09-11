@@ -195,6 +195,7 @@
  <ul class="nav-links">${links}</ul>
  <div class="nav-actions">
   <a class="btn btn-primary btn-sm" href="shop.html">Catalog</a>
+  <a class="icon-btn" href="account.html" aria-label="Account"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></a>
   <button class="icon-btn" id="cartBtn" aria-label="Open cart"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span class="cart-count" id="cartCount">0</span></button>
   <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
  </div>
@@ -202,6 +203,7 @@
 <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
  <button class="icon-btn close" id="closeMenu" aria-label="Close menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
  ${NAV.map(([h,t])=>`<a href="${h}">${t}</a>`).join("")}
+ <a href="account.html">Account</a>
  <a href="cart.html">Cart</a>
 </nav>`;
   }
@@ -211,7 +213,7 @@
   <div><a class="logo" href="index.html"><span>luma</span><span>peptides</span><span>co.</span></a><p class="tag">Research-grade peptides, independently tested by lot. For laboratory research use only.</p><p class="tag biz"><a href="mailto:info@lumaresearchco.com">info@lumaresearchco.com</a><br><a href="tel:+13855215259">(385) 521-5259</a><br>30 N Gould St<br>Sheridan, WY 82801</p></div>
   <div><h4>Catalog</h4><ul><li><a href="shop.html">All compounds</a></li><li><a href="shop.html?cat=metabolic">Metabolic Research</a></li><li><a href="shop.html?cat=tissue">Tissue Research</a></li><li><a href="shop.html?cat=dermal">Dermal Research</a></li><li><a href="shop.html?cat=longevity">Longevity Research</a></li><li><a href="shop.html?cat=supplies">Lab Supplies</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="verify.html">Verify a Lot</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-  <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="status.html">Track order</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
+  <div><h4>Support</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="status.html">Track order</a></li><li><a href="account.html">Account</a></li><li><a href="shipping-returns.html">Shipping</a></li><li><a href="shipping-returns.html#returns">Returns</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
   <div><h4>Follow Us</h4><div class="social">
    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg></a>
    <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8a1 1 0 0 1 1-1z"/></svg></a>
