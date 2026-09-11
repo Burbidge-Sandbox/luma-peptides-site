@@ -6,7 +6,7 @@
   const form=document.getElementById("checkoutForm"), sum=document.getElementById("coSummary");
   if(!Cart.items().length){ location.replace("cart.html"); return; }
   let ship="standard";
-  document.getElementById("shipOpts").innerHTML=Object.entries(CFG.shipping).map(([k,v])=>`<label class="ship-opt"><input type="radio" name="ship" value="${k}" ${k===ship?"checked":""}><div class="opt-body"><b>${v.label}</b><span>${k==="standard"?`Free over $${CFG.freeShipThreshold}`:"Cold-pack included"}</span></div><b id="ship-${k}"></b></label>`).join("");
+  document.getElementById("shipOpts").innerHTML=Object.entries(CFG.shipping).map(([k,v])=>`<label class="ship-opt"><input type="radio" name="ship" value="${k}" ${k===ship?"checked":""}><div class="opt-body"><b>${v.label}</b><span>${k==="standard"?`Free over $${CFG.freeShipThreshold}`:"Faster delivery"}</span></div><b id="ship-${k}"></b></label>`).join("");
   function drawSummary(){
     const t=Cart.totals(ship);
     document.getElementById("ship-standard").textContent = (t.sub-t.discount>=CFG.freeShipThreshold||t.promo?.type==="ship")?"Free":money(CFG.shipping.standard.price);

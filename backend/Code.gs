@@ -162,7 +162,7 @@ function emailCustomerPaid_(o){
   MailApp.sendEmail({to:o.email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Payment received for order "+o.order_id,htmlBody:layout_("Payment received",body)});
 }
 function emailCustomerShipped_(o){
-  var body='<tr><td style="padding:10px 36px 6px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Order '+o.order_id+' has shipped.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 18px">Tracking number: <b>'+o.tracking+'</b><br>Shipping method: '+o.shipping+'<br>Plain outer packaging with a cold pack. Store at −20 °C on receipt.</p>'+btn_(loginLink_(o.email,"email",EMAIL_LINK_DAYS),"View your orders")+'</td></tr>';
+  var body='<tr><td style="padding:10px 36px 6px"><h1 style="font-family:Georgia,serif;font-weight:normal;font-size:30px;margin:0 0 12px">Order '+o.order_id+' has shipped.</h1><p style="font-size:15px;line-height:1.6;color:#4F4744;margin:0 0 18px">Tracking number: <b>'+o.tracking+'</b><br>Shipping method: '+o.shipping+'<br>Plain outer packaging. Store at −20 °C on receipt.</p>'+btn_(loginLink_(o.email,"email",EMAIL_LINK_DAYS),"View your orders")+'</td></tr>';
   MailApp.sendEmail({to:o.email,replyTo:ORDER_EMAIL,name:FROM_NAME,subject:"Order "+o.order_id+" shipped — tracking "+o.tracking,htmlBody:layout_("Shipped",body)});
 }
 function emailOwnerOrder_(b){
