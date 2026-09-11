@@ -716,3 +716,13 @@ body.gate-open{overflow:hidden}
 
 /* Phone: no announcement bar (statement already sits on the home hero and in the footer) */
 @media(max-width:760px){.announce{display:none}}
+
+/* Phone hero: headline over the photo, no paragraph */
+@media(max-width:760px){
+  .editorial-hero .hero-visual{height:470px}
+  .editorial-hero .hero-visual::before{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;background:linear-gradient(to bottom,rgba(238,229,218,0) 0%,rgba(238,229,218,.55) 45%,#EEE5DA 100%);z-index:1;pointer-events:none}
+  .hero-copy{margin-top:-215px;position:relative;z-index:2;padding-top:0;padding-bottom:30px}
+  .editorial-hero .eyebrow{margin-bottom:10px}
+  .editorial-hero h1{font-size:2.75rem;margin-bottom:18px}
+  .editorial-hero .lede{display:none}
+}
