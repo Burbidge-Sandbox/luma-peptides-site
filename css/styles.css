@@ -673,3 +673,11 @@ body.gate-open{overflow:hidden}
   .card{padding:1.2rem .8rem 1rem}
   .card .card-actions .btn{min-height:40px}
 }
+
+/* Phone: no category buttons on the catalog — sort menu and count only */
+@media(max-width:760px){
+  .chips{display:none}
+  .shop-toolbar select{margin-top:0}
+  .result-count{margin-top:0}
+  .shop-toolbar{padding:.45rem 0 .5rem}
+}
