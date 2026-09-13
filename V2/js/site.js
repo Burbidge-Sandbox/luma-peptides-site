@@ -232,7 +232,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="gate" id="gate" hidden>
  <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle" aria-describedby="gateBody">
-  <div class="logo" aria-hidden="true"><span>luma</span> <span>peptides co.</span></div>
+  <div class="logo" aria-hidden="true"><span>luma</span><span> peptides co.</span></div>
   <span class="eyebrow">Before you continue</span>
   <h2 id="gateTitle">Research materials only.</h2>
   <div class="gate-body" id="gateBody">
