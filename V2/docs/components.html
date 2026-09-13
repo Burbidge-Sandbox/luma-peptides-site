@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V2 components — Luma</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body{background:var(--ground)}
+  .g-wrap{max-width:1100px;margin:0 auto;padding:40px 24px 80px}
+  .g-head{border-bottom:1px solid var(--ink);padding-bottom:18px;margin-bottom:36px}
+  .g-head h1{font-size:2.4rem;margin:0 0 .3rem}
+  .g-head p{color:var(--ink-2);max-width:60ch;margin:0}
+  .g-sec{margin:0 0 56px}
+  .g-sec>h2{font-size:1.5rem;margin:0 0 .2rem}
+  .g-sec>p.note{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin:0 0 18px}
+  .g-dark{background:var(--dark);color:var(--on-dark);padding:28px;border-radius:var(--radius);margin-top:18px}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .sw{border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface)}
+  .sw i{display:block;height:56px}
+  .sw span{display:block;padding:.5rem .6rem;font-family:var(--mono);font-size:.7rem;line-height:1.5;color:var(--ink-2)}
+  .sw span b{display:block;color:var(--ink);font-weight:600}
+  .type-row{display:grid;grid-template-columns:160px 1fr;gap:16px;align-items:baseline;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .type-row small{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+  code.k{font-family:var(--mono);font-size:.78rem;background:var(--ground-2);padding:.1rem .35rem;border-radius:3px}
+</style>
+</head>
+<body>
+<main class="g-wrap">
+ <header class="g-head">
+  <span class="eyebrow">V2 · step 1 of 6</span>
+  <h1>Tokens and components</h1>
+  <p>Everything on this page is built from <code class="k">css/styles.css</code> alone. No page markup has changed. Sample content uses allowed vocabulary only: compound, CAS, purity, net content, lot, test date, lab, storage.</p>
+ </header>
+
+ <section class="g-sec">
+  <h2>Colour tokens</h2>
+  <p class="note">§0 · cool ground, one accent, dark instrument surface</p>
+  <div class="swatches">
+   <div class="sw"><i style="background:var(--ground)"></i><span><b>--ground</b>#F4F5F3 · page</span></div>
+   <div class="sw"><i style="background:var(--ground-2)"></i><span><b>--ground-2</b>#EBEDEA · bands</span></div>
+   <div class="sw"><i style="background:var(--surface)"></i><span><b>--surface</b>#FCFCFB · cards</span></div>
+   <div class="sw"><i style="background:var(--dark)"></i><span><b>--dark</b>#121416 · testing, process</span></div>
+   <div class="sw"><i style="background:var(--dark-2)"></i><span><b>--dark-2</b>#1B1E21 · raised on dark</span></div>
+   <div class="sw"><i style="background:var(--ink)"></i><span><b>--ink</b>#15181A · text</span></div>
+   <div class="sw"><i style="background:var(--ink-2)"></i><span><b>--ink-2</b>#3F4447 · body</span></div>
+   <div class="sw"><i style="background:var(--muted)"></i><span><b>--muted</b>#6B7175 · labels</span></div>
+   <div class="sw"><i style="background:var(--line)"></i><span><b>--line</b>#DCDFDC · rules</span></div>
+   <div class="sw"><i style="background:var(--accent)"></i><span><b>--accent</b>#B4432C · CTAs only</span></div>
+   <div class="sw"><i style="background:var(--accent-soft)"></i><span><b>--accent-soft</b>#F4E6E1</span></div>
+   <div class="sw"><i style="background:var(--ok)"></i><span><b>--ok</b>#3F6B4A · pass</span></div>
+   <div class="sw"><i style="background:var(--warn)"></i><span><b>--warn</b>#8A5A16 · pending</span></div>
+  </div>
+ </section>
+
+ <section class="g-sec">
+  <h2>Type</h2>
+  <p class="note">§0 · serif display, sans body, mono for data · tabular numerals wherever figures stack</p>
+  <div class="type-row"><small>--serif · display</small><span style="font-family:var(--serif);font-size:2.4rem;line-height:1.05">BPC-157, 10 mg net content</span></div>
+  <div class="type-row"><small>--sans · body</small><span>Lyophilized powder, sealed under inert gas. Store at −20 °C, desiccated, protected from light.</span></div>
+  <div class="type-row"><small>--mono · data</small><span class="mono">LOT LP-2609-TZ15 · PURITY 99.4 % · TESTED 2026-08-18 · CAS 137525-51-0</span></div>
+  <div class="type-row"><small>.eyebrow</small><span class="eyebrow">Independent testing · every lot</span></div>
+ </section>
+
+ <section class="g-sec">
+  <h2>.cta-pair</h2>
+  <p class="note">§4 · filled + outlined in a row · stacks full-width under 520px</p>
+  <div class="cta-pair"><a class="btn btn-primary" href="#">Shop compounds</a><a class="btn btn-outline" href="#">See the testing</a></div>
+  <div class="g-dark on-dark"><div class="cta-pair"><a class="btn btn-primary" href="#">Shop compounds</a><a class="btn btn-outline" href="#">See the testing</a></div></div>
+ </section>
+
+ <section class="g-sec">
+  <h2>.fact-strip</h2>
+  <p class="note">§4 · four operational facts · 4 → 2×2 → 1</p>
+  <div class="fact-strip">
+   <div><b>Third-party tested</b><small>Every lot</small></div>
+   <div><b>COA per lot</b><small>Published before shipping</small></div>
+   <div><b>Stored at −20 °C</b><small>Desiccated, dark</small></div>
+   <div><b>Ships in 1 business day</b><small>US only</small></div>
+  </div>
+  <div class="g-dark on-dark"><div class="fact-strip">
+   <div><b>HPLC purity</b><small>Assay</small></div>
+   <div><b>LC-MS identity</b><small>Confirmed</small></div>
+   <div><b>Net content</b><small>By weight</small></div>
+   <div><b>Endotoxin</b><small>LAL</small></div>
+  </div></div>
+ </section>
+
+ <section class="g-sec">
+  <h2>.spec-table</h2>
+  <p class="note">§4 · label/value rows · mono values · <code class="k">tr.ok</code> adds a checkmark · <code class="k">.dense .sortable</code> for the COA library</p>
+  <table class="spec-table" style="max-width:520px">
+   <tr class="ok"><th>Compound</th><td>BPC-157</td></tr>
+   <tr class="ok"><th>CAS</th><td>137525-51-0</td></tr>
+   <tr class="ok"><th>Purity (HPLC)</th><td>99.5 %</td></tr>
+   <tr class="ok"><th>Identity (LC-MS)</th><td>Confirmed</td></tr>
+   <tr class="ok"><th>Net content</th><td>10.0 mg</td></tr>
+   <tr><th>Format</th><td>Lyophilized powder, 3 ml vial</td></tr>
+   <tr><th>Lot</th><td>LP-2608-BPC5</td></tr>
+   <tr><th>Storage</th><td>−20 °C, desiccated, dark</td></tr>
+   <tr><th>Test date</th><td>2026-07-30 · Freedom Diagnostics</td></tr>
+  </table>
+  <div class="g-dark on-dark"><div class="table-wrap"><table class="spec-table dense sortable">
+   <thead><tr><th aria-sort="descending">Test date</th><th>Lot</th><th>Compound</th><th class="num">Purity</th><th>Identity</th><th class="num">Net content</th><th>Lab</th><th>COA</th></tr></thead>
+   <tbody>
+    <tr><td>2026-08-18</td><td>LP-2609-TZ15</td><td>GLP-2 T</td><td class="num">99.4 %</td><td>Confirmed</td><td class="num">15.1 mg</td><td>Freedom Diagnostics</td><td><a href="#">PDF</a></td></tr>
+    <tr><td>2026-08-18</td><td>LP-2609-GLOW</td><td>BPC-157 + GHK-Cu + TB-500</td><td class="num">99.0 %</td><td>Confirmed</td><td class="num">5.0 mg</td><td>Freedom Diagnostics</td><td><a href="#">PDF</a></td></tr>
+    <tr><td>2026-07-30</td><td>LP-2608-GHK5</td><td>GHK-Cu</td><td class="num">99.6 %</td><td>Confirmed</td><td class="num">5.1 mg</td><td>Freedom Diagnostics</td><td><a href="#">PDF</a></td></tr>
+    <tr><td>2026-07-30</td><td>LP-2608-BPC5</td><td>BPC-157</td><td class="num">99.5 %</td><td>Confirmed</td><td class="num">10.0 mg</td><td>Freedom Diagnostics</td><td><a href="#">PDF</a></td></tr>
+   </tbody>
+  </table></div></div>
+ </section>
+
+ <section class="g-sec">
+  <h2>.evidence-tile</h2>
+  <p class="note">§4 · one analytical figure, one caption, one link to the source document</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+   <div class="evidence-tile"><span class="figure">99.4<small>%</small></span><span class="caption">Assay purity by HPLC, lot LP-2609-TZ15, tested 2026-08-18 by Freedom Diagnostics.</span><a class="source" href="#">View certificate (PDF) →</a></div>
+   <div class="evidence-tile on-dark"><span class="figure">4</span><span class="caption">Independent tests on every lot: purity, identity, net content, endotoxin.</span><a class="source" href="#">How we test →</a></div>
+  </div>
+ </section>
+
+ <section class="g-sec">
+  <h2>.process-steps</h2>
+  <p class="note">§4 · five numbered steps in real sequence · 5 → 2 → 1 · images optional (hidden under 520px)</p>
+  <ol class="process-steps">
+   <li><b>Received</b><p>Sealed lot logged by number on arrival.</p></li>
+   <li><b>Sampled</b><p>Vials drawn from the lot for the laboratory.</p></li>
+   <li><b>Tested</b><p>HPLC purity, LC-MS identity, net content, endotoxin.</p></li>
+   <li><b>Stored</b><p>−20 °C, desiccated, protected from light.</p></li>
+   <li><b>Shipped</b><p>Within one business day of release. US only.</p></li>
+  </ol>
+  <div class="g-dark on-dark"><ol class="process-steps">
+   <li><b>Received</b><p>Sealed lot logged by number on arrival.</p></li>
+   <li><b>Sampled</b><p>Vials drawn from the lot for the laboratory.</p></li>
+   <li><b>Tested</b><p>HPLC purity, LC-MS identity, net content, endotoxin.</p></li>
+   <li><b>Stored</b><p>−20 °C, desiccated, protected from light.</p></li>
+   <li><b>Shipped</b><p>Within one business day of release. US only.</p></li>
+  </ol></div>
+ </section>
+
+ <section class="g-sec">
+  <h2>.ruo-notice</h2>
+  <p class="note">§4 · the RUO statement as a reusable component · buy box, checkout, footer · <code class="k">.compact</code> for tight spaces</p>
+  <div style="display:grid;gap:14px;max-width:640px">
+   <div class="ruo-notice"><span><b>For laboratory research use only.</b> Not for human or veterinary use. Not a drug, food, or supplement. Not intended to diagnose, treat, cure, or prevent any disease. <a href="#">Terms</a></span></div>
+   <div class="ruo-notice compact"><span>For laboratory research use only. Not for human or veterinary use.</span></div>
+   <div class="ruo-notice on-dark"><span><b>For laboratory research use only.</b> Not for human or veterinary use. Not a drug, food, or supplement.</span></div>
+  </div>
+ </section>
+
+ <section class="g-sec">
+  <h2>Status pills</h2>
+  <p class="note">analytical states only · pass / fail / pending</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><span class="pill pill-pass">Pass</span><span class="pill pill-fail">Fail</span><span class="pill pill-pending">Pending</span><span class="pill">In stock</span></div>
+ </section>
+</main>
+</body>
+</html>
