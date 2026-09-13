@@ -941,3 +941,4 @@ body.dark-top .nav .btn-primary:hover{background:var(--on-dark)}
 .gate-card h2{overflow-wrap:anywhere;text-wrap:balance}
 .gate-card .logo span+span{margin-left:0}
 @media(max-width:520px){.gate{justify-content:flex-start;padding:1.6rem 1.1rem 2rem}.gate-card h2{font-size:2rem}.gate-body p{font-size:1rem}.gate-check{font-size:.92rem;padding:.85rem .9rem}}
+#gateEnter{white-space:normal;line-height:1.3;padding:.85rem 1rem;text-align:center}
