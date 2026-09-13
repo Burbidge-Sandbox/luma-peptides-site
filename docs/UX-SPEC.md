@@ -18,16 +18,33 @@ Current tokens (`css/styles.css` `:root`) are cream `#F7F2EC` + terracotta
 `#B4432C` + Cormorant/Inter. That combination is the default "AI wellness
 brand" look and reads soft, not analytical. Move the ground, keep one accent.
 
-- **Ground:** cool paper `#F4F5F3` / near-white `#FCFCFB`, plus a true dark
-  surface `#121416` for the testing and process sections. Dark = instrument
-  panel; it is the cheapest credibility signal on the page (Tally Health).
-- **Accent:** keep one saturated colour, used almost entirely on CTAs and
-  nothing else. Terracotta is fine if it is the brand; drop its usage to <5%
-  of the page.
-- **Type:** keep a serif or condensed display for headings, but pair it with a
-  monospace utility face (IBM Plex Mono or similar) for lot numbers, purity
-  figures, spec labels and eyebrows. Data set in mono is the whole visual
-  argument. `font-variant-numeric: tabular-nums` wherever figures stack.
+**Revised 2026-09-13.** The first pass moved the ground about one percent of
+lightness, which is imperceptible. These are the values to implement; the
+change has to be felt, not measured.
+
+- **Dark is the primary ground**, not an accent surface. The entry gate, hero,
+  testing and process sections all sit on it. Light paper is for catalogue,
+  reading and forms. This single decision is what separates a supplier from a
+  wellness brand.
+  - `--dark: #0E1113` · `--dark-2: #171B1E` · `--line-dark: #2A2F33`
+  - `--on-dark: #ECEDE9` · `--on-dark-muted: #99A2A6`
+- **Light ground moves properly off cream** — cool, slightly green-grey paper:
+  - `--ground: #E8E9E4` · `--surface: #F7F8F5` · `--line: #D3D6D0`
+  - `--ink: #111416` · `--ink-2: #3A4043` · `--muted: #656D71`
+- **Accent:** one colour, CTAs only, under 5% coverage.
+  - `--accent: #C04A2E` (deepened terracotta, holds the brand tie)
+  - `--accent-on-dark: #E2694A` (use on dark grounds; the base is too dark to
+    read there)
+  - Status only: `--ok: #2F6B4F` · `--warn: #9A6B12`. Never decorative.
+- **Type — this is what will actually be noticed:**
+  - Display: **Archivo** 700/800, tight tracking (`-0.02em`), used large and
+    for section heads. Replaces Cormorant Garamond in all UI.
+  - Body: **Newsreader** 400 for reading text.
+  - Mono: **IBM Plex Mono** 400/500 for every lot number, purity figure, spec
+    label, eyebrow and price. `font-variant-numeric: tabular-nums` everywhere
+    digits stack.
+  - **Exception:** the `luma peptides co.` wordmark keeps its current serif.
+    It is the brand mark; everything around it changes.
 - **Restraint:** OneSkin is the model. One CTA style, no badge wall, no
   ticker, no popup. Decoration reads as compensation.
 
@@ -39,7 +56,7 @@ Rebuild `index.html` to this sequence. Each item names what it replaces.
 |---|---|---|---|
 | 01 | Announcement bar | One shipping or documentation fact, or the starter-kit price | No urgency framed around results |
 | 02 | Hero | Lab or product photography, oversized display type, neutral identity line. Two CTAs: filled **Shop compounds**, outlined **See the testing** | Dual CTA from NOVOS: buyer and skeptic in one row |
-| 03 | Fact strip | Four items, ~four words each: Third-party tested · COA per lot · Cold-shipped · Ships from Utah in 2 days | Alloy's trust bar, filled with operational facts |
+| 03 | Fact strip | Four items, ~four words each. Use only facts that are currently true — as of 2026-09-13: Third-party tested · COA per lot · Lot-numbered vials · Ships in 1 business day | Alloy's trust bar, filled with operational facts. No cold-pack language: that was removed and must not come back. Re-check these four against reality before every publish |
 | 04 | Testing preview | One figure (e.g. assay purity) as a tile with a link into the real document | Calibrate's evidence tile; figure must be analytical |
 | 05 | Catalogue | Compound cards: name, purity, net content, price-from, format. Sorted by compound | Never by goal or outcome |
 | 06 | Process strip | Received → sampled → tested → stored → shipped, 5 steps, photography of the real operation | This replaces the social-proof block entirely |
@@ -73,8 +90,13 @@ benefits to specifications:
 2. **Specification block above the price** — compound, CAS, purity, net
    content, format, lot, storage (−20 °C desiccated), test date. Mono,
    checkmarked rows, one line of detail each.
-3. Price ladder: subscription price anchored against list, with the one-time
-   price shown on the same screen and visibly the worse deal.
+3. Price ladder — **quantity breaks, not subscription.** Per-vial price at 1,
+   3 and 5 vials, shown as one table with the per-unit figure falling as
+   quantity rises, so the larger pack is visibly the better deal. This keeps
+   the anchoring mechanic while staying clear of rule 10: a recurring
+   auto-shipment implies a personal consumption cadence, a quantity discount
+   is ordinary lab-supply pricing. No subscription, no "subscribe & save",
+   no delivery-frequency selector anywhere on the site.
 4. Verification seals inside the image carousel, not the footer.
 5. **RUO statement inside the buy box**, above the add-to-cart button.
 6. Below the fold: link to this lot's COA, storage & handling, shipping.
@@ -121,3 +143,69 @@ One page per session, verified against §5 before moving on:
 5. `shop.html` — re-sort by compound, strip goal-based filters.
 6. Sweep `faq.html`, `about.html`, `terms.html`, `js/products.js` copy and all
    meta tags against §5.
+
+---
+
+## 7. Step 2 — the first screen
+
+Scope: `V2/index.html` plus the entry gate, nothing below the fact strip.
+This is the whole step. Do not rebuild the rest of the homepage yet.
+
+Rationale: the entry gate — not the hero — is what every first-time visitor
+actually reads. It currently renders as a white cookie-banner box dimming the
+page behind it, with "Leave" weighted almost equally to the primary action.
+Every design decision below it is seen second.
+
+### 7.1 Entry gate
+
+Treat it as the most deliberate screen on the site. It is the positioning
+statement: this is a supplier of research material, and it screens who enters.
+
+- Full-bleed `--dark` ground, opaque. No dimmed-page-behind treatment — the
+  page underneath should not be visible or scrollable while it is open.
+- Centred column, max 560px. Mono eyebrow (`BEFORE YOU CONTINUE`), display
+  headline, RUO statement set in body serif at reading size — a real document,
+  not fine print. Keep the existing copy; it is good.
+- The acknowledgement checkbox is required and unchecked by default. The
+  primary button is disabled until it is checked, and its label states what is
+  being agreed to.
+- **Button hierarchy:** one filled primary, full width. "Leave" becomes a
+  plain text link beneath it, not a second button of equal weight.
+- **Remember the acknowledgement** in `localStorage` for 30 days
+  (`luma.ruo.ack`, storing an ISO timestamp and the terms version). Re-showing
+  it every visit trains people to click through without reading, which defeats
+  the point of having a record. Wrap reads and writes in try/catch — private
+  windows throw.
+- Focus trapped inside the gate; Escape does **not** dismiss it; background
+  scroll locked; visible focus rings; honours `prefers-reduced-motion`.
+- No imagery of people. No product beauty shot. The gate is text and ground.
+
+### 7.2 Hero
+
+- Continues on `--dark`, so entering the site reads as one continuous move
+  rather than a modal lifting off a different page.
+- Headline in Archivo at display scale, naming what the catalogue is in
+  neutral terms. It must not describe an effect, a benefit, or a "perspective"
+  — replace the current line. A plain identity statement is stronger here.
+- Mono sub-line carrying a concrete fact about the catalogue (compound count,
+  purity standard, lab).
+- `.cta-pair`: filled **Shop compounds** + outlined **See the testing**.
+- Right side: lab or vial photography on the dark ground. One image, no
+  carousel, no autoplay video.
+
+### 7.3 Fact strip
+
+- Sits directly beneath the hero on `--dark-2`, the seam between dark and
+  paper.
+- Four items, current true facts only: Third-party tested · COA per lot ·
+  Lot-numbered vials · Ships in 1 business day.
+- Mono labels, 4 → 2×2 → 1 column. No icons unless they carry meaning.
+
+### 7.4 Done means
+
+- The §5 checklist passes on the gate and the hero.
+- The gate is not bypassable by scrolling, tabbing, or Escape, and does not
+  re-appear for 30 days after acknowledgement.
+- Side-by-side against the live site, the difference is obvious at a glance —
+  if it is not, the step failed regardless of what changed in the CSS.
+- Screenshots of both states (gate, and hero after entry) at 1440px and 375px.

@@ -232,17 +232,17 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="gate" id="gate" hidden>
  <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle" aria-describedby="gateBody">
-  <div class="logo" aria-hidden="true"><span>luma</span><span>peptides co.</span></div>
+  <div class="logo" aria-hidden="true"><span>luma</span> <span>peptides co.</span></div>
   <span class="eyebrow">Before you continue</span>
   <h2 id="gateTitle">Research materials only.</h2>
   <div class="gate-body" id="gateBody">
    <p>Everything here is supplied <b>for laboratory research use only</b>: not for human or animal use, and not intended to diagnose, treat, cure, or prevent any disease. Statements have not been evaluated by the FDA. Luma Peptides Co. is a chemical supplier, not a pharmacy or clinic, and provides no usage guidance.</p>
   </div>
-  <p class="gate-affirm">By entering I confirm I am <b>21 or older</b>, ordering for a laboratory or research organization, will use products <b>for in-vitro research only</b> and never administer them to any human or animal, and accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  <label class="gate-check"><input type="checkbox" id="gateAgree"><span>I confirm I am <b>21 or older</b>, ordering for a laboratory or research organization, will use products <b>for in-vitro research only</b> and never administer them to any human or animal, and accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
   <div class="gate-actions">
-   <button class="btn btn-primary is-ready" id="gateEnter" type="button">I'm 21+ and agree · Enter</button>
-   <a class="btn btn-outline" href="https://www.google.com" id="gateLeave">Leave</a>
+   <button class="btn btn-primary" id="gateEnter" type="button" disabled>I acknowledge research use only · Enter</button>
   </div>
+  <a class="gate-leave" href="https://www.google.com" id="gateLeave">Leave this site</a>
  </div>
 </div>`;
   }
@@ -327,16 +327,17 @@
       Cart.add(b.dataset.add,b.dataset.plan||"once",qty,b.dataset.variant||null);
     });
 
-    /* Entry disclaimer / age gate — remembered for 30 days */
+    /* Entry gate (UX-SPEC §7.1): acknowledgement remembered 30 days in luma.ruo.ack */
     (function(){
-      const KEY="lumaB_gate_ok", DAYS=30, gate=$("#gate");
-      let ok=false; try{ ok = (+localStorage.getItem(KEY)||0) > Date.now(); }catch(e){}
+      const KEY="luma.ruo.ack", TERMS_VERSION="2026-09-13", DAYS=30, gate=$("#gate"), main=$("#main");
+      let ok=false; try{ const rec=JSON.parse(localStorage.getItem(KEY)||"null"); ok=!!(rec&&rec.version===TERMS_VERSION&&(Date.now()-Date.parse(rec.ts))<DAYS*864e5); }catch(e){}
       if(ok) return;
-      gate.hidden=false; document.body.classList.add("gate-open");
-      const btn=$("#gateEnter"), ret=document.activeElement;
-      btn.addEventListener("click",()=>{ try{ localStorage.setItem(KEY,String(Date.now()+DAYS*864e5)); }catch(e){} CAP.track("gate_accept",{}); gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); ret?.focus?.(); },300); });
-      btn.focus();
-      gate.addEventListener("keydown",e=>{ if(e.key!=="Tab") return; const f=[...gate.querySelectorAll("input,button:not([disabled]),a[href]")]; const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();} else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();} });
+      gate.hidden=false; document.body.classList.add("gate-open"); if(main) main.inert=true;
+      const chk=$("#gateAgree"), btn=$("#gateEnter"), ret=document.activeElement;
+      chk.addEventListener("change",()=>{ btn.disabled=!chk.checked; });
+      btn.addEventListener("click",()=>{ if(!chk.checked) return; try{ localStorage.setItem(KEY,JSON.stringify({ts:new Date().toISOString(),version:TERMS_VERSION})); }catch(e){} CAP.track("gate_accept",{version:TERMS_VERSION}); gate.classList.add("closing"); setTimeout(()=>{ gate.hidden=true; document.body.classList.remove("gate-open"); if(main) main.inert=false; ret?.focus?.(); },300); });
+      chk.focus();
+      gate.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.stopPropagation(); return; } if(e.key!=="Tab") return; const f=[...gate.querySelectorAll("input,button:not([disabled]),a[href]")]; const a=f[0], z=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();} else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();} });
     })();
 
     /* Reveal on scroll */

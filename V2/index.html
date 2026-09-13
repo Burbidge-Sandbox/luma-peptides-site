@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Luma Peptides Co. — Research peptides, tested by lot.</title>
-<meta name="description" content="Research-grade peptides for laboratory use, independently tested by lot with published certificates of analysis.">
+<title>Luma Peptides Co. — Lyophilized peptides for laboratory research</title>
+<meta name="description" content="Lyophilized peptide reference material for laboratory research. Twelve compounds, every lot tested by an independent laboratory, certificates published by lot number.">
 <meta name="theme-color" content="#F7F2EC">
 <meta property="og:title" content="Luma Peptides Co. — A clearer perspective on peptides.">
-<meta property="og:description" content="Research-grade peptides for laboratory use, independently tested by lot with published certificates of analysis.">
+<meta property="og:description" content="Lyophilized peptide reference material for laboratory research. Every lot independently tested; certificates published by lot number.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://lumaresearchco.com/">
 <meta property="og:image" content="https://lumaresearchco.com/assets/hero-editorial.jpg">
@@ -24,25 +24,29 @@
 <script src="js/site.js?v=20260910x" defer></script>
 
 </head>
-<body class="home-editorial">
+<body class="dark-top">
 <main id="main">
-<section class="hero editorial-hero">
- <div class="wrap">
-  <div class="hero-copy">
-   <span class="eyebrow">For laboratory research use only</span>
-   <h1>A clearer <br>perspective <br>on <em>peptides.</em></h1>
-   <p class="lede">Research-grade peptides, independently tested lot by lot. Browse the catalog, review the specifications, and look up any certificate of analysis.</p>
-   <div class="hero-cta"><a class="btn btn-primary" href="shop.html">Browse the catalog <span aria-hidden="true">↗</span></a><a class="text-link" href="verify.html">Our approach to verification <span aria-hidden="true">→</span></a></div>
+<section class="hero-v2 on-dark" aria-labelledby="heroTitle">
+ <div class="wrap hero-v2-grid">
+  <div class="hero-v2-copy">
+   <span class="eyebrow">Research-use-only reference material</span>
+   <h1 id="heroTitle">Lyophilized peptides for laboratory research.</h1>
+   <p class="hero-v2-fact">12 compounds · HPLC purity and LC-MS identity on every lot · tested by Freedom Diagnostics · certificate published under the lot number</p>
+   <div class="cta-pair"><a class="btn btn-primary" href="shop.html">Shop compounds</a><a class="btn btn-outline" href="verify.html">See the testing</a></div>
   </div>
-  <figure class="hero-visual">
-   <img class="hero-scene" src="assets/hero-editorial.jpg" width="1536" height="1024" alt="Luma BPC-157 vial on textured travertine in warm directional light" fetchpriority="high">
-   <figcaption><span>THE LUMA COLLECTION</span></figcaption>
-   
+  <figure class="hero-v2-media">
+   <img src="assets/hero-editorial.jpg" width="1536" height="1024" alt="Sealed 3 ml vial of lyophilized BPC-157 standing on a travertine block" fetchpriority="high">
+   <figcaption>BPC-157 · 3 ml vial · lot-numbered</figcaption>
   </figure>
  </div>
 </section>
-<section class="promise-section" aria-label="Shipping and service">
- <div class="wrap"><div class="promise" id="promiseStrip"></div></div>
+<section class="facts-v2" aria-label="How orders are handled">
+ <div class="wrap"><div class="fact-strip on-dark">
+  <div><b>Third-party tested</b><small>Every lot, independent lab</small></div>
+  <div><b>COA per lot</b><small>Published before shipping</small></div>
+  <div><b>Lot-numbered vials</b><small>Look any lot up</small></div>
+  <div><b>Ships in 1 business day</b><small>After lab release · US only</small></div>
+ </div></div>
 </section>
 <section class="collection-section section paper">
  <div class="wrap">
@@ -76,12 +80,7 @@
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
  const ids=["glp-2-t","glp-3-rt","glp-1-sm","glow-klow","bpc-157"];
- /* Promise strip — driven by CONFIG so policy changes are one edit */
- (function(){ const C=window.LUMA_CONFIG, P=C.promises||{}; const tiles=[
-   {k:"Ships fast",t:`Ships within ${P.shipDays||1} business day${(P.shipDays||1)>1?"s":""}`,d:"Every order leaves within one business day of lab release, in plain packaging."},
-   {k:P.freeShipAlways?"Always included":"Free over $"+C.freeShipThreshold,t:P.freeShipAlways?"Free US shipping":"Free shipping over $"+C.freeShipThreshold,d:P.freeShipAlways?"On every US order. No minimum, no code.":"Standard shipping is free above $"+C.freeShipThreshold+". Express available at checkout."},
-   P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every order online",d:"Look up any order by number to see payment, lab release, and shipping status."}
- ]; document.getElementById("promiseStrip").innerHTML=tiles.map(x=>`<div class="promise-tile"><span class="promise-kicker">${x.k}</span><b>${x.t}</b><p>${x.d}</p></div>`).join(""); })();
+
  document.getElementById("topSellers").innerHTML=ids.map(id=>window.LUMA_PRODUCTS.find(p=>p.id===id)).map(productCard).join("");
  document.querySelectorAll("#topSellers .reveal").forEach(el=>el.classList.add("in"));
 });

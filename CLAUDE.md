@@ -36,7 +36,14 @@ Never add, and remove on sight:
    framing; SEO/meta text that targets those terms.
 9. Navigation, collections, filters, or URLs organised by goal or outcome
    (weight, energy, anti-aging). Organise by compound, format, quantity.
-10. Bundles, names, or imagery that only make sense as a human regimen.
+10. Bundles, names, or imagery that only make sense as a human regimen —
+    including subscriptions, auto-ship, "subscribe & save", and any
+    delivery-frequency selector. Quantity-break pricing (1 / 3 / 5 vials) is
+    the approved alternative and carries no regimen implication.
+11. Any operational claim that is not currently true. Shipping speed, cold
+    handling, stock and turnaround are facts with an expiry date — verify
+    before publishing, and delete rather than soften. Cold-pack language is
+    permanently out.
 
 Always present:
 
@@ -65,4 +72,10 @@ promotional-law attorney reviews before launch.
   and nav in `js/site.js`. Change data there, not in markup.
 - Keep every page keyboard accessible, reduced-motion aware, and working at
   ~375px width.
-- Never handle raw card numbers. Checkout stays a demo until Stripe is wired.
+- **Payments (updated 2026-09-13):** Venmo is live; the card checkout is still
+  a demo. Never handle raw card numbers, and never present the demo card flow
+  as a working payment path. Whatever the rail, the RUO acknowledgement
+  checkbox must gate order submission — it is not tied to the payment method.
+- Venmo is a stopgap, not the plan of record. Treat a payments migration to a
+  high-risk processor as pending work, and do not build checkout logic that
+  assumes Venmo is permanent.
