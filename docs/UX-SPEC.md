@@ -56,7 +56,7 @@ Rebuild `index.html` to this sequence. Each item names what it replaces.
 |---|---|---|---|
 | 01 | Announcement bar | One shipping or documentation fact, or the starter-kit price | No urgency framed around results |
 | 02 | Hero | Lab or product photography, oversized display type, neutral identity line. Two CTAs: filled **Shop compounds**, outlined **See the testing** | Dual CTA from NOVOS: buyer and skeptic in one row |
-| 03 | Fact strip | Four items, ~four words each. Use only facts that are currently true — as of 2026-09-13: Third-party tested · COA per lot · Lot-numbered vials · Ships in 1 business day | Alloy's trust bar, filled with operational facts. No cold-pack language: that was removed and must not come back. Re-check these four against reality before every publish |
+| 03 | Fact strip | Four items, ~four words each. Use only facts that are currently true — as of 2026-09-13: Third-party tested · COA per lot · Lot number emailed per order · Ships in 1 business day | Alloy's trust bar, filled with operational facts. No cold-pack language: that was removed and must not come back. Re-check these four against reality before every publish |
 | 04 | Testing preview | One figure (e.g. assay purity) as a tile with a link into the real document | Calibrate's evidence tile; figure must be analytical |
 | 05 | Catalogue | Compound cards: name, purity, net content, price-from, format. Sorted by compound | Never by goal or outcome |
 | 06 | Process strip | Received → sampled → tested → stored → shipped, 5 steps, photography of the real operation | This replaces the social-proof block entirely |
@@ -198,7 +198,7 @@ statement: this is a supplier of research material, and it screens who enters.
 - Sits directly beneath the hero on `--dark-2`, the seam between dark and
   paper.
 - Four items, current true facts only: Third-party tested · COA per lot ·
-  Lot-numbered vials · Ships in 1 business day.
+  Lot number emailed per order · Ships in 1 business day.
 - Mono labels, 4 → 2×2 → 1 column. No icons unless they carry meaning.
 
 ### 7.4 Done means

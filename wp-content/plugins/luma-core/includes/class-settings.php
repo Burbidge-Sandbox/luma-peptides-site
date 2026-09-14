@@ -19,7 +19,7 @@ class Settings {
 
 	public static function defaults(): array {
 		return [
-			'facts'           => "Third-party tested\nCOA per lot\nLot-numbered vials\nShips in 1 business day",
+			'facts'           => "Third-party tested\nCOA per lot\nLot number emailed per order\nShips in 1 business day",
 			'facts_verified'  => '',
 			'alert_email'     => 'info@lumaresearchco.com',
 			'ga4_id'          => '',
