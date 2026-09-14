@@ -117,3 +117,28 @@ p{margin:0 0 1em}
 .woocommerce ul.products{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
 .woocommerce ul.products li.product{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem}
 .woocommerce ul.products li.product .price,.woocommerce .summary .price{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- Testing page ---------- */
+.testing-hero{background:var(--paper);border-bottom:1px solid var(--line)}
+.lot-lookup{margin-top:1.5rem;max-width:560px}
+.lot-lookup label{display:block;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.lot-lookup-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.lot-lookup input{flex:1 1 220px;padding:.85rem 1rem;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase}
+.lot-result{margin-top:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem 1.5rem;max-width:640px}
+.lot-result-none{margin-top:1rem;color:var(--terra)}
+.lot-photo{margin-top:1rem;border-radius:8px;max-width:320px}
+.table-scroll{overflow-x:auto}
+.coa-table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:640px}
+.coa-table th,.coa-table td{text-align:left;padding:.65rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+.coa-table th{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.coa-table a{color:var(--terra);text-decoration:underline}
+.explainer dt{font-family:var(--serif);font-size:1.4rem;margin-top:1.2rem}
+.explainer dd{margin:.3rem 0 0;color:var(--ink-2);max-width:64ch}
+
+/* ---------- Product page: spec block + price ladder ---------- */
+.price-ladder{width:100%;max-width:420px;border-collapse:collapse;margin:1rem 0 1.25rem}
+.price-ladder th,.price-ladder td{padding:.5rem 0;border-bottom:1px solid var(--line);text-align:left}
+.price-ladder th{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.price-ladder td{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.price-ladder td:last-child{text-align:right}
+.woocommerce div.product .summary .price{font-size:1.4rem}

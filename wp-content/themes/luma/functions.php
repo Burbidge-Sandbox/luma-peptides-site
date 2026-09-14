@@ -79,3 +79,75 @@ remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 3
 
 /* RUO statement inside the buy box, above add-to-cart (CLAUDE.md "Always present"). */
 add_action( 'woocommerce_before_add_to_cart_form', 'luma_ruo_notice', 5 );
+
+/* ---------- Product page: specification block above the price, quantity ladder below it ---------- */
+add_action( 'woocommerce_single_product_summary', 'luma_spec_block', 9 );
+function luma_spec_block(): void {
+	global $product;
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+	$specs = (array) $product->get_meta( '_luma_specs' );
+	$lot   = luma_current_lot_number( $product );
+	if ( $lot ) {
+		$specs = [ 'Lot' => $lot ] + $specs;
+	}
+	if ( ! $specs ) {
+		return;
+	}
+	echo '<table class="spec-table">';
+	foreach ( $specs as $k => $v ) {
+		echo '<tr><th>' . esc_html( (string) $k ) . '</th><td>' . esc_html( (string) $v ) . '</td></tr>';
+	}
+	echo '</table>';
+}
+
+add_action( 'woocommerce_single_product_summary', 'luma_price_ladder', 11 );
+function luma_price_ladder(): void {
+	global $product;
+	if ( ! $product instanceof WC_Product || ! class_exists( 'Luma\Core\Pricing' ) || $product->is_type( 'variable' ) ) {
+		return;
+	}
+	if ( $product->get_regular_price() === '' ) {
+		return;
+	}
+	$rows = Luma\Core\Pricing::ladder( $product );
+	echo '<table class="price-ladder"><tr><th>' . esc_html__( 'Quantity', 'luma' ) . '</th><th>' . esc_html__( 'Per vial', 'luma' ) . '</th></tr>';
+	foreach ( $rows as $qty => $price ) {
+		echo '<tr><td>' . esc_html( (string) $qty ) . ( $qty > 1 ? '+' : '' ) . '</td><td>' . wp_kses_post( wc_price( $price ) ) . '</td></tr>';
+	}
+	echo '</table>';
+}
+
+/** Lot number currently shipping for a product/variation, if set. */
+function luma_current_lot_number( WC_Product $product ): string {
+	$lot_id = (int) $product->get_meta( '_luma_current_lot' );
+	if ( ! $lot_id && $product->is_type( 'variable' ) ) {
+		return '';
+	}
+	$lot = $lot_id ? get_post( $lot_id ) : null;
+	return $lot ? $lot->post_title : '';
+}
+
+/* Documentation tab replaces Woo's "Additional information". */
+add_filter( 'woocommerce_product_tabs', function ( array $tabs ): array {
+	unset( $tabs['additional_information'] );
+	$tabs['documentation'] = [
+		'title'    => __( 'Documentation', 'luma' ),
+		'priority' => 20,
+		'callback' => function () {
+			global $product;
+			$inside = (string) $product->get_meta( '_luma_inside' );
+			if ( $inside ) {
+				echo '<p>' . esc_html( $inside ) . '</p>';
+			}
+			echo '<ul>';
+			echo '<li><a href="' . esc_url( home_url( '/testing/' ) ) . '">' . esc_html__( 'Certificates of analysis and lot lookup', 'luma' ) . '</a></li>';
+			echo '<li><a href="' . esc_url( home_url( '/shipping-returns/' ) ) . '">' . esc_html__( 'Shipping and handling', 'luma' ) . '</a></li>';
+			echo '<li><a href="' . esc_url( home_url( '/terms/' ) ) . '">' . esc_html__( 'Research-use terms', 'luma' ) . '</a></li>';
+			echo '</ul>';
+			luma_ruo_notice();
+		},
+	];
+	return $tabs;
+}, 99 );

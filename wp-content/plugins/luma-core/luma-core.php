@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_CORE_VERSION', '0.1.0' );
+define( 'LUMA_CORE_VERSION', '0.2.0' );
 define( 'LUMA_CORE_FILE', __FILE__ );
 define( 'LUMA_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LUMA_CORE_TERMS_VERSION', '2026-09-14' ); // bump when RUO terms wording changes
@@ -22,6 +22,8 @@ require_once LUMA_CORE_DIR . 'includes/class-settings.php';
 require_once LUMA_CORE_DIR . 'includes/class-catalogue-rules.php';
 require_once LUMA_CORE_DIR . 'includes/class-ruo-gate.php';
 require_once LUMA_CORE_DIR . 'includes/class-lots.php';
+require_once LUMA_CORE_DIR . 'includes/class-pricing.php';
+require_once LUMA_CORE_DIR . 'includes/class-seed.php';
 
 add_action( 'plugins_loaded', function () {
 	Luma\Core\Settings::init();
@@ -35,6 +37,8 @@ add_action( 'plugins_loaded', function () {
 	}
 	Luma\Core\CatalogueRules::init();
 	Luma\Core\RuoGate::init();
+	Luma\Core\Pricing::init();
+	Luma\Core\Seed::init();
 } );
 
 /* Rewrite flush without relying on activation hooks (the plugin may be loaded by luma-bootstrap). */

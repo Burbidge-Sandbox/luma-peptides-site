@@ -1,0 +1,8 @@
+[
+  { "lot": "LP-2609-TR15",  "sku": "TR15",  "current": true, "status": "PENDING", "lab": "Freedom Diagnostics", "qty_received": 10 },
+  { "lot": "LP-2609-TR30",  "sku": "TR30",  "current": true, "status": "PENDING", "lab": "Freedom Diagnostics", "qty_received": 10 },
+  { "lot": "LP-2609-RT15",  "sku": "RT15",  "current": true, "status": "PENDING", "lab": "Freedom Diagnostics", "qty_received": 10 },
+  { "lot": "LP-2609-RT30",  "sku": "RT30",  "current": true, "status": "PENDING", "lab": "Freedom Diagnostics", "qty_received": 10 },
+  { "lot": "LP-2609-BPC10", "sku": "BPC10", "current": true, "status": "PENDING", "lab": "Freedom Diagnostics", "qty_received": 10 },
+  { "lot": "LP-2609-GLOW",  "sku": "GLOW",  "current": true, "status": "PENDING", "lab": "Freedom Diagnostics", "qty_received": 10 }
+]
