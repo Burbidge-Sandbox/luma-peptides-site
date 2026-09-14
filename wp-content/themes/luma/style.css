@@ -1,0 +1,119 @@
+/*
+Theme Name: Luma
+Theme URI: https://lumaresearchco.com
+Author: Luma Peptides Co.
+Description: Storefront theme for Luma Peptides Co. — research-use-only peptide reference material. Hand-written classic theme; see docs/WOO-MIGRATION.md and CLAUDE.md in the repo.
+Version: 0.1.0
+Requires at least: 6.5
+Tested up to: 6.8
+Requires PHP: 8.1
+License: Proprietary
+Text Domain: luma
+*/
+
+/* ============================================================
+   Design tokens — ported from legacy/css/styles.css :root.
+   Add tokens here; never hardcode colors in template CSS.
+   (UX-SPEC §0 "V2" tokens are NOT applied — decision pending.)
+   ============================================================ */
+:root{
+  --cream:#F7F2EC;
+  --cream-2:#EFE7DE;
+  --paper:#FDFBF8;
+  --ink:#2A2523;
+  --ink-2:#4F4744;
+  --muted:#7C736E;
+  --line:#E6DCD2;
+  --terra:#B4432C;
+  --terra-2:#9A3A26;
+  --terra-soft:#F3E2DC;
+  --sage:#7E8C74;
+  --gold:#C9A66B;
+  --ok:#2F6B4F;
+  --warn:#9A6B12;
+  --shadow:0 10px 30px -12px rgba(42,37,35,.18);
+  --shadow-lg:0 30px 60px -20px rgba(42,37,35,.25);
+  --radius:14px;
+  --serif:"Cormorant Garamond","Georgia",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --wrap:1200px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:500;line-height:1.1;margin:0 0 .5em;letter-spacing:-.01em}
+h1{font-size:clamp(2.6rem,5.5vw,4.6rem)}
+h2{font-size:clamp(2rem,3.6vw,2.9rem)}
+h3{font-size:1.5rem}
+p{margin:0 0 1em}
+.wrap{width:min(var(--wrap),92%);margin-inline:auto}
+.skip-link{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:.6rem 1rem;border-radius:8px;z-index:999}
+.skip-link:focus{left:8px}
+:focus-visible{outline:2px solid var(--terra);outline-offset:3px}
+.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- Buttons ---------- */
+.btn,.button,.wc-block-components-button{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.95rem 1.8rem;border-radius:8px;font-weight:600;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;min-height:48px;white-space:nowrap;transition:background .2s,color .2s}
+.btn-primary,.button.alt,.single_add_to_cart_button{background:var(--terra);color:#fff}
+.btn-primary:hover,.button.alt:hover,.single_add_to_cart_button:hover{background:var(--terra-2)}
+.btn-outline{border:1.5px solid var(--terra);color:var(--terra);background:transparent}
+.btn-outline:hover{background:var(--terra);color:#fff}
+.btn[disabled],.button[disabled]{opacity:.5;cursor:not-allowed}
+
+/* ---------- Header ---------- */
+.site-header{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;min-height:72px}
+.logo{font-family:var(--serif);font-size:1.5rem;letter-spacing:.02em;display:inline-flex;gap:.35em}
+.logo span:nth-child(2){color:var(--terra)}
+.site-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1.6rem;flex-wrap:wrap}
+.site-nav a{font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.site-nav a:hover,.site-nav .current-menu-item>a{color:var(--terra)}
+.header-tools{display:flex;gap:1rem;align-items:center;font-size:.85rem}
+
+/* ---------- Sections ---------- */
+.section{padding:clamp(3rem,7vw,6rem) 0}
+.hero{background:var(--paper);border-bottom:1px solid var(--line)}
+.hero .eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.hero p.lede{font-size:1.15rem;color:var(--ink-2);max-width:56ch}
+.cta-pair{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem}
+.fact-strip{background:var(--cream-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fact-strip ul{list-style:none;margin:0;padding:1.25rem 0;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.fact-strip li{font-family:var(--mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+@media (max-width:900px){.fact-strip ul{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.fact-strip ul{grid-template-columns:1fr}}
+
+/* ---------- RUO notice component (UX-SPEC §4) ---------- */
+.ruo-notice{border:1px solid var(--line);border-left:3px solid var(--terra);background:var(--paper);padding:.9rem 1.1rem;border-radius:8px;font-size:.92rem;color:var(--ink-2);margin:1rem 0}
+.ruo-notice b{color:var(--ink)}
+
+/* ---------- Spec table (UX-SPEC §4) ---------- */
+.spec-table{width:100%;border-collapse:collapse;margin:1rem 0}
+.spec-table th,.spec-table td{text-align:left;padding:.55rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+.spec-table th{font-weight:500;color:var(--muted);width:38%;font-size:.9rem}
+.spec-table td{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.92rem}
+
+/* ---------- Footer ---------- */
+.site-footer{background:var(--paper);border-top:1px solid var(--line);padding:3rem 0 2rem;font-size:.9rem;color:var(--ink-2)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:2rem}
+@media (max-width:760px){.footer-grid{grid-template-columns:1fr}}
+.site-footer h4{font-family:var(--sans);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+.site-footer ul{list-style:none;margin:0;padding:0}
+.site-footer li{margin:.35rem 0}
+.site-footer .disclaimer{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--line);font-size:.85rem}
+.footer-bottom{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:1rem;font-size:.8rem;color:var(--muted)}
+
+/* ---------- WooCommerce neutralisation (visual; luma-core removes the markup) ---------- */
+.star-rating,.woocommerce-product-rating,.related.products,.up-sells,.cross-sells,.onsale{display:none!important}
+.woocommerce ul.products{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
+.woocommerce ul.products li.product{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem}
+.woocommerce ul.products li.product .price,.woocommerce .summary .price{font-family:var(--mono);font-variant-numeric:tabular-nums}

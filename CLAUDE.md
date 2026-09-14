@@ -1,13 +1,16 @@
 # Luma Peptides Co. — storefront working rules
 
-Read `docs/UX-SPEC.md` before changing any page. This file is the standing
+Read `docs/UX-SPEC.md` (design intent) and `docs/WOO-MIGRATION.md` (build
+plan) before changing any page. This file is the standing
 guardrail; the spec is the build brief.
 
 ## What this site is
 
 A direct-to-consumer storefront for **research-use-only (RUO)** peptide
-reference material. Static HTML/CSS/JS, no build step, no framework, no
-package manager. Every page must work when opened directly from disk.
+reference material. **As of 2026-09-14 it is being rebuilt on WooCommerce**
+(self-hosted WordPress on Cloudways) — read `docs/WOO-MIGRATION.md` for the
+plan and build order. The original static site lives on in `legacy/` until
+cutover and is frozen except for the compliance sweeps below.
 
 ## Compliance guardrails — non-negotiable
 
@@ -63,19 +66,49 @@ rule it hits and offer the compliant version of the same idea.
 None of this is legal advice; it is the working standard for the build. An FDA
 promotional-law attorney reviews before launch.
 
-## Stack rules
+## Stack rules (WooCommerce — updated 2026-09-14)
 
-- Plain HTML/CSS/JS only. No React, no Tailwind, no CDN frameworks, no npm.
-- Design tokens live in `css/styles.css` `:root`. Add tokens, do not hardcode
-  colors in page CSS.
-- Catalog, copy and lots live in `js/products.js`; site config, header, footer
-  and nav in `js/site.js`. Change data there, not in markup.
+- **Repo is a wp-content overlay:** `wp-content/themes/luma` (classic PHP
+  theme) and `wp-content/plugins/luma-core` (all Luma-specific logic). WordPress
+  core and third-party plugins are never committed. See WOO-MIGRATION §2.
+- **No page builders, no marketplace themes, no theme frameworks.** No
+  Elementor, Divi, WPBakery, Astra/Flatsome/Storefront child themes. Templates
+  are hand-written PHP the agent controls end to end.
+- **Plugins:** only those listed in WOO-MIGRATION §5. Never install a plugin to
+  solve a problem luma-core can solve in under ~100 lines. Never edit a
+  third-party plugin's files — hook it or replace it.
+- **Anything a plugin or the admin can inject is in scope for the guardrails.**
+  Reviews, ratings, related/upsell/cross-sell, popups, "customers also bought",
+  sale badges, and auto-generated SEO meta count as content. luma-core disables
+  the Woo defaults that violate the rules; view source after every plugin
+  install or update and remove what slipped in.
+- **No subscriptions, ever.** If WooCommerce Subscriptions or any auto-ship
+  plugin appears, luma-core must refuse to run. Quantity breaks (1/3/5) are the
+  approved mechanic.
+- **Design tokens** live in the theme's `:root` (ported from `legacy/css/styles.css`).
+  Add tokens, do not hardcode colors. Template CSS references tokens only.
+- **Copy lives in git,** not the block editor: product spec fields are post meta
+  rendered by templates; static pages (FAQ, terms, about…) render from
+  `inc/content/*.php`. This keeps every sentence reviewable in a diff.
+- **Server is Nginx (Cloudways Lightning).** There is no `.htaccess`; redirects
+  and rules go in Cloudways → Web Rules or PHP.
+- **Secrets never enter the repo:** no API keys, SMTP passwords, gateway
+  credentials, or the WP salts. They live in Cloudways/WP settings or
+  `wp-config.php` on the server. The Apps Script pattern (shared secret in
+  client JS) is retired and must not be recreated.
+- **Local first:** build and verify against a local WordPress (Local /
+  `wp-env`) with the theme and plugin symlinked, run the acceptance checklists
+  (UX-SPEC §5 + WOO-MIGRATION §8), then deploy. Use WP-CLI for seeding products,
+  lots, users and test orders rather than clicking through admin.
 - Keep every page keyboard accessible, reduced-motion aware, and working at
   ~375px width.
-- **Payments (updated 2026-09-13):** Venmo is live; the card checkout is still
-  a demo. Never handle raw card numbers, and never present the demo card flow
-  as a working payment path. Whatever the rail, the RUO acknowledgement
-  checkbox must gate order submission — it is not tied to the payment method.
-- Venmo is a stopgap, not the plan of record. Treat a payments migration to a
-  high-risk processor as pending work, and do not build checkout logic that
-  assumes Venmo is permanent.
+- **Payments:** Venmo (manual, "Awaiting payment" status) is a stopgap shipped
+  as a clearly labelled custom gateway in luma-core. The plan of record is a
+  high-risk card processor plus a second rail (crypto or eCheck); underwriting
+  is in progress. Never handle raw card numbers, never present a demo card
+  flow as working, and never write checkout logic that assumes a specific
+  gateway. Whatever the rail, the RUO acknowledgement checkbox gates order
+  submission server-side and is stored on the order.
+- **Operational claims** (ship-in-1-day, stock, turnaround) are data with an
+  expiry: pull them from a single settings screen in luma-core, and verify the
+  values before every deploy.

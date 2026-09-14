@@ -81,11 +81,11 @@ window.LUMA_PRODUCTS = [
     faqs:[]
   },
   {
-    id:"glow-klow", stock:"in", name:"BPC-157 + GHK-Cu + TB-500 Blend", label:["BPC + GHK-CU","+ TB-500"], strength:"5mg blend vial",
+    id:"glow-klow", stock:"in", name:"BPC-157 + GHK-Cu + TB-500 Blend", label:["BPC + GHK-CU","+ TB-500"], strength:"70mg blend vial",
     category:"dermal", once:179, subscribe:null, image:"assets/products/glow-klow", imageFocus:"50% 55%",
     tagline:"Three-peptide co-lyophilized preparation.",
     description:"A co-lyophilized preparation of BPC-157, the copper tripeptide GHK-Cu, and TB-500. Each component has been independently characterized in the literature; the blend is supplied for researchers studying the compounds together in cell-based assays. Lyophilized powder for in-vitro research.",
-    inside:"Three co-lyophilized peptides, sealed under inert gas.",
+    inside:"Three co-lyophilized peptides, sealed under inert gas. GHK-Cu 50mg, BPC-157 10mg, TB-500 10mg \u2014 70mg total.",
     specs:{"Form":"Lyophilized powder","Purity (last lot, HPLC)":"99.0%","Identity":"LC-MS confirmed, all components","Storage":"−20 °C, desiccated, protected from light"},
     faqs:[]
   },
