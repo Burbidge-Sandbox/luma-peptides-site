@@ -9,7 +9,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.1.0' );
+define( 'LUMA_THEME_VERSION', '0.2.1' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 
@@ -151,3 +151,8 @@ add_filter( 'woocommerce_product_tabs', function ( array $tabs ): array {
 	];
 	return $tabs;
 }, 99 );
+
+/* Archive title: the catalogue is "Compounds", not "Shop". */
+add_filter( 'woocommerce_page_title', fn( $t ) => is_shop() ? __( 'Compounds', 'luma' ) : $t );
+add_filter( 'loop_shop_columns', fn() => 4 );
+add_filter( 'loop_shop_per_page', fn() => 24 );
