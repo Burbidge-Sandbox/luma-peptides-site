@@ -1,11 +1,10 @@
 <?php
 /**
- * Wrapper for all WooCommerce views (archive, single, cart, checkout, account).
- * woocommerce_content() does not fire the before/after_main_content hooks,
- * so the layout wrapper is applied here directly.
+ * Wrapper for the remaining WooCommerce views (cart, checkout, account,
+ * category archives). Catalog and product pages have their own templates.
  */
 get_header();
-echo '<main id="content" class="wrap section woo-main">';
+echo '<main id="main"><div class="wrap woo-page">';
 woocommerce_content();
-echo '</main>';
+echo '</div></main>';
 get_footer();

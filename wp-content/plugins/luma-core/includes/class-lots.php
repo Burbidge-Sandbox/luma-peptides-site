@@ -169,53 +169,45 @@ class Lots {
 		if ( $q && ! preg_match( '/^LP-/', $q ) && preg_match( '/^LP\d{4}[A-Z0-9]+$/', $q ) ) {
 			$q = preg_replace( '/^LP(\d{4})([A-Z0-9]+)$/', 'LP-$1-$2', $q ); // tolerate missing hyphens
 		}
+		$contact = home_url( '/contact/' );
 		ob_start();
-		echo '<form class="lot-lookup" method="get" action="">';
-		echo '<label for="lot" class="mono">' . esc_html__( 'Lot number (printed on the vial)', 'luma-core' ) . '</label>';
-		echo '<div class="lot-lookup-row"><input type="text" id="lot" name="lot" value="' . esc_attr( $q ) . '" placeholder="LP-2609-BPC10" autocomplete="off" class="mono" required> ';
-		echo '<button class="btn btn-primary" type="submit">' . esc_html__( 'Look up', 'luma-core' ) . '</button></div></form>';
+		echo '<div class="verify-box"><form method="get" action=""><label class="sr-only" for="lotInput">Lot number</label><input id="lotInput" name="lot" value="' . esc_attr( $q ) . '" placeholder="LP-2609-BPC10" autocomplete="off" spellcheck="false" required><button class="btn btn-primary">Look up</button></form>';
+		echo '<p class="verify-hint">The lot number is printed on the vial label, e.g. <b>LP-2609-BPC10</b>.</p></div>';
+		echo '<div class="coa-result" id="coaResult" aria-live="polite">';
 		if ( $q ) {
 			if ( self::rate_limited() ) {
-				echo '<p class="lot-result-none">' . esc_html__( 'Too many lookups. Try again in a minute.', 'luma-core' ) . '</p>';
+				echo '<div class="coa-card"><div class="coa-badge fail">Too many lookups</div><p style="margin:0;color:var(--ink-2)">Please wait a minute and try again.</p></div>';
 			} else {
 				$lot = self::find( $q );
 				if ( ! $lot ) {
-					echo '<p class="lot-result-none">' . esc_html__( 'No lot with that number. Check the vial label and try again.', 'luma-core' ) . '</p>';
+					echo '<div class="coa-card"><div class="coa-badge fail">✕ &nbsp;Lot not found</div><p style="margin:0;color:var(--ink-2)">We don\'t have a record of <b>' . esc_html( $q ) . '</b>. Double-check the code printed on the vial, or <a href="' . esc_url( $contact ) . '" style="color:var(--terra);text-decoration:underline">contact support</a> — a lot that is not listed here should be reported.</p></div>';
 				} else {
 					self::render_card( self::view( $lot ) );
 				}
 			}
 		}
+		echo '</div>';
 		return (string) ob_get_clean();
 	}
 
 	public static function render_card( array $v ): void {
-		$rows = [
-			'Compound'      => $v['product'],
-			'Lot'           => $v['lot'],
-			'Testing lab'   => $v['lab'],
-			'Method'        => $v['method'],
-			'Assay purity'  => $v['purity'],
-			'Identity'      => $v['identity'],
-			'Net content'   => $v['net_content'],
-			'Endotoxin'     => $v['endotoxin'],
-			'Test date'     => $v['tested'],
-			'Status'        => $v['status'],
-			'Retest by'     => $v['expires'],
-		];
-		echo '<div class="lot-result"><table class="spec-table">';
-		foreach ( $rows as $k => $val ) {
-			if ( $val === '' ) {
-				continue;
-			}
-			echo '<tr><th>' . esc_html( $k ) . '</th><td>' . esc_html( $val ) . '</td></tr>';
-		}
-		echo '</table>';
-		if ( $v['status'] === 'PENDING' ) {
-			echo '<p class="ruo-notice">' . esc_html__( 'Third-party testing for this lot is in progress. The certificate of analysis is published here when it is issued.', 'luma-core' ) . '</p>';
+		$pending = $v['status'] === 'PENDING';
+		$pass    = $v['status'] === 'PASS';
+		$cell    = fn( $val, $ok = false ) => $val !== '' ? '<b' . ( $ok && $pass ? ' class="pass"' : '' ) . '>' . esc_html( $val ) . '</b>' : '<b style="color:var(--muted);font-weight:400">Pending</b>';
+		echo '<div class="coa-card">';
+		echo '<div class="coa-badge' . ( $pending ? '' : ( $pass ? '' : ' fail' ) ) . '">' . ( $pending ? 'Testing in progress' : 'Certificate of analysis · ' . esc_html( $v['status'] ) ) . '</div>';
+		echo '<div class="coa-head"><div><b style="font-size:1.15rem">' . esc_html( $v['product'] ) . '</b><br><span style="font-size:.85rem;color:var(--muted)">Lot ' . esc_html( $v['lot'] ) . '</span></div>' . ( $pass ? '<span class="coa-stamp">TESTED</span>' : '' ) . '</div>';
+		echo '<div class="coa-grid">';
+		echo '<div class="coa-row"><span>Laboratory</span>' . $cell( $v['lab'] ) . '</div><div class="coa-row"><span>Test date</span>' . $cell( $v['tested'] ) . '</div>';
+		echo '<div class="coa-row"><span>Purity (HPLC)</span>' . $cell( $v['purity'], true ) . '</div><div class="coa-row"><span>Identity</span>' . $cell( $v['identity'], true ) . '</div>';
+		echo '<div class="coa-row"><span>Net content</span>' . $cell( $v['net_content'] ) . '</div><div class="coa-row"><span>Endotoxin</span>' . $cell( $v['endotoxin'] ) . '</div>';
+		echo '<div class="coa-row"><span>Best before</span>' . $cell( $v['expires'] ) . '</div><div class="coa-row"><span>Overall</span>' . $cell( $v['status'], true ) . '</div>';
+		echo '</div>';
+		if ( $pending ) {
+			echo '<p style="font-size:.85rem;color:var(--ink-2);margin:1.2rem 0 0">Third-party testing for this lot is in progress. The certificate of analysis is published here when it is issued.</p>';
 		}
 		if ( $v['coa_url'] ) {
-			echo '<p><a class="btn btn-outline" href="' . esc_url( $v['coa_url'] ) . '" target="_blank" rel="noopener">' . esc_html__( 'Open certificate of analysis (PDF)', 'luma-core' ) . '</a></p>';
+			echo '<p style="margin:1.2rem 0 0"><a class="btn btn-outline btn-sm" href="' . esc_url( $v['coa_url'] ) . '" target="_blank" rel="noopener">Open certificate (PDF)</a></p>';
 		}
 		if ( $v['photo_url'] ) {
 			echo '<img class="lot-photo" src="' . esc_url( $v['photo_url'] ) . '" alt="' . esc_attr( 'Vial photo, lot ' . $v['lot'] ) . '" loading="lazy">';

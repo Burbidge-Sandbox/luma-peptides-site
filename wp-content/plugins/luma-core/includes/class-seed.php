@@ -31,13 +31,19 @@ class Seed {
 	];
 
 	/** Compound-family categories (never goal- or outcome-based). */
+	/** Categories exactly as the live static site had them (products.js LUMA_CATEGORIES). */
 	const CATEGORIES = [
-		'incretin-analogs' => [ 'Incretin analogs',      [ 'glp-2-t', 'glp-3-rt', 'glp-1-sm' ] ],
-		'ghrh-ghs-analogs' => [ 'GHRH & GHS analogs',    [ 'tesamorelin', 'cjc-ipamorelin' ] ],
-		'short-peptides'   => [ 'Short peptides',        [ 'bpc-157', 'wolverine-stack', 'glow-klow', 'ghk-cu', 'mots-c', 'epithalon' ] ],
-		'cofactors'        => [ 'Cofactors',             [ 'nad-500' ] ],
-		'solvents'         => [ 'Solvents',              [ 'bac-water' ] ],
+		'metabolic' => [ 'Metabolic Research', [ 'glp-2-t', 'glp-3-rt', 'glp-1-sm', 'tesamorelin' ] ],
+		'tissue'    => [ 'Tissue Research',    [ 'bpc-157', 'wolverine-stack' ] ],
+		'dermal'    => [ 'Dermal Research',    [ 'ghk-cu', 'glow-klow' ] ],
+		'longevity' => [ 'Longevity Research', [ 'cjc-ipamorelin', 'nad-500', 'mots-c', 'epithalon' ] ],
+		'supplies'  => [ 'Solvents',           [ 'bac-water' ] ],
 	];
+	/** Earlier scaffold categories, removed on the next seed run. */
+	const RETIRED_CATEGORIES = [ 'incretin-analogs', 'ghrh-ghs-analogs', 'short-peptides', 'cofactors' ];
+
+	/** Static pages imported verbatim from the legacy site (main inner HTML). */
+	const LEGACY_PAGES = [ 'about', 'faq', 'contact', 'shipping-returns', 'privacy', 'terms' ];
 
 	/** Studio vial used as the grid image for every product (legacy/site.js behaviour). */
 	const GRID_IMAGE = 'assets/products/vial-studio-1024.jpg';
@@ -108,6 +114,12 @@ class Seed {
 			$cat_ids[ $slug ] = $term_id;
 			foreach ( $ids as $pid ) {
 				$id_to_cat[ $pid ] = $term_id;
+			}
+		}
+		foreach ( self::RETIRED_CATEGORIES as $slug ) {
+			$t = get_term_by( 'slug', $slug, 'product_cat' );
+			if ( $t ) {
+				wp_delete_term( $t->term_id, 'product_cat' );
 			}
 		}
 		/* Retire the default "Uncategorized" from the front end. */
@@ -233,8 +245,64 @@ class Seed {
 			$out[] = 'Lot ' . $lot['lot'] . ' → #' . $lot_id . ( $pid ? ' (' . $lot['sku'] . ')' : ' (no product for ' . $lot['sku'] . ')' );
 		}
 
+		/* Legacy static pages */
+		foreach ( self::LEGACY_PAGES as $slug ) {
+			$r = self::import_page( $slug );
+			$out[] = 'Page ' . $slug . ' → ' . $r;
+		}
+
 		wc_delete_product_transients();
+		wp_cache_delete( 'luma_catalogue_json', 'luma' );
 		return implode( "\n", $out );
+	}
+
+	/** Import legacy/<slug>.html <main> inner HTML as a page using the Legacy template, links rewritten. */
+	private static function import_page( string $slug ): string {
+		$src = WP_CONTENT_DIR . '/luma-src/' . $slug . '.html';
+		if ( ! is_file( $src ) ) {
+			return 'missing ' . $slug . '.html';
+		}
+		$html = (string) file_get_contents( $src );
+		if ( ! preg_match( '#<main[^>]*>(.*)</main>#s', $html, $m ) ) {
+			return 'no <main>';
+		}
+		$body = $m[1];
+		$body = preg_replace( '#<script\b[^>]*>.*?</script>#s', '', $body );
+		$map  = [
+			'index.html'            => home_url( '/' ),
+			'shop.html'             => wc_get_page_permalink( 'shop' ),
+			'verify.html'           => home_url( '/testing/' ),
+			'status.html'           => wc_get_account_endpoint_url( 'orders' ),
+			'account.html'          => wc_get_page_permalink( 'myaccount' ),
+			'cart.html'             => wc_get_cart_url(),
+			'checkout.html'         => wc_get_checkout_url(),
+			'contact.html'          => home_url( '/contact/' ),
+			'faq.html'              => home_url( '/faq/' ),
+			'about.html'            => home_url( '/about/' ),
+			'terms.html'            => home_url( '/terms/' ),
+			'privacy.html'          => home_url( '/privacy/' ),
+			'shipping-returns.html' => home_url( '/shipping-returns/' ),
+		];
+		$body = preg_replace_callback( '#href="([a-z\-]+\.html)(\#[^"]*)?"#', function ( $mm ) use ( $map ) {
+			return 'href="' . ( $map[ $mm[1] ] ?? $mm[1] ) . ( $mm[2] ?? '' ) . '"';
+		}, $body );
+		$body = str_replace( 'src="assets/', 'src="' . content_url( '/luma-src/assets/' ), $body );
+		$body = preg_replace( '#href="product\.html\?id=([a-z0-9\-]+)[^"]*"#', 'href="' . home_url( '/product/' ) . '$1/"', $body );
+		$titles = [ 'about' => 'About', 'faq' => 'FAQ', 'contact' => 'Contact', 'shipping-returns' => 'Shipping & Returns', 'privacy' => 'Privacy Policy', 'terms' => 'Terms' ];
+		$page   = get_page_by_path( $slug );
+		$args   = [
+			'post_type'    => 'page',
+			'post_name'    => $slug,
+			'post_title'   => $titles[ $slug ] ?? ucfirst( $slug ),
+			'post_status'  => 'publish',
+			'post_content' => $body,
+		];
+		if ( $page ) {
+			$args['ID'] = $page->ID;
+		}
+		$id = wp_insert_post( wp_slash( $args ) );
+		update_post_meta( $id, '_wp_page_template', 'page-legacy.php' );
+		return '#' . $id;
 	}
 
 	/** Sideload an image from the git-deployed static assets, renaming it to $basename. Returns attachment ID (cached by basename). */

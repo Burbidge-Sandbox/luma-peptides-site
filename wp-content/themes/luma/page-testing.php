@@ -1,41 +1,28 @@
 <?php
 /**
  * Template Name: Testing
- * The flagship page (UX-SPEC §2): lot lookup + COA library + plain-language
- * explanation of what the tests measure and do not measure.
+ * Port of legacy verify.html. The lookup itself is [luma_lot_lookup] from
+ * luma-core (real lots, rate-limited), rendered in the legacy .coa-card markup.
  */
 get_header();
 ?>
-<main id="content" class="testing">
-	<section class="section testing-hero">
-		<div class="wrap">
-			<p class="eyebrow mono"><?php esc_html_e( 'Third-party testing · Freedom Diagnostics', 'luma' ); ?></p>
-			<h1><?php esc_html_e( 'Every lot, tested. Look yours up.', 'luma' ); ?></h1>
-			<p class="lede"><?php esc_html_e( 'Each lot is sent to an independent laboratory for identity, assay purity and net content. Enter the lot number printed on your vial to see its certificate of analysis.', 'luma' ); ?></p>
-			<?php echo do_shortcode( '[luma_lot_lookup]' ); ?>
-		</div>
-	</section>
-	<section class="section">
-		<div class="wrap">
-			<h2><?php esc_html_e( 'Certificate library', 'luma' ); ?></h2>
-			<?php echo do_shortcode( '[luma_coa_library]' ); ?>
-		</div>
-	</section>
-	<section class="section testing-explainer">
-		<div class="wrap">
-			<h2><?php esc_html_e( 'What the tests measure', 'luma' ); ?></h2>
-			<dl class="explainer">
-				<dt><?php esc_html_e( 'Identity', 'luma' ); ?></dt>
-				<dd><?php esc_html_e( 'Mass spectrometry confirms the measured molecular mass matches the expected compound. It answers “is this the stated peptide?” and nothing else.', 'luma' ); ?></dd>
-				<dt><?php esc_html_e( 'Assay purity', 'luma' ); ?></dt>
-				<dd><?php esc_html_e( 'HPLC separates the sample and reports what percentage of the peptide-containing peaks is the target compound. It does not detect non-peptide contaminants, solvents or endotoxin unless those are tested separately.', 'luma' ); ?></dd>
-				<dt><?php esc_html_e( 'Net content', 'luma' ); ?></dt>
-				<dd><?php esc_html_e( 'The measured mass of material in the vial against the label claim.', 'luma' ); ?></dd>
-				<dt><?php esc_html_e( 'What it does not tell you', 'luma' ); ?></dt>
-				<dd><?php esc_html_e( 'A certificate of analysis describes a sample from a lot at the time of testing. It is not a statement about safety, suitability, or effects in any organism. All material is supplied for in-vitro research only.', 'luma' ); ?></dd>
-			</dl>
-			<?php luma_ruo_notice(); ?>
-		</div>
-	</section>
+<main id="main">
+<div class="wrap page-head" style="text-align:center">
+ <span class="eyebrow">Transparency</span>
+ <h1>Verify your lot</h1>
+ <p style="margin-inline:auto">Every Luma vial carries a lot number. Enter it below to view the independent laboratory certificate for that exact lot.</p>
+</div>
+<div class="wrap" style="padding-bottom:5rem">
+ <?php echo do_shortcode( '[luma_lot_lookup]' ); ?>
+ <div class="values" style="max-width:960px;margin:4rem auto 0">
+  <div class="value"><svg viewBox="0 0 24 24"><path d="M9 3h6v5l4 9a3 3 0 0 1-3 4H8a3 3 0 0 1-3-4l4-9z"/><path d="M8 14h8"/></svg><h3>What we test</h3><p>Purity by HPLC, identity by LC-MS, net content by weight, and endotoxin. All four must pass.</p></div>
+  <div class="value"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5M16 4v5"/></svg><h3>When we test</h3><p>Before release, every lot. Results are published here before the first vial ships, never after.</p></div>
+  <div class="value"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/></svg><h3>Who tests</h3><p>Independent U.S. laboratories. We never test our own product.</p></div>
+ </div>
+ <div style="max-width:960px;margin:3rem auto 0">
+  <h2 style="font-size:1.6rem">Certificate library</h2>
+  <?php echo do_shortcode( '[luma_coa_library]' ); ?>
+ </div>
+</div>
 </main>
 <?php get_footer(); ?>
