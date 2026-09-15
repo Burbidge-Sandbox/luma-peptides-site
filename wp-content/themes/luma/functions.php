@@ -10,10 +10,30 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.3.1' );
+define( 'LUMA_THEME_VERSION', '0.3.2' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
+
+/* ---------- WooCommerce template overrides ----------
+ * Woo caches located template paths in the persistent object cache
+ * (Object Cache Pro), so a newly added theme override can be ignored until
+ * the cache is cleared. Two guards: always prefer a theme file when one
+ * exists, and clear Woo's template cache whenever the theme version changes.
+ */
+add_filter( 'wc_get_template', function ( $template, $template_name ) {
+	$override = get_template_directory() . '/woocommerce/' . ltrim( $template_name, '/' );
+	return file_exists( $override ) ? $override : $template;
+}, 20, 2 );
+
+add_action( 'init', function () {
+	if ( get_option( 'luma_theme_version' ) !== LUMA_THEME_VERSION ) {
+		if ( function_exists( 'wc_clear_template_cache' ) ) {
+			wc_clear_template_cache();
+		}
+		update_option( 'luma_theme_version', LUMA_THEME_VERSION );
+	}
+}, 99 );
 
 add_action( 'after_setup_theme', function () {
 	add_theme_support( 'title-tag' );
