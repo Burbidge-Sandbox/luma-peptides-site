@@ -3,7 +3,7 @@
  * Plugin Name: Luma Core
  * Plugin URI:  https://lumaresearchco.com
  * Description: Luma Peptides Co. store logic — RUO acknowledgement gate, catalogue rules, lots & certificates of analysis, operational facts. Enforces CLAUDE.md; not optional.
- * Version:     0.3.3
+ * Version:     0.3.4
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Author:      Luma Peptides Co.
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_CORE_VERSION', '0.3.3' );
+define( 'LUMA_CORE_VERSION', '0.3.4' );
 define( 'LUMA_CORE_FILE', __FILE__ );
 define( 'LUMA_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LUMA_CORE_TERMS_VERSION', '2026-09-14' ); // bump when RUO terms wording changes
@@ -61,6 +61,9 @@ add_action( 'before_woocommerce_init', function () {
 		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', LUMA_CORE_FILE, true );
 	}
 } );
+
+/* Version readout in the admin footer (deploy verification). */
+add_filter( 'admin_footer_text', fn( $t ) => $t . ' · Luma Core ' . LUMA_CORE_VERSION . ( defined( 'LUMA_THEME_VERSION' ) ? ' · Theme ' . LUMA_THEME_VERSION : '' ) );
 
 /** Theme-facing helper: operational facts for the fact strip. */
 function luma_core_facts(): array {

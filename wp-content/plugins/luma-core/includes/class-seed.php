@@ -51,6 +51,7 @@ class Seed {
 	public static function init(): void {
 		add_action( 'admin_menu', [ __CLASS__, 'menu' ], 20 );
 		add_action( 'admin_post_luma_seed', [ __CLASS__, 'handle' ] );
+		add_action( 'admin_post_luma_receive', [ __CLASS__, 'handle_receive' ] );
 	}
 
 	public static function menu(): void {
@@ -91,6 +92,82 @@ class Seed {
 		set_transient( 'luma_seed_log', $log, 300 );
 		wp_safe_redirect( admin_url( 'admin.php?page=luma-tools' ) );
 		exit;
+	}
+
+	/** Supplier packing-list code → store SKU (variation SKU where one exists). */
+	const SUPPLIER_CODES = [
+		'RT15' => 'RT15', 'RT30' => 'RT30', 'TR15' => 'TR15', 'TR30' => 'TR30', 'SM10' => 'SM10',
+		'BC10' => 'BPC10', 'BPC10' => 'BPC10', 'BPC' => 'BPC10',
+		'BBG70' => 'GLOW', 'BBG' => 'GLOW', 'GLOW' => 'GLOW', 'GLOW70' => 'GLOW',
+		'BT10' => 'BPCTB', 'BPCTB' => 'BPCTB',
+		'WA10' => 'BACW10', 'WA' => 'BACW10', 'BW10' => 'BACW10', 'BACW10' => 'BACW10', 'BW' => 'BACW10',
+		'GHK5' => 'GHK5', 'GHK' => 'GHK5', 'TESA5' => 'TESA5', 'TESA' => 'TESA5', 'CJCIP' => 'CJCIP', 'CI5' => 'CJCIP',
+		'NAD500' => 'NAD500', 'NAD' => 'NAD500', 'MOTS10' => 'MOTS10', 'MOTS' => 'MOTS10', 'EPI10' => 'EPI10', 'EPI' => 'EPI10',
+	];
+
+	public static function handle_receive(): void {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( 'Forbidden' );
+		}
+		check_admin_referer( 'luma_receive' );
+		$per   = ! empty( $_POST['boxes'] ) ? max( 1, (int) ( $_POST['per_box'] ?? 10 ) ) : 1;
+		$mode  = ( $_POST['mode'] ?? 'set' ) === 'add' ? 'add' : 'set';
+		$dry   = ! empty( $_POST['dry'] );
+		$lines = (string) wp_unslash( $_POST['lines'] ?? '' );
+		set_transient( 'luma_seed_log', self::receive( $lines, $per, $mode, $dry ), 300 );
+		wp_safe_redirect( admin_url( 'admin.php?page=luma-tools' ) );
+		exit;
+	}
+
+	/** Parse "CODE=N boxes" lines and apply stock. @return string log */
+	public static function receive( string $lines, int $per_unit, string $mode, bool $dry ): string {
+		$counts = [];
+		$out    = [ ( $dry ? 'PREVIEW — ' : '' ) . ( 'add' === $mode ? 'Adding to' : 'Setting' ) . ' stock (×' . $per_unit . ' per line unit)' ];
+		foreach ( preg_split( '/\r?\n/', $lines ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line || ! preg_match( '/^([A-Za-z]+\d*)\s*[=:\-]?\s*(\d+)/', $line, $m ) ) {
+				if ( '' !== $line ) {
+					$out[] = 'skip: "' . $line . '"';
+				}
+				continue;
+			}
+			$code = strtoupper( preg_replace( '/\s+/', '', $m[1] ) );
+			$sku  = self::SUPPLIER_CODES[ $code ] ?? null;
+			if ( ! $sku ) {
+				$out[] = 'UNKNOWN code ' . $code . ' — not applied';
+				continue;
+			}
+			$counts[ $sku ] = ( $counts[ $sku ] ?? 0 ) + (int) $m[2] * $per_unit;
+		}
+		foreach ( $counts as $sku => $qty ) {
+			$pid = wc_get_product_id_by_sku( $sku );
+			$p   = $pid ? wc_get_product( $pid ) : null;
+			if ( ! $p ) {
+				$out[] = $sku . ': no product with this SKU';
+				continue;
+			}
+			$before = (int) $p->get_stock_quantity();
+			$new    = 'add' === $mode ? $before + $qty : $qty;
+			$out[]  = sprintf( '%s (%s): %d → %d', $sku, $p->get_name() . ( $p->is_type( 'variation' ) ? ' ' . implode( ' ', $p->get_attributes() ) : '' ), $before, $new );
+			if ( $dry ) {
+				continue;
+			}
+			$p->set_manage_stock( true );
+			$p->set_stock_quantity( $new );
+			$p->set_stock_status( $new > 0 ? 'instock' : 'outofstock' );
+			$p->save();
+			$lot_id = (int) $p->get_meta( '_luma_current_lot' );
+			if ( $lot_id ) {
+				$received = 'add' === $mode ? (int) get_post_meta( $lot_id, '_lot_qty_received', true ) + $qty : $qty;
+				update_post_meta( $lot_id, '_lot_qty_received', $received );
+				update_post_meta( $lot_id, '_lot_qty_remaining', $new );
+			}
+		}
+		if ( ! $dry ) {
+			wc_delete_product_transients();
+			wp_cache_delete( 'luma_catalogue_json', 'luma' );
+		}
+		return implode( "\n", $out );
 	}
 
 	/** @return string log */
@@ -159,9 +236,11 @@ class Seed {
 			if ( ! $has_variants ) {
 				$product->set_regular_price( (string) $p['once'] );
 				$product->set_manage_stock( true );
-				$product->set_stock_quantity( ( $p['stock'] ?? 'out' ) === 'in' ? 10 : 0 );
-				$product->set_stock_status( ( $p['stock'] ?? 'out' ) === 'in' ? 'instock' : 'outofstock' );
-				$product->set_low_stock_amount( 3 );
+				if ( ! $existing ) { // stock is live data after creation — never reset it on a re-run
+					$product->set_stock_quantity( ( $p['stock'] ?? 'out' ) === 'in' ? 10 : 0 );
+					$product->set_stock_status( ( $p['stock'] ?? 'out' ) === 'in' ? 'instock' : 'outofstock' );
+					$product->set_low_stock_amount( 3 );
+				}
 			}
 
 			if ( $grid_image_id ) {
@@ -195,9 +274,11 @@ class Seed {
 					$variation->set_attributes( [ 'strength' => $v['label'] ] );
 					$variation->set_regular_price( (string) $v['once'] );
 					$variation->set_manage_stock( true );
-					$variation->set_stock_quantity( ( $v['stock'] ?? 'out' ) === 'in' ? 10 : 0 );
-					$variation->set_stock_status( ( $v['stock'] ?? 'out' ) === 'in' ? 'instock' : 'outofstock' );
-					$variation->set_low_stock_amount( 3 );
+					if ( ! $vid ) {
+						$variation->set_stock_quantity( ( $v['stock'] ?? 'out' ) === 'in' ? 10 : 0 );
+						$variation->set_stock_status( ( $v['stock'] ?? 'out' ) === 'in' ? 'instock' : 'outofstock' );
+						$variation->set_low_stock_amount( 3 );
+					}
 					$variation->update_meta_data( '_luma_strength', $v['strength'] ?? $v['label'] );
 					$variation->set_status( 'publish' );
 					$nvid  = $variation->save();
@@ -232,9 +313,11 @@ class Seed {
 				'_lot_identity'     => $lot['identity'] ?? '',
 				'_lot_net_content'  => $lot['net_content'] ?? '',
 				'_lot_expires'      => $lot['expires'] ?? '',
-				'_lot_qty_received' => (int) ( $lot['qty_received'] ?? 0 ),
-				'_lot_qty_remaining'=> (int) ( $lot['qty_remaining'] ?? $lot['qty_received'] ?? 0 ),
 			];
+			if ( ! $post ) { // quantities are maintained by Receive inventory after first creation
+				$meta['_lot_qty_received']  = (int) ( $lot['qty_received'] ?? 0 );
+				$meta['_lot_qty_remaining'] = (int) ( $lot['qty_remaining'] ?? $lot['qty_received'] ?? 0 );
+			}
 			foreach ( $meta as $k => $v ) {
 				update_post_meta( $lot_id, $k, $v );
 			}
