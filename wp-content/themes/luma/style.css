@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.3.1
+Version: 0.4.0
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -46,3 +46,36 @@ body.admin-bar .header{top:32px}
 body.order-received .page-head{display:none}
 .confirm .order-box .coa-row{padding:.7rem 0}
 .pay-box:empty{display:none}
+
+/* My Account: legacy .acct layout over Woo endpoints. */
+.account-page{padding-top:0}
+.acct-nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1.8rem;justify-content:center}
+.acct-nav .chip{text-decoration:none;color:inherit}
+.acct-content .woocommerce-notices-wrapper:empty{display:none}
+.acct-content .woocommerce-message,.acct-content .woocommerce-info,.acct-content .woocommerce-error{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:var(--radius);padding:.9rem 1.1rem;margin:0 0 1.2rem;font-size:.92rem;color:var(--ink-2);list-style:none}
+.acct-content .woocommerce-message a.button,.acct-content .woocommerce-info a.button{display:inline-block;margin-right:.8rem;color:var(--terra);font-weight:600;text-decoration:underline}
+.acct-content .woocommerce-error{border-left-color:var(--terra);color:var(--terra)}
+.acct-content form.edit-account,.acct-content form.woocommerce-EditAccountForm,.acct-content form.woocommerce-address-fields,.acct-content .woocommerce-Addresses,.acct-content .woocommerce-PaymentMethods,.acct-content form#add_payment_method,.acct-content .woocommerce-MyAccount-paymentMethods{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem 1.4rem}
+.acct-content form .form-row{display:grid;gap:.35rem;margin:0 0 1rem;padding:0}
+.acct-content form .form-row label{font-size:.8rem;font-weight:600;color:var(--ink-2)}
+.acct-content form .form-row .required{color:var(--terra);text-decoration:none}
+.acct-content form .form-row input.input-text,.acct-content form .form-row select,.acct-content form .form-row textarea,.acct-content form .form-row .select2-selection{padding:.85rem 1rem;border:1.5px solid var(--line);border-radius:8px;background:#fff;width:100%;font:inherit;min-height:0;height:auto}
+.acct-content form .form-row input.input-text:focus{outline:0;border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft)}
+.acct-content form .form-row .password-input{position:relative;display:block}
+.acct-content form .form-row .show-password-input{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);cursor:pointer}
+.acct-content form fieldset{border:0;padding:0;margin:1.4rem 0 0}
+.acct-content form fieldset legend{font-family:var(--serif,Georgia,serif);font-size:1.25rem;margin-bottom:.6rem}
+.acct-content form .woocommerce-form-row--first,.acct-content form .form-row-first,.acct-content form .form-row-last{width:100%}
+.acct-content form button.button,.acct-content .woocommerce-Address a.edit,.acct-content .woocommerce-MyAccount-paymentMethods .button{display:inline-flex;align-items:center;justify-content:center;background:var(--ink);color:#fff;border:0;border-radius:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem;padding:.6rem 1.1rem;min-height:40px;cursor:pointer;text-decoration:none}
+.acct-content form button.button:hover{background:#000}
+.acct-content .woocommerce-Addresses{display:grid;gap:1.4rem}
+@media(min-width:720px){.acct-content .woocommerce-Addresses{grid-template-columns:1fr 1fr}}
+.acct-content .woocommerce-Address-title{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.5rem}
+.acct-content .woocommerce-Address-title h2{font-size:1.25rem;margin:0}
+.acct-content .woocommerce-Address address{font-style:normal;color:var(--ink-2);font-size:.92rem;line-height:1.55}
+.acct-content .woocommerce-MyAccount-paymentMethods{width:100%;border-collapse:collapse;font-size:.92rem}
+.acct-content .woocommerce-MyAccount-paymentMethods th,.acct-content .woocommerce-MyAccount-paymentMethods td{text-align:left;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.acct-content .woocommerce-MyAccount-paymentMethods th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.acct-content .woocommerce-MyAccount-paymentMethods .button{margin-right:.4rem}
+.acct-content .pill{white-space:nowrap}
+.acct-content .order-box .pass{color:#4E6144}

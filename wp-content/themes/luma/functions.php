@@ -10,10 +10,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.3.2' );
+define( 'LUMA_THEME_VERSION', '0.4.0' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
+require_once get_template_directory() . '/inc/account.php';
 
 /* ---------- WooCommerce template overrides ----------
  * Woo caches located template paths in the persistent object cache
