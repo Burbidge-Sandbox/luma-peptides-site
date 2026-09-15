@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.4.3
+Version: 0.4.4
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -105,9 +105,12 @@ body.order-received .page-head{display:none}
 .checkout-page .wc-block-components-text-input input:focus,
 .checkout-page .wc-block-components-combobox input:focus{border-color:var(--terra)!important;box-shadow:0 0 0 3px var(--terra-soft)!important}
 .checkout-page .wc-block-components-text-input label,.checkout-page .wc-block-components-combobox label,.checkout-page .wc-block-components-select label{color:var(--muted)}
-.checkout-page .wc-block-components-radio-control__option{border:1.5px solid var(--line);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;background:#fff}
-.checkout-page .wc-block-components-radio-control__option:has(input:checked){border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft)}
-.checkout-page .wc-block-components-radio-control__option::after,.checkout-page .wc-block-components-radio-control__option::before{display:none}
+.checkout-page .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option{border:1.5px solid var(--line);border-radius:10px;padding:.9rem 1rem .9rem 3rem;margin-bottom:.6rem;background:#fff}
+.checkout-page .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option:has(input:checked){border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft)}
+.checkout-page .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option::after,.checkout-page .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option::before{display:none}
+.checkout-page .wc-block-components-shipping-rates-control .wc-block-components-radio-control__input{left:1rem}
+.checkout-page .wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option{padding-left:3rem}
+.checkout-page .wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__input{left:1rem}
 .checkout-page .wc-block-components-radio-control__input{border-color:var(--line)}
 .checkout-page .wc-block-components-radio-control__input:checked{border-color:var(--terra);background:var(--terra)}
 .checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]:checked{background:var(--terra);border-color:var(--terra)}

@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.4.3' );
+define( 'LUMA_THEME_VERSION', '0.4.4' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -92,6 +92,12 @@ add_filter( 'body_class', function ( array $c ): array {
 
 /* Shop page title (used by Woo for <title>). */
 add_filter( 'woocommerce_page_title', fn( $t ) => is_shop() ? 'Catalog' : $t );
+add_filter( 'document_title_parts', function ( array $parts ): array {
+	if ( function_exists( 'is_shop' ) && is_shop() ) {
+		$parts['title'] = 'Catalog';
+	}
+	return $parts;
+} );
 
 /* ---------- Product helpers used by catalogue-json ---------- */
 function luma_current_lot_number( WC_Product $product ): string {
