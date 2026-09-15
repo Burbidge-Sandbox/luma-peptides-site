@@ -73,8 +73,24 @@ table.td th { font-size:11px !important; letter-spacing:.1em; text-transform:upp
 		if ( $sent_to_admin || $plain_text || ! $order instanceof \WC_Order ) {
 			return;
 		}
-		$label = $order->is_paid() ? 'Order confirmed · payment received' : ( $order->has_status( 'completed' ) ? 'Order shipped' : 'Order reserved · payment pending' );
-		echo '<p class="luma-eyebrow">' . esc_html( $label ) . ' · ' . esc_html( $order->get_order_number() ) . '</p>';
+		echo '<p class="luma-eyebrow">' . esc_html( self::eyebrow( $order ) ) . ' · ' . esc_html( $order->get_order_number() ) . '</p>';
+	}
+
+	public static function eyebrow( \WC_Order $order ): string {
+		switch ( $order->get_status() ) {
+			case 'refunded':
+				return 'Order refunded';
+			case 'cancelled':
+				return 'Order cancelled';
+			case 'failed':
+				return 'Payment not completed';
+			case 'completed':
+				return 'Order shipped';
+			case 'processing':
+				return 'Order confirmed · payment received';
+			default:
+				return $order->is_paid() ? 'Order confirmed · payment received' : 'Order reserved · payment pending';
+		}
 	}
 
 	/** RUO acknowledgement + next steps under the order table. */
@@ -88,7 +104,7 @@ table.td th { font-size:11px !important; letter-spacing:.1em; text-transform:upp
 		$ack    = (string) $order->get_meta( '_luma_ruo_ack' );
 
 		if ( $plain_text ) {
-			echo "\n" . ( $ack ? 'Research-use acknowledgement recorded ' . substr( $ack, 0, 16 ) . " UTC.\n" : '' )
+			echo "\n" . ( $ack ? 'Research-use acknowledgement recorded ' . $ack . ".\n" : '' )
 				. "Each vial is labelled with its lot number; look up the certificate of analysis at {$verify}\n"
 				. "Track this order: {$orders}\n\n";
 			return;
@@ -97,14 +113,19 @@ table.td th { font-size:11px !important; letter-spacing:.1em; text-transform:upp
 			echo '<p class="luma-fine">' . ( $ack ? 'RUO acknowledgement ' . esc_html( substr( $ack, 0, 16 ) ) . ' UTC · ' : '<b>No RUO acknowledgement stored.</b> · ' ) . 'Stock was reduced at checkout. Assign the lot on the order before marking it Completed.</p>';
 			return;
 		}
-		if ( $order->has_status( 'completed' ) ) {
+		$closed = $order->has_status( [ 'refunded', 'cancelled', 'failed' ] );
+		if ( $order->has_status( 'refunded' ) ) {
+			echo '<p>The refund has been sent back to your original payment method. Depending on your bank it can take 5–10 business days to appear.</p>';
+		} elseif ( $order->has_status( 'completed' ) ) {
 			echo '<p>Each vial is labelled with its lot number. Enter it on the lot lookup page to see the independent certificate of analysis for exactly what you received.</p>';
-		} elseif ( $order->is_paid() ) {
+		} elseif ( $order->has_status( 'processing' ) ) {
 			echo '<p>Your order is queued for lab release. You will get a second email with tracking when it ships, usually within one business day.</p>';
 		}
-		echo '<p style="margin:18px 0"><a class="luma-btn" href="' . esc_url( $orders ) . '">Track this order</a>&nbsp;&nbsp;<a href="' . esc_url( $verify ) . '" style="font-size:13px">Verify a lot →</a></p>';
+		if ( ! $closed ) {
+			echo '<p style="margin:18px 0"><a class="luma-btn" href="' . esc_url( $orders ) . '">Track this order</a>&nbsp;&nbsp;<a href="' . esc_url( $verify ) . '" style="font-size:13px">Verify a lot →</a></p>';
+		}
 		if ( $ack ) {
-			echo '<p class="luma-fine">Research-use acknowledgement recorded ' . esc_html( substr( $ack, 0, 16 ) ) . ' UTC. All sales final once shipped.</p>';
+			echo '<p class="luma-fine">Research-use acknowledgement recorded ' . esc_html( $ack ) . '. For laboratory research use only. Not for human or animal use.' . ( $closed ? '' : ' All sales final once shipped.' ) . '</p>';
 		}
 	}
 }

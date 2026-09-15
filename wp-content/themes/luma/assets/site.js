@@ -97,6 +97,23 @@
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Checkout</a>
 <a class="btn btn-ghost btn-block" href="${CONFIG.urls.cart}" style="margin-top:.3rem">View full cart</a>`;
   }
+  /* Full cart page (port of legacy cart.js) — same Store API cart as the drawer. */
+  function renderPage(){
+    const list=$("#cartList"), sum=$("#summaryBody"); if(!list||!sum) return;
+    if(!cartData||!cartData.items.length){ list.innerHTML=`<div class="empty-cart"><p>Your cart is empty.</p><a class="btn btn-primary" href="${CONFIG.urls.shop}">Browse the catalog</a></div>`; sum.innerHTML=""; return; }
+    const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=CONFIG.freeShipThreshold||150;
+    const ship=(sub-disc)>=thr?0:8; const coupon=(cartData.coupons||[])[0];
+    list.innerHTML=cartData.items.map(lineHTML).join("");
+    sum.innerHTML=`<div class="promo"><input id="promoIn" placeholder="Promo code" value="${coupon?esc(coupon.code):""}" aria-label="Promo code"><button class="btn btn-dark btn-sm" id="promoBtn">${coupon?"Remove":"Apply"}</button></div><div class="promo-msg" id="promoMsg"></div>
+<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?"Promo "+esc(coupon.code):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>Standard shipping</span><b>${ship?money(ship):"Free"}</b></div><div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
+<a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Proceed to checkout</a>
+<div class="secure"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Secure checkout · All sales final on shipped goods</div>`;
+    $("#promoBtn").onclick=async()=>{ const m=$("#promoMsg"); const code=$("#promoIn").value.trim();
+      try{ cartData=coupon?await api("cart/remove-coupon",{method:"POST",body:JSON.stringify({code:coupon.code})}):await api("cart/apply-coupon",{method:"POST",body:JSON.stringify({code})}); render(); }
+      catch(e){ m.textContent=e.message||"That code isn't valid."; m.className="promo-msg err"; } };
+  }
+  const renderDrawerOnly=render;
+  render=function(){ renderDrawerOnly(); renderPage(); };
   window.renderCart=render;
 
   /* ---------- Drawer / menu / toast ---------- */

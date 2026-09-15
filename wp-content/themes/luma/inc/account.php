@@ -45,6 +45,11 @@ function luma_order_lots( WC_Order $order ): array {
 	return array_values( array_unique( $lots ) );
 }
 
+/** Carrier + number + URL, or null. */
+function luma_order_tracking( WC_Order $order ): ?array {
+	return class_exists( 'Luma\\Core\\Fulfillment' ) ? Luma\Core\Fulfillment::tracking( $order ) : null;
+}
+
 function luma_order_pill_class( WC_Order $order ): string {
 	$s = $order->get_status();
 	$map = [
@@ -99,7 +104,8 @@ function luma_account_render_orders( $customer_orders, bool $has_orders, int $cu
 			<div class="acct-order">
 				<div class="acct-order-top"><div><b>Order <?php echo esc_html( $order->get_order_number() ); ?></b><span class="acct-date"><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span></div><span class="<?php echo esc_attr( luma_order_pill_class( $order ) ); ?>"><?php echo esc_html( luma_order_pill_label( $order ) ); ?></span></div>
 				<p class="acct-items"><?php echo esc_html( implode( ' · ', $items ) ); ?></p>
-				<div class="acct-order-meta"><span><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></span><?php if ( $lots ) : ?><span>Lots <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></span><?php endif; ?></div>
+				<?php $trk = luma_order_tracking( $order ); ?>
+				<div class="acct-order-meta"><span><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></span><?php if ( $trk ) : ?><span>Tracking <?php echo $trk['url'] ? '<a href="' . esc_url( $trk['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $trk['carrier'] . ' ' . $trk['number'] ) . '</a>' : esc_html( $trk['carrier'] . ' ' . $trk['number'] ); ?></span><?php endif; ?><?php if ( $lots ) : ?><span>Lots <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></span><?php endif; ?></div>
 				<div class="acct-actions">
 					<?php foreach ( wc_get_account_orders_actions( $order ) as $key => $a ) : ?>
 						<a class="btn <?php echo 'pay' === $key ? 'btn-primary' : ( 'view' === $key ? 'btn-outline' : 'btn-ghost' ); ?> btn-sm" href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a>

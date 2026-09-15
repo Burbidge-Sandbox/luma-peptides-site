@@ -29,7 +29,8 @@ class RuoGate {
 
 		/* Surface the record: admin order screen + customer emails. */
 		add_action( 'woocommerce_admin_order_data_after_billing_address', [ __CLASS__, 'admin_display' ] );
-		add_action( 'woocommerce_email_after_order_table', [ __CLASS__, 'email_display' ], 10, 1 );
+		/* Email line is rendered by Luma\Core\Emails (single, status-aware). */
+		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'scrub_block_field' ] );
 	}
 
 	public static function label(): string {
@@ -86,6 +87,18 @@ class RuoGate {
 		$fields = $request->get_param( 'additional_fields' );
 		if ( is_array( $fields ) && ! empty( $fields['luma/ruo-ack'] ) ) {
 			$order->update_meta_data( self::META, self::stamp() );
+		}
+	}
+
+	/**
+	 * Woo stores the block field as `_wc_other/luma/ruo-ack` and prints it under an
+	 * "Additional information" heading in emails and order views. The timestamped
+	 * `_luma_ruo_ack` is the record we keep; drop the raw field so it isn't shown twice.
+	 */
+	public static function scrub_block_field( \WC_Order $order ): void {
+		if ( $order->get_meta( self::META ) && $order->meta_exists( '_wc_other/luma/ruo-ack' ) ) {
+			$order->delete_meta_data( '_wc_other/luma/ruo-ack' );
+			$order->save();
 		}
 	}
 

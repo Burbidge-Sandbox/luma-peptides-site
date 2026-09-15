@@ -29,6 +29,7 @@ $lots  = luma_order_lots( $order );
 		<?php if ( (float) $order->get_total_refunded() > 0 ) : ?><div class="coa-row"><span>Refunded</span><b class="pass">−<?php echo wp_kses_post( $money( $order->get_total_refunded() ) ); ?></b></div><?php endif; ?>
 		<div class="coa-row"><span><b>Total</b><?php echo $order->get_payment_method_title() ? ' · ' . esc_html( $order->get_payment_method_title() ) : ''; ?></span><b><?php echo wp_kses_post( $money( $order->get_total() ) ); ?></b></div>
 		<?php if ( $ship ) : ?><p style="font-size:.85rem;color:var(--muted);margin:1rem 0 0"><b>Ships to:</b> <?php echo wp_kses_post( str_replace( '<br/>', ', ', $ship ) ); ?></p><?php endif; ?>
+		<?php $trk = luma_order_tracking( $order ); if ( $trk ) : ?><p style="font-size:.85rem;color:var(--muted);margin:.5rem 0 0"><b>Tracking:</b> <?php echo esc_html( $trk['carrier'] ); ?> <?php echo $trk['url'] ? '<a href="' . esc_url( $trk['url'] ) . '" target="_blank" rel="noopener" style="color:var(--terra);text-decoration:underline">' . esc_html( $trk['number'] ) . '</a>' : esc_html( $trk['number'] ); ?></p><?php endif; ?>
 		<?php if ( $order->get_customer_note() ) : ?><p style="font-size:.85rem;color:var(--muted);margin:.5rem 0 0"><b>Note:</b> <?php echo esc_html( $order->get_customer_note() ); ?></p><?php endif; ?>
 		<?php if ( $lots ) : ?><p style="font-size:.85rem;color:var(--muted);margin:.5rem 0 0"><b>Lots:</b> <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>" style="color:var(--terra);text-decoration:underline"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></p><?php endif; ?>
 		<?php if ( $ack ) : ?><p style="font-size:.78rem;color:var(--muted);margin:.5rem 0 0">Research-use acknowledgement recorded <?php echo esc_html( substr( $ack, 0, 16 ) ); ?> UTC.</p><?php endif; ?>
@@ -43,4 +44,4 @@ $lots  = luma_order_lots( $order );
 		<a class="btn btn-ghost btn-sm" href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>">← All orders</a>
 	</div>
 </div>
-<?php do_action( 'woocommerce_view_order', $order_id ); ?>
+<?php /* Woo's default order-details table is hooked on woocommerce_view_order; the legacy box above replaces it. */ ?>

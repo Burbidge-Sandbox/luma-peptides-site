@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.4.2
+Version: 0.4.3
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -79,3 +79,57 @@ body.order-received .page-head{display:none}
 .acct-content .woocommerce-MyAccount-paymentMethods .button{margin-right:.4rem}
 .acct-content .pill{white-space:nowrap}
 .acct-content .order-box .pass{color:#4E6144}
+
+/* Cart page: legacy cart.html markup driven by the Store API cart. */
+.cart-layout{padding-top:0}
+.cart-layout .empty-cart{text-align:center;padding:2rem 0}
+.cart-layout .empty-cart p{color:var(--muted);margin-bottom:1rem}
+.cart-layout .totals>div{display:flex;justify-content:space-between;padding:.45rem 0;font-size:.95rem;color:var(--ink-2)}
+.cart-layout .totals .grand{border-top:1px solid var(--line);margin-top:.4rem;padding-top:.8rem;font-size:1.05rem;color:var(--ink)}
+.cart-layout .totals .discount b{color:#4E6144}
+.cart-layout .btn-block{margin-top:1rem}
+@media(min-width:900px){.cart-layout{grid-template-columns:1.5fr 1fr}}
+
+/* Checkout: WooCommerce block checkout restyled to the legacy panel/field look. */
+.checkout-page .wp-block-woocommerce-checkout{margin:0}
+.checkout-page .wc-block-checkout__main{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.6rem}
+.checkout-page .wc-block-components-sidebar{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.6rem;position:sticky;top:110px}
+.checkout-page .wc-block-checkout__sidebar .wc-block-components-order-summary__button-text,
+.checkout-page .wc-block-components-checkout-step__title,
+.checkout-page .wc-block-components-title{font-family:var(--serif);font-weight:500;font-size:1.45rem;color:var(--ink);letter-spacing:0}
+.checkout-page .wc-block-components-checkout-step__description{font-size:.85rem;color:var(--muted)}
+.checkout-page .wc-block-components-text-input input,
+.checkout-page .wc-block-components-combobox .wc-block-components-combobox-control input,
+.checkout-page .wc-block-components-select .components-custom-select-control__button,
+.checkout-page .wc-block-components-textarea{border:1.5px solid var(--line)!important;border-radius:8px!important;background:#fff!important;font-family:var(--sans);font-size:.95rem;box-shadow:none!important;color:var(--ink)}
+.checkout-page .wc-block-components-text-input input:focus,
+.checkout-page .wc-block-components-combobox input:focus{border-color:var(--terra)!important;box-shadow:0 0 0 3px var(--terra-soft)!important}
+.checkout-page .wc-block-components-text-input label,.checkout-page .wc-block-components-combobox label,.checkout-page .wc-block-components-select label{color:var(--muted)}
+.checkout-page .wc-block-components-radio-control__option{border:1.5px solid var(--line);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;background:#fff}
+.checkout-page .wc-block-components-radio-control__option:has(input:checked){border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft)}
+.checkout-page .wc-block-components-radio-control__option::after,.checkout-page .wc-block-components-radio-control__option::before{display:none}
+.checkout-page .wc-block-components-radio-control__input{border-color:var(--line)}
+.checkout-page .wc-block-components-radio-control__input:checked{border-color:var(--terra);background:var(--terra)}
+.checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]:checked{background:var(--terra);border-color:var(--terra)}
+.checkout-page .wc-block-components-checkbox__label{font-size:.9rem;color:var(--ink-2);line-height:1.5}
+.checkout-page .wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option{border:1.5px solid var(--line);border-radius:10px;margin-bottom:.6rem}
+.checkout-page .wc-block-components-checkout-place-order-button{background:var(--terra)!important;color:#fff!important;border:0;border-radius:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem;padding:1.05rem 1.5rem;width:100%;min-height:54px}
+.checkout-page .wc-block-components-checkout-place-order-button:hover{background:var(--terra-2)!important}
+.checkout-page .wc-block-checkout__actions_row{justify-content:stretch}
+.checkout-page .wc-block-components-checkout-return-to-cart-button{color:var(--terra);font-size:.85rem}
+.checkout-page .wc-block-components-order-summary-item__description .wc-block-components-product-name{font-family:var(--sans);font-weight:600;color:var(--ink);font-size:.92rem}
+.checkout-page .wc-block-components-order-summary-item__image img{border-radius:8px;background:var(--cream)}
+.checkout-page .wc-block-components-totals-item{font-size:.95rem;color:var(--ink-2)}
+.checkout-page .wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
+.checkout-page .wc-block-components-totals-footer-item .wc-block-components-totals-item__value{font-size:1.05rem;color:var(--ink);font-weight:600}
+.checkout-page .wc-block-components-totals-coupon__button,.checkout-page .wc-block-components-totals-coupon-link{color:var(--terra)}
+.checkout-page .wc-block-components-panel__button{font-size:.9rem;color:var(--ink-2)}
+.checkout-page .wc-block-components-notice-banner{border-radius:var(--radius);border-color:var(--line)}
+.checkout-page .wc-block-checkout__terms,.checkout-page .wc-block-components-checkout-policies{font-size:.82rem;color:var(--muted)}
+.checkout-page .wc-block-components-express-payment__title-container::before,.checkout-page .wc-block-components-express-payment__title-container::after{border-color:var(--line)}
+.checkout-page .wc-block-components-express-payment--checkout .wc-block-components-express-payment__content{border:1.5px solid var(--line);border-radius:10px;background:var(--paper)}
+.checkout-page .wc-block-components-address-card{border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.checkout-page .wc-block-components-checkout-step{border-bottom:1px solid var(--line);padding-bottom:1.4rem;margin-bottom:1.4rem}
+.checkout-page .wc-block-components-checkout-step:last-child{border-bottom:0}
+.checkout-page .wc-block-components-checkout-step__container::after{display:none}
+.checkout-page .wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before{display:none}
