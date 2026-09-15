@@ -78,6 +78,20 @@ class Seed {
 				<label><input type="checkbox" name="with_images" value="1" checked> Sideload images</label><br><br>
 				<?php submit_button( 'Run seed', 'primary', 'submit', false ); ?>
 			</form>
+
+			<hr style="margin:2rem 0">
+			<h2>Receive inventory</h2>
+			<p>Paste the supplier's packing list, one item per line, e.g. <code>RT30=7 boxes</code>, <code>WA10 = 5</code> or <code>BC10 50</code>. Supplier codes are mapped to store SKUs (<code>WA10</code> → bac water, <code>BC10</code> → BPC-157, <code>BBG70</code> → Glow blend). Repeated codes are summed.</p>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<?php wp_nonce_field( 'luma_receive' ); ?>
+				<input type="hidden" name="action" value="luma_receive">
+				<textarea name="lines" rows="8" cols="50" class="large-text code" placeholder="RT30=7 boxes&#10;TR15=2 boxes"></textarea><br>
+				<label><input type="checkbox" name="boxes" value="1" checked> Quantities are boxes of <input type="number" name="per_box" value="10" min="1" style="width:4em"> vials</label><br>
+				<label><input type="radio" name="mode" value="set" checked> Set stock to these counts (full recount)</label><br>
+				<label><input type="radio" name="mode" value="add"> Add to current stock (new shipment)</label><br>
+				<label><input type="checkbox" name="dry" value="1"> Preview only (no changes)</label><br><br>
+				<?php submit_button( 'Apply inventory', 'secondary', 'submit', false ); ?>
+			</form>
 		</div>
 		<?php
 	}
