@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.3.0' );
+define( 'LUMA_THEME_VERSION', '0.3.1' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -60,6 +60,14 @@ add_filter( 'woocommerce_enqueue_styles', fn( $s ) => $s ); // keep Woo CSS on c
 
 /* RUO statement in the checkout/cart context (product page carries it in-template). */
 add_action( 'woocommerce_before_cart', 'luma_ruo_notice', 5 );
+
+/* Order-received page: hide the page-head title so the legacy .confirm block stands alone. */
+add_filter( 'body_class', function ( array $c ): array {
+	if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+		$c[] = 'order-received';
+	}
+	return $c;
+} );
 
 /* Shop page title (used by Woo for <title>). */
 add_filter( 'woocommerce_page_title', fn( $t ) => is_shop() ? 'Catalog' : $t );
