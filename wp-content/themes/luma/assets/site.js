@@ -92,7 +92,8 @@
     if(!cartData||!cartData.items.length){ body.innerHTML=`<div class="empty-cart"><svg viewBox="0 0 24 24"><path d="M6 7h12l1 14H5z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><p>Your cart is empty.</p><a class="btn btn-outline btn-sm" href="${CONFIG.urls.shop}">Browse the catalog</a></div>`; foot.innerHTML=""; return; }
     const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=CONFIG.freeShipThreshold||150; const left=Math.max(0,thr-(sub-disc));
     body.innerHTML=cartData.items.map(lineHTML).join("");
-    foot.innerHTML=`<div class="ship-bar">${left>0?`You're <b>${money(left)}</b> away from free shipping`:`🎉 You've unlocked <b>free shipping</b>`}<div class="track"><div class="fill" style="width:${Math.min(100,((sub-disc)/thr)*100)}%"></div></div></div>
+    const P=CONFIG.promises||{};
+    foot.innerHTML=`<div class="ship-bar">${thr>0?(left>0?`You're <b>${money(left)}</b> away from free shipping`:`🎉 You've unlocked <b>free shipping</b>`):`<b>Free next-day shipping</b> on every order${P.sameDayCounty?` · same-day in ${esc(P.sameDayCounty)} before ${esc(P.sameDayCutoff||"noon")}`:""}`}${thr>0?`<div class="track"><div class="fill" style="width:${Math.min(100,((sub-disc)/thr)*100)}%"></div></div>`:""}</div>
 <div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>Volume discount</span><b>−${money(disc)}</b></div>`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div></div>
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Checkout</a>
 <a class="btn btn-ghost btn-block" href="${CONFIG.urls.cart}" style="margin-top:.3rem">View full cart</a>`;
@@ -102,10 +103,10 @@
     const list=$("#cartList"), sum=$("#summaryBody"); if(!list||!sum) return;
     if(!cartData||!cartData.items.length){ list.innerHTML=`<div class="empty-cart"><p>Your cart is empty.</p><a class="btn btn-primary" href="${CONFIG.urls.shop}">Browse the catalog</a></div>`; sum.innerHTML=""; return; }
     const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=CONFIG.freeShipThreshold||150;
-    const ship=(sub-disc)>=thr?0:8; const coupon=(cartData.coupons||[])[0];
+    const ship=thr>0&&(sub-disc)<thr?8:0; const coupon=(cartData.coupons||[])[0]; const P=CONFIG.promises||{};
     list.innerHTML=cartData.items.map(lineHTML).join("");
     sum.innerHTML=`<div class="promo"><input id="promoIn" placeholder="Promo code" value="${coupon?esc(coupon.code):""}" aria-label="Promo code"><button class="btn btn-dark btn-sm" id="promoBtn">${coupon?"Remove":"Apply"}</button></div><div class="promo-msg" id="promoMsg"></div>
-<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?"Promo "+esc(coupon.code):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>Standard shipping</span><b>${ship?money(ship):"Free"}</b></div><div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
+<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?"Promo "+esc(coupon.code):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>${thr>0?"Standard shipping":"Next-day shipping"}</span><b>${ship?money(ship):"Free"}</b></div>${P.sameDayCounty?`<div style="font-size:.78rem;color:var(--muted);padding:0 0 .4rem">Same-day delivery in ${esc(P.sameDayCounty)} for orders placed before ${esc(P.sameDayCutoff||"noon")}.</div>`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Proceed to checkout</a>
 <div class="secure"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Secure checkout · All sales final on shipped goods</div>`;
     $("#promoBtn").onclick=async()=>{ const m=$("#promoMsg"); const code=$("#promoIn").value.trim();

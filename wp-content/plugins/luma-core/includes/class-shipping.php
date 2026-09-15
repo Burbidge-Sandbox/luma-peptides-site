@@ -1,86 +1,96 @@
 <?php
 /**
- * Shipping rates exactly as the legacy storefront promised:
- * Standard (3–5 days) $8 · Express (1–2 days) $24 · Standard free at $150+.
- * Seeded once into the US zone; edit later in WooCommerce → Shipping.
+ * Shipping (policy 2026-09-15): free next-day shipping on every US order, plus
+ * free same-day delivery for Utah County addresses ordered before 12 pm MT.
+ * Seeded idempotently by SEED_VERSION; edit later in WooCommerce → Shipping.
  */
 namespace Luma\Core;
 
 defined( 'ABSPATH' ) || exit;
 
 class Shipping {
-	const SEED_VERSION = '1';
-	const THRESHOLD    = 150;
+	const SEED_VERSION = '2';
+
+	/** Utah County ZIPs (explicit — a range would sweep in Salt Lake County). */
+	const UTAH_COUNTY_ZIPS = [
+		'84003', '84004', '84005', '84013', '84042', '84043', '84045', '84057', '84058', '84059', '84062', '84097',
+		'84601', '84602', '84603', '84604', '84605', '84606', '84626', '84633', '84651', '84653', '84655', '84660', '84663', '84664',
+	];
 
 	public static function init(): void {
 		add_action( 'init', [ __CLASS__, 'maybe_seed' ], 30 );
-		// When Standard is free (>= $150) hide the paid Standard rate so the customer sees Free + Express only.
-		add_filter( 'woocommerce_package_rates', [ __CLASS__, 'collapse_rates' ], 10, 2 );
+	}
+
+	private static function set_free( \WC_Shipping_Zone $zone, string $title, array $existing_ids ): int {
+		$id = $existing_ids ? array_shift( $existing_ids ) : $zone->add_shipping_method( 'free_shipping' );
+		update_option( 'woocommerce_free_shipping_' . $id . '_settings', [ 'title' => $title, 'requires' => '', 'min_amount' => '0', 'ignore_discounts' => 'no' ] );
+		return $id;
 	}
 
 	public static function maybe_seed(): void {
 		if ( get_option( 'luma_shipping_seed' ) === self::SEED_VERSION || ! class_exists( '\WC_Shipping_Zones' ) ) {
 			return;
 		}
-		$zone = null;
+		global $wpdb;
+		$us = null;
+		$uc = null;
 		foreach ( \WC_Shipping_Zones::get_zones() as $z ) {
 			foreach ( $z['zone_locations'] as $loc ) {
 				if ( 'country' === $loc->type && 'US' === $loc->code ) {
-					$zone = new \WC_Shipping_Zone( $z['id'] );
-					break 2;
+					$us = new \WC_Shipping_Zone( $z['id'] );
 				}
 			}
-		}
-		if ( ! $zone ) {
-			$zone = new \WC_Shipping_Zone();
-			$zone->set_zone_name( 'United States (US)' );
-			$zone->add_location( 'US', 'country' );
-			$zone->save();
+			if ( 'Utah County (same-day)' === $z['zone_name'] ) {
+				$uc = new \WC_Shipping_Zone( $z['id'] );
+			}
 		}
 
-		$have = [];
-		foreach ( $zone->get_shipping_methods() as $m ) {
-			$have[ $m->id ][] = (int) $m->get_instance_id();
+		/* US: one method — free next-day. Remove the old flat rates. */
+		if ( ! $us ) {
+			$us = new \WC_Shipping_Zone();
+			$us->set_zone_name( 'United States (US)' );
+			$us->add_location( 'US', 'country' );
+			$us->save();
+		}
+		$free = [];
+		foreach ( $us->get_shipping_methods() as $m ) {
+			if ( 'free_shipping' === $m->id ) {
+				$free[] = (int) $m->get_instance_id();
+			} else {
+				$us->delete_shipping_method( $m->get_instance_id() );
+			}
+		}
+		$us_next = self::set_free( $us, 'Next-day shipping — free', $free );
+		foreach ( array_slice( $free, 1 ) as $extra ) {
+			$us->delete_shipping_method( $extra );
 		}
 
-		// Free shipping: reuse the existing instance, gate it at the threshold.
-		$free_id = $have['free_shipping'][0] ?? $zone->add_shipping_method( 'free_shipping' );
-		update_option( 'woocommerce_free_shipping_' . $free_id . '_settings', [
-			'title'            => 'Standard (3–5 days) — free',
-			'requires'         => 'min_amount',
-			'min_amount'       => (string) self::THRESHOLD,
-			'ignore_discounts' => 'no',
-		] );
-
-		$flat = $have['flat_rate'] ?? [];
-		$std  = $flat[0] ?? $zone->add_shipping_method( 'flat_rate' );
-		update_option( 'woocommerce_flat_rate_' . $std . '_settings', [ 'title' => 'Standard (3–5 days)', 'tax_status' => 'none', 'cost' => '8' ] );
-		$exp = $flat[1] ?? $zone->add_shipping_method( 'flat_rate' );
-		update_option( 'woocommerce_flat_rate_' . $exp . '_settings', [ 'title' => 'Express (1–2 days)', 'tax_status' => 'none', 'cost' => '24' ] );
-
-		// Order: Free, Standard, Express.
-		global $wpdb;
-		foreach ( [ $free_id => 1, $std => 2, $exp => 3 ] as $id => $order ) {
+		/* Utah County: same-day (before noon MT) + next-day, both free. */
+		if ( ! $uc ) {
+			$uc = new \WC_Shipping_Zone();
+			$uc->set_zone_name( 'Utah County (same-day)' );
+			$uc->set_zone_order( 0 );
+			foreach ( self::UTAH_COUNTY_ZIPS as $zip ) {
+				$uc->add_location( $zip, 'postcode' );
+			}
+			$uc->save();
+		}
+		$ucfree = [];
+		foreach ( $uc->get_shipping_methods() as $m ) {
+			if ( 'free_shipping' === $m->id ) {
+				$ucfree[] = (int) $m->get_instance_id();
+			}
+		}
+		$same = self::set_free( $uc, 'Same-day delivery — free (order by 12 pm MT)', $ucfree );
+		$next = self::set_free( $uc, 'Next-day shipping — free', $ucfree );
+		foreach ( [ $same => 1, $next => 2 ] as $id => $order ) {
 			$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zone_methods', [ 'method_order' => $order, 'is_enabled' => 1 ], [ 'instance_id' => $id ] );
 		}
+		/* Utah County zone must be evaluated before the US zone. */
+		$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zones', [ 'zone_order' => 0 ], [ 'zone_id' => $uc->get_id() ] );
+		$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zones', [ 'zone_order' => 1 ], [ 'zone_id' => $us->get_id() ] );
+
 		\WC_Cache_Helper::get_transient_version( 'shipping', true );
 		update_option( 'luma_shipping_seed', self::SEED_VERSION );
-	}
-
-	public static function collapse_rates( array $rates, array $package ): array {
-		$has_free = false;
-		foreach ( $rates as $r ) {
-			if ( 'free_shipping' === $r->get_method_id() ) {
-				$has_free = true;
-			}
-		}
-		if ( $has_free ) {
-			foreach ( $rates as $k => $r ) {
-				if ( 'flat_rate' === $r->get_method_id() && str_starts_with( $r->get_label(), 'Standard' ) ) {
-					unset( $rates[ $k ] );
-				}
-			}
-		}
-		return $rates;
 	}
 }

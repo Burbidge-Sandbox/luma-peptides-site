@@ -89,8 +89,8 @@ function luma_catalogue_json(): array {
 		'categories' => $cats,
 		'tiers'      => (array) get_option( 'luma_volume_tiers', [ [ 'min' => 3, 'pct' => 5 ], [ 'min' => 5, 'pct' => 10 ], [ 'min' => 10, 'pct' => 15 ] ] ),
 		'config'     => [
-			'freeShipThreshold' => 150,
-			'promises'          => [ 'shipDays' => 1, 'freeShipAlways' => false, 'deliveryPromiseDays' => 0 ],
+			'freeShipThreshold' => 0,
+			'promises'          => [ 'shipDays' => 1, 'freeShipAlways' => true, 'nextDay' => true, 'sameDayCounty' => 'Utah County', 'sameDayCutoff' => '12:00 pm MT', 'deliveryPromiseDays' => 0 ],
 			'siteUrl'           => home_url(),
 			'assets'            => luma_assets_url(),
 			'urls'              => [

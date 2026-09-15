@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.4.4
+Version: 0.4.5
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -136,3 +136,12 @@ body.order-received .page-head{display:none}
 .checkout-page .wc-block-components-checkout-step:last-child{border-bottom:0}
 .checkout-page .wc-block-components-checkout-step__container::after{display:none}
 .checkout-page .wc-block-components-checkout-step--with-step-number .wc-block-components-checkout-step__title::before{display:none}
+
+/* Footer: payment badges (Stripe cards + wallets, Venmo). */
+.payments{flex-wrap:wrap}
+.payments .pay-badge{background:#fff}
+.payments .pay-visa{color:#1A1F71;border-color:#1A1F71}
+.payments .pay-mc{color:#EB001B;border-color:#EB001B}
+.payments .pay-amex{color:#006FCF;border-color:#006FCF}
+.payments .pay-disc{color:#E55C20;border-color:#E55C20}
+.payments .pay-apple,.payments .pay-google{color:#000;border-color:#000}

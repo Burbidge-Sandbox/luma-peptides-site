@@ -12,7 +12,7 @@
   </div></div>
  </div>
  <p class="disclaimer"><b>For laboratory research use only. Not for human or animal use.</b> Statements on this site have not been evaluated by the FDA; products are not intended to diagnose, treat, cure, or prevent any disease. Luma Peptides Co. is a chemical supplier, not a pharmacy or clinic. Purchasers must be 21 or older and affiliated with a research organization. <a href="<?php echo esc_url( $u['terms'] ); ?>" style="text-decoration:underline">Full terms</a>.</p>
- <div class="footer-bottom"><span>© <?php echo esc_html( gmdate( 'Y' ) ); ?> Luma Peptides Co. All rights reserved. lumaresearchco.com is operated by Luma Peptides Co.</span><div class="payments"><span class="venmo-badge">VENMO</span></div></div>
+ <div class="footer-bottom"><span>© <?php echo esc_html( gmdate( 'Y' ) ); ?> Luma Peptides Co. All rights reserved. lumaresearchco.com is operated by Luma Peptides Co.</span><div class="payments" aria-label="Payments accepted"><span class="pay-badge pay-visa">VISA</span><span class="pay-badge pay-mc">Mastercard</span><span class="pay-badge pay-amex">AMEX</span><span class="pay-badge pay-disc">Discover</span><span class="pay-badge pay-apple">&#63743; Pay</span><span class="pay-badge pay-google">G Pay</span><span class="venmo-badge">VENMO</span></div></div>
 </div></footer>
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true">

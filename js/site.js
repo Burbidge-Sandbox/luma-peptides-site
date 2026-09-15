@@ -11,10 +11,10 @@
 
   /* ---------- Config (edit freely) ---------- */
   const CONFIG = {
-    freeShipThreshold:150,
+    freeShipThreshold:0,
     /* Home-page promise strip. Set freeShipAlways:true or deliveryPromiseDays:5 once those policies are approved. */
     promises:{shipDays:1, freeShipAlways:false, deliveryPromiseDays:0},
-    shipping:{standard:{label:"Standard (3–5 days)",price:8},express:{label:"Express (1–2 days)",price:24}},
+    shipping:{standard:{label:"Next-day shipping (free)",price:0},express:{label:"Express (1–2 days)",price:24}},
     promos:{GLOW15:{type:"pct",value:15,label:"15% off"},WELCOME10:{type:"pct",value:10,label:"10% off"},FREESHIP:{type:"ship",value:0,label:"Free shipping"}},
     taxRate:0, /* set e.g. 0.07 for demo tax */
     venmo:{handle:"LumaResearchCo",profile:"https://www.venmo.com/u/LumaResearchCo"},
