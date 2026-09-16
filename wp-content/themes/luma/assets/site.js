@@ -90,7 +90,7 @@
     const c=$("#cartCount"); if(c){c.textContent=Cart.count(); c.classList.toggle("show",Cart.count()>0);}
     const body=$("#drawerBody"), foot=$("#drawerFoot"); if(!body) return;
     if(!cartData||!cartData.items.length){ body.innerHTML=`<div class="empty-cart"><svg viewBox="0 0 24 24"><path d="M6 7h12l1 14H5z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><p>Your cart is empty.</p><a class="btn btn-outline btn-sm" href="${CONFIG.urls.shop}">Browse the catalog</a></div>`; foot.innerHTML=""; return; }
-    const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=CONFIG.freeShipThreshold||150; const left=Math.max(0,thr-(sub-disc));
+    const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=Number(CONFIG.freeShipThreshold??150); const left=Math.max(0,thr-(sub-disc));
     body.innerHTML=cartData.items.map(lineHTML).join("");
     const P=CONFIG.promises||{};
     foot.innerHTML=`<div class="ship-bar">${thr>0?(left>0?`You're <b>${money(left)}</b> away from free shipping`:`🎉 You've unlocked <b>free shipping</b>`):`<b>Free next-day shipping</b> on every order${P.sameDayCounty?` · same-day in ${esc(P.sameDayCounty)} before ${esc(P.sameDayCutoff||"noon")}`:""}`}${thr>0?`<div class="track"><div class="fill" style="width:${Math.min(100,((sub-disc)/thr)*100)}%"></div></div>`:""}</div>
@@ -102,7 +102,7 @@
   function renderPage(){
     const list=$("#cartList"), sum=$("#summaryBody"); if(!list||!sum) return;
     if(!cartData||!cartData.items.length){ list.innerHTML=`<div class="empty-cart"><p>Your cart is empty.</p><a class="btn btn-primary" href="${CONFIG.urls.shop}">Browse the catalog</a></div>`; sum.innerHTML=""; return; }
-    const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=CONFIG.freeShipThreshold||150;
+    const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=Number(CONFIG.freeShipThreshold??150);
     const ship=thr>0&&(sub-disc)<thr?8:0; const coupon=(cartData.coupons||[])[0]; const P=CONFIG.promises||{};
     list.innerHTML=cartData.items.map(lineHTML).join("");
     sum.innerHTML=`<div class="promo"><input id="promoIn" placeholder="Promo code" value="${coupon?esc(coupon.code):""}" aria-label="Promo code"><button class="btn btn-dark btn-sm" id="promoBtn">${coupon?"Remove":"Apply"}</button></div><div class="promo-msg" id="promoMsg"></div>
