@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_CORE_VERSION', '0.4.1' );
+define( 'LUMA_CORE_VERSION', '0.4.2' );
 define( 'LUMA_CORE_FILE', __FILE__ );
 define( 'LUMA_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LUMA_CORE_TERMS_VERSION', '2026-09-14' ); // bump when RUO terms wording changes

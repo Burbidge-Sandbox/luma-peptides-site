@@ -16,7 +16,7 @@ $luma_nav  = [
 	[ $luma_urls['shop'],    'Catalog',     is_shop() || is_product_category() || is_product() ],
 	[ $luma_urls['faq'],     'FAQ',         is_page( 'faq' ) ],
 	[ $luma_urls['verify'],  'Verify a Lot', is_page( 'testing' ) ],
-	[ $luma_urls['orders'],  'Track Order', is_account_page() ],
+	[ $luma_urls['orders'],  'Track Order', is_account_page() && is_user_logged_in() && ( is_wc_endpoint_url( 'orders' ) || is_wc_endpoint_url( 'view-order' ) ) ],
 	[ $luma_urls['contact'], 'Contact',     is_page( 'contact' ) ],
 ];
 ?>

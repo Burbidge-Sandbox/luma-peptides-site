@@ -25,7 +25,7 @@ add_filter( 'woocommerce_account_menu_items', function ( array $items ): array {
 /** Page-head copy for the account page (legacy #acctTitle / #acctLede). */
 function luma_account_head(): array {
 	if ( ! is_user_logged_in() ) {
-		return [ 'Your orders and documents', 'Sign in to see order history, tracking and certificates of analysis for every lot you have received.' ];
+		return [ 'Your orders and documents', 'Sign in, or create an account, to see order history, tracking and certificates of analysis for every lot you have received.' ];
 	}
 	if ( is_wc_endpoint_url( 'view-order' ) ) {
 		return [ 'Order details', '' ];

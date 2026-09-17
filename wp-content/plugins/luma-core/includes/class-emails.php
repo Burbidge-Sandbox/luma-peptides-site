@@ -64,6 +64,7 @@ table.td th { font-size:11px !important; letter-spacing:.1em; text-transform:upp
 #template_footer #credit { color:' . self::MUTED . ' !important; font-size:12px !important; font-family:Inter,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif !important; line-height:1.5; }
 .luma-eyebrow { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:' . self::TERRA . '; font-weight:600; margin:0 0 6px; }
 .luma-fine { font-size:12px !important; color:' . self::MUTED . ' !important; margin-top:18px; }
+#body_content_inner a[style*="background-color"] { color:#fff !important; background-color:' . self::TERRA . ' !important; border-radius:8px !important; font-size:12px !important; letter-spacing:.08em; text-transform:uppercase; font-weight:600 !important; padding:12px 22px !important; }
 .luma-btn { display:inline-block; background:' . self::TERRA . '; color:#fff !important; text-decoration:none; padding:12px 22px; border-radius:8px; font-size:12px; letter-spacing:.08em; text-transform:uppercase; font-weight:600; }
 ';
 	}
