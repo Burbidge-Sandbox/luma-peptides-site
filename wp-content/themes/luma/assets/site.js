@@ -223,6 +223,19 @@
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-waitlist]"); if(!b) return; e.preventDefault(); joinWaitlist(b.dataset.waitlist); });
 
   /* ---------- Contact form ---------- */
+  /* Block checkout: draw the same labelled vial as the catalog in the order summary (React re-renders, so observe). */
+  (function(){
+    if(!document.querySelector(".checkout-page")||!window.LUMA_PRODUCTS) return;
+    const find=(name)=>{ name=(name||"").trim().toLowerCase(); return window.LUMA_PRODUCTS.find(x=>x.name.toLowerCase()===name)||window.LUMA_PRODUCTS.find(x=>name.startsWith(x.name.toLowerCase()))||null; };
+    const paint=()=>{ document.querySelectorAll(".wc-block-components-order-summary-item").forEach(it=>{
+      const box=it.querySelector(".wc-block-components-order-summary-item__image"); if(!box||box.querySelector(".product-photo")) return;
+      const nm=it.querySelector(".wc-block-components-product-name"); const p=nm&&find(nm.textContent); if(!p) return;
+      const meta=(it.querySelector(".wc-block-components-product-details")||{}).textContent||""; const v=(p.variants||[]).find(v=>meta.toUpperCase().includes(v.key.toUpperCase()));
+      const img=box.querySelector("img"); if(img) img.remove();
+      box.insertAdjacentHTML("beforeend", vialSVG(v?{...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]}:p));
+    }); };
+    paint(); new MutationObserver(paint).observe(document.body,{childList:true,subtree:true});
+  })();
   document.addEventListener("submit",async e=>{
     const f=e.target; if(f.id!=="contactForm") return; e.preventDefault();
     const fd=new FormData(f); fd.append("action","luma_contact");

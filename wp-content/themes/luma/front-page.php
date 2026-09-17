@@ -35,7 +35,7 @@ get_header();
   <div><span class="eyebrow">A closer look</span><h2>Clarity starts <br>with the details.</h2><p>What is in a vial matters, and so does the documentation that comes with it. Every lot is characterized by an independent laboratory for identity, purity, net content, and endotoxin before it is released for sale.</p><a class="text-link" href="<?php echo esc_url( $u['verify'] ); ?>">Explore lot verification <span aria-hidden="true">↗</span></a></div>
   <div class="detail-list">
    <div><span>01</span><div><h3>Review the specification</h3><p>Each listing states the compound, net content, form, purity of the most recent lot, and storage conditions.</p></div></div>
-   <div><span>02</span><div><h3>Check the certificate</h3><p>Every carton carries a lot number. The certificate of analysis for that exact lot is published before the first vial ships.</p></div></div>
+   <div><span>02</span><div><h3>Check the certificate</h3><p>Every vial carries a lot number. The certificate of analysis for that exact lot is published before the first vial ships.</p></div></div>
    <div><span>03</span><div><h3>Request documentation</h3><p>Full laboratory reports are available on request for any lot. <a href="<?php echo esc_url( $u['contact'] ); ?>">Contact Luma</a> for documentation. Usage guidance is not provided.</p></div></div>
   </div>
  </div>
