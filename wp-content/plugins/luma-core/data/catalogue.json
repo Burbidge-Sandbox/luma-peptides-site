@@ -385,7 +385,7 @@
  "lots": {
   "LP-2609-TZ15": {
    "product": "GLP-2 T 15mg",
-   "lab": "Freedom Diagnostics",
+   "lab": "Kovera Labs",
    "tested": "2026-08-18",
    "purity": "99.4%",
    "identity": "Confirmed (LC-MS)",
@@ -396,7 +396,7 @@
   },
   "LP-2609-GLOW": {
    "product": "BPC-157 + GHK-Cu + TB-500 Blend 5mg",
-   "lab": "Freedom Diagnostics",
+   "lab": "Kovera Labs",
    "tested": "2026-08-18",
    "purity": "99.0%",
    "identity": "Confirmed (LC-MS)",
@@ -407,7 +407,7 @@
   },
   "LP-2608-GHK5": {
    "product": "GHK-Cu 5mg",
-   "lab": "Freedom Diagnostics",
+   "lab": "Kovera Labs",
    "tested": "2026-07-30",
    "purity": "99.6%",
    "identity": "Confirmed (HPLC)",
@@ -418,7 +418,7 @@
   },
   "LP-2608-BPC5": {
    "product": "BPC-157 10mg",
-   "lab": "Freedom Diagnostics",
+   "lab": "Kovera Labs",
    "tested": "2026-07-30",
    "purity": "99.5%",
    "identity": "Confirmed (HPLC)",

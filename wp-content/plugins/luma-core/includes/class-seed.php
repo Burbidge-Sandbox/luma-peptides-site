@@ -319,7 +319,7 @@ class Seed {
 			$meta   = [
 				'_lot_product_id'   => $prod ? ( $prod->is_type( 'variation' ) ? $prod->get_parent_id() : $pid ) : 0,
 				'_lot_variation_id' => $prod && $prod->is_type( 'variation' ) ? $pid : 0,
-				'_lot_lab'          => $lot['lab'] ?? 'Freedom Diagnostics',
+				'_lot_lab'          => $lot['lab'] ?? 'Kovera Labs',
 				'_lot_status'       => $lot['status'] ?? 'PENDING',
 				'_lot_tested'       => $lot['tested'] ?? '',
 				'_lot_method'       => $lot['method'] ?? '',

@@ -134,8 +134,8 @@ window.LUMA_CATEGORIES = { all:"All compounds", metabolic:"Metabolic Research", 
 window.LUMA_VOLUME_TIERS = [{min:3,pct:5},{min:5,pct:10},{min:10,pct:15}];
 
 window.LUMA_LOTS = {
-  "LP-2609-TZ15":{product:"GLP-2 T 15mg",lab:"Freedom Diagnostics",tested:"2026-08-18",purity:"99.4%",identity:"Confirmed (LC-MS)",netContent:"15.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
-  "LP-2609-GLOW":{product:"BPC-157 + GHK-Cu + TB-500 Blend 5mg",lab:"Freedom Diagnostics",tested:"2026-08-18",purity:"99.0%",identity:"Confirmed (LC-MS)",netContent:"5.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
-  "LP-2608-GHK5":{product:"GHK-Cu 5mg",lab:"Freedom Diagnostics",tested:"2026-07-30",purity:"99.6%",identity:"Confirmed (HPLC)",netContent:"5.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"},
-  "LP-2608-BPC5":{product:"BPC-157 10mg",lab:"Freedom Diagnostics",tested:"2026-07-30",purity:"99.5%",identity:"Confirmed (HPLC)",netContent:"10.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"}
+  "LP-2609-TZ15":{product:"GLP-2 T 15mg",lab:"Kovera Labs",tested:"2026-08-18",purity:"99.4%",identity:"Confirmed (LC-MS)",netContent:"15.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
+  "LP-2609-GLOW":{product:"BPC-157 + GHK-Cu + TB-500 Blend 5mg",lab:"Kovera Labs",tested:"2026-08-18",purity:"99.0%",identity:"Confirmed (LC-MS)",netContent:"5.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-08"},
+  "LP-2608-GHK5":{product:"GHK-Cu 5mg",lab:"Kovera Labs",tested:"2026-07-30",purity:"99.6%",identity:"Confirmed (HPLC)",netContent:"5.1mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"},
+  "LP-2608-BPC5":{product:"BPC-157 10mg",lab:"Kovera Labs",tested:"2026-07-30",purity:"99.5%",identity:"Confirmed (HPLC)",netContent:"10.0mg",endotoxin:"< 0.05 EU/mg",status:"PASS",expires:"2028-07"}
 };
