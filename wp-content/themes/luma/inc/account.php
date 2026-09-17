@@ -146,3 +146,11 @@ function luma_account_certificates_section(): void {
 	}
 	echo '</section>';
 }
+
+/* Don't reveal whether an email exists: one neutral message for any bad email/password combination. */
+add_filter( 'authenticate', function ( $user ) {
+	if ( is_wp_error( $user ) && in_array( $user->get_error_code(), [ 'invalid_email', 'invalid_username', 'incorrect_password' ], true ) ) {
+		return new WP_Error( 'luma_login', 'That email and password don\'t match our records. Check them and try again, or use "Lost your password?" below.' );
+	}
+	return $user;
+}, 99 );

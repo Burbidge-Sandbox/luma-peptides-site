@@ -4,7 +4,9 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+echo '<div class="acct-notices">';
 do_action( 'woocommerce_before_customer_login_form' );
+echo '</div>';
 $register = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
 ?>
 <div class="acct-auth<?php echo $register ? ' has-register' : ''; ?>">
@@ -42,6 +44,7 @@ $register = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
 				<p class="acct-fine full">A link to set your password will be sent to your email address.</p>
 			<?php endif; ?>
 			<?php do_action( 'woocommerce_register_form' ); ?>
+			<?php wp_nonce_field( 'woocommerce-register', 'woocommerce-register-nonce' ); ?>
 			<div class="full"><button type="submit" class="btn btn-dark" name="register" value="Register">Create account</button></div>
 			<?php do_action( 'woocommerce_register_form_end' ); ?>
 		</form>
