@@ -154,3 +154,6 @@ add_filter( 'authenticate', function ( $user ) {
 	}
 	return $user;
 }, 99 );
+
+/* Password bar: "medium" (2) rather than Woo's default "strong" (3); the meter still shows and the button greys out when too weak. */
+add_filter( 'woocommerce_min_password_strength', fn() => 2 );

@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.4.8
+Version: 0.4.9
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -63,7 +63,15 @@ body.order-received .page-head{display:none}
 .acct-auth .btn{width:100%;min-height:48px}
 .acct-auth .woocommerce-privacy-policy-text{font-size:.8rem;color:var(--muted)}
 .acct-auth .woocommerce-privacy-policy-text p{margin:0}
-.acct-auth .woocommerce-password-strength,.acct-auth .woocommerce-password-hint{font-size:.78rem;color:var(--muted);margin:.3rem 0 0}
+/* Password strength meter: reserve its space so the button never jumps under the cursor */
+.acct-register .field.pw{position:relative;padding-bottom:1.35rem}
+.acct-auth .woocommerce-password-strength{position:absolute;left:0;bottom:0;margin:0;font-size:.76rem;line-height:1.2;color:var(--muted);letter-spacing:.02em}
+.acct-auth .woocommerce-password-strength.short,.acct-auth .woocommerce-password-strength.bad{color:var(--terra)}
+.acct-auth .woocommerce-password-strength.good{color:#8a6a1f}
+.acct-auth .woocommerce-password-strength.strong{color:#4E6144}
+.acct-auth .woocommerce-password-hint{display:none}
+.acct-auth .field .pw-help{font-size:.76rem;color:var(--muted);margin:0}
+.acct-auth .btn:disabled,.acct-auth .btn[disabled]{opacity:.45;cursor:not-allowed}
 .acct-legal{text-align:center;margin-top:2rem}
 /* Notices on the account pages (login errors, "password reset", etc.) */
 .account-page .woocommerce-notices-wrapper:empty{display:none}

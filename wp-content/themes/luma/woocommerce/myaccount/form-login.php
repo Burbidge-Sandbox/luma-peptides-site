@@ -39,7 +39,7 @@ $register = 'yes' === get_option( 'woocommerce_enable_myaccount_registration' );
 			<?php endif; ?>
 			<div class="field full"><label for="reg_email">Email</label><input type="email" name="email" id="reg_email" autocomplete="email" value="<?php echo ( ! empty( $_POST['email'] ) ) ? esc_attr( wp_unslash( $_POST['email'] ) ) : ''; ?>" required></div><?php // phpcs:ignore WordPress.Security.NonceVerification ?>
 			<?php if ( 'no' === get_option( 'woocommerce_registration_generate_password' ) ) : ?>
-				<div class="field full"><label for="reg_password">Password</label><input type="password" name="password" id="reg_password" autocomplete="new-password" required></div>
+				<div class="field full pw"><label for="reg_password">Password</label><input type="password" name="password" id="reg_password" autocomplete="new-password" minlength="8" required><p class="pw-help">At least 8 characters; mix letters, numbers or symbols.</p></div>
 			<?php else : ?>
 				<p class="acct-fine full">A link to set your password will be sent to your email address.</p>
 			<?php endif; ?>
