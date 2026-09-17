@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.5.0
+Version: 0.5.1
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -73,6 +73,27 @@ body.order-received .page-head{display:none}
 .acct-auth .field .pw-help{font-size:.76rem;color:var(--muted);margin:0}
 .acct-auth .btn:disabled,.acct-auth .btn[disabled]{opacity:.45;cursor:not-allowed}
 .acct-legal{text-align:center;margin-top:2rem}
+/* Account overview layout (0.5.1) */
+.acct-grid{display:grid;gap:1.6rem;align-items:start}
+@media(min-width:900px){.acct-grid{grid-template-columns:minmax(0,1fr) 300px}}
+.acct-main{min-width:0}
+.acct-side{display:grid;gap:1rem}
+.acct-side-card{padding:1.3rem 1.4rem}
+.acct-side-card h3{font-family:var(--serif,Georgia,serif);font-weight:500;font-size:1.2rem;margin:0 0 .8rem}
+.acct-side-card p{margin:0;font-size:.9rem;color:var(--ink-2);line-height:1.55}
+.acct-side-card p a{color:var(--terra);text-decoration:underline}
+.acct-kv{margin:0 0 .9rem;display:grid;gap:.55rem}
+.acct-kv div{display:grid;gap:.1rem}
+.acct-kv dt{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.acct-kv dd{margin:0;font-size:.92rem;color:var(--ink);overflow-wrap:anywhere}
+.acct-kv .muted{color:var(--muted)}
+.acct-side-links{display:grid;gap:.45rem}
+.acct-side-links a{font-size:.9rem;color:var(--ink);text-decoration:none;border-bottom:1px solid transparent;width:fit-content}
+.acct-side-links a:hover{color:var(--terra);border-bottom-color:var(--terra)}
+.acct-help{background:var(--cream)}
+.acct-empty{display:grid;gap:1rem;justify-items:start}
+.acct-empty p{margin:0;color:var(--ink-2)}
+
 /* Notices on the account pages (login errors, "password reset", etc.) */
 .account-page .woocommerce-notices-wrapper:empty{display:none}
 .account-page .woocommerce-error,.account-page .woocommerce-message,.account-page .woocommerce-info,.acct-notices .woocommerce-error,.acct-notices .woocommerce-message,.acct-notices .woocommerce-info{list-style:none;margin:0 auto 1.4rem;padding:.9rem 1.1rem .9rem 1rem;max-width:1040px;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:var(--radius);font-size:.92rem;color:var(--ink-2);display:flex;flex-direction:column;gap:.4rem}

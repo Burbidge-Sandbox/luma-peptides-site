@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.5.0' );
+define( 'LUMA_THEME_VERSION', '0.5.1' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';

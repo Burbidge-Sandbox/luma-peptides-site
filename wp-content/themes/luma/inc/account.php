@@ -30,7 +30,8 @@ function luma_account_head(): array {
 	if ( is_wc_endpoint_url( 'view-order' ) ) {
 		return [ 'Order details', '' ];
 	}
-	return [ 'Welcome back.', '' ];
+	$first = wp_get_current_user()->first_name;
+	return [ $first ? 'Welcome back, ' . $first . '.' : 'Welcome back.', '' ];
 }
 
 /** Lot numbers attached to an order's line items (set at shipment; falls back to nothing). */
@@ -121,7 +122,7 @@ function luma_account_render_orders( $customer_orders, bool $has_orders, int $cu
 			echo '</div>';
 		}
 	} else {
-		echo '<div class="acct-card"><p style="margin:0;color:var(--ink-2)">No orders yet under this email.</p></div>';
+		echo '<div class="acct-card acct-empty"><p>No orders yet under this email. Every lot is independently tested and ships free next-day.</p><a class="btn btn-primary btn-sm" href="' . esc_url( $u['shop'] ) . '">Browse the catalog</a></div>';
 	}
 	echo '</section>';
 }
