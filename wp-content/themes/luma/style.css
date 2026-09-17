@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.5.1
+Version: 0.5.2
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -74,8 +74,9 @@ body.order-received .page-head{display:none}
 .acct-auth .btn:disabled,.acct-auth .btn[disabled]{opacity:.45;cursor:not-allowed}
 .acct-legal{text-align:center;margin-top:2rem}
 /* Account overview layout (0.5.1) */
-.acct-grid{display:grid;gap:1.6rem;align-items:start}
-@media(min-width:900px){.acct-grid{grid-template-columns:minmax(0,1fr) 300px}}
+.account-page .acct:has(.acct-grid){max-width:1080px;margin-inline:auto}
+.acct-grid{display:grid;gap:1.8rem;align-items:start}
+@media(min-width:960px){.acct-grid{grid-template-columns:minmax(0,1fr) 320px}}
 .acct-main{min-width:0}
 .acct-side{display:grid;gap:1rem}
 .acct-side-card{padding:1.3rem 1.4rem}
@@ -160,7 +161,7 @@ body.order-received .page-head{display:none}
 .checkout-page .wc-block-components-express-payment-continue-rule{display:flex;align-items:center;gap:.9rem;margin:1.6rem 0 1.4rem;font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 .checkout-page .wc-block-components-express-payment-continue-rule::before,.checkout-page .wc-block-components-express-payment-continue-rule::after{content:"";flex:1;height:1px;background:var(--line);border:0}
 /* Order-summary thumbnails: same labelled vial as the catalog and cart */
-.checkout-page .wc-block-components-order-summary-item__image{width:64px;flex:0 0 64px}
+.checkout-page .wc-block-components-order-summary-item__image{width:72px;flex:0 0 72px}
 .checkout-page .wc-block-components-order-summary-item__image .product-photo{width:100%;aspect-ratio:2/3;border-radius:4px;background:var(--cream)}
 .checkout-page .wc-block-components-order-summary-item__image .product-photo>img{object-fit:cover}
 .checkout-page .wc-block-components-order-summary-item__image svg.photo-label{width:100%;height:100%}
