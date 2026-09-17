@@ -257,14 +257,14 @@ class Seed {
 				}
 			}
 
-			if ( $grid_image_id ) {
+			if ( $with_images ) {
+				/* Featured image = the labelled vial (same composite the catalog draws), so cart/checkout/emails/admin all show the product. */
+				$label_id = self::sideload( 'assets/products/labelled/' . $p['id'] . '.jpg', $p['id'] . '-label' );
+				$product->set_image_id( $label_id ?: $grid_image_id );
+				$detail = ! empty( $p['image'] ) ? self::sideload( $p['image'] . '.jpg', $p['id'] ) : 0;
+				$product->set_gallery_image_ids( $detail ? [ $detail ] : [] );
+			} elseif ( $grid_image_id && ! $product->get_image_id() ) {
 				$product->set_image_id( $grid_image_id );
-				if ( $with_images && ! empty( $p['image'] ) ) {
-					$detail = self::sideload( $p['image'] . '.jpg', $p['id'] );
-					if ( $detail ) {
-						$product->set_gallery_image_ids( [ $detail ] );
-					}
-				}
 			}
 
 			$product_id = $product->save();
@@ -294,6 +294,12 @@ class Seed {
 						$variation->set_low_stock_amount( 3 );
 					}
 					$variation->update_meta_data( '_luma_strength', $v['strength'] ?? $v['label'] );
+					if ( $with_images ) {
+						$vimg = self::sideload( 'assets/products/labelled/' . $p['id'] . '--' . strtolower( $v['key'] ?? $v['label'] ) . '.jpg', $p['id'] . '-' . strtolower( $v['key'] ?? $v['label'] ) . '-label' );
+						if ( $vimg ) {
+							$variation->set_image_id( $vimg );
+						}
+					}
 					$variation->set_status( 'publish' );
 					$nvid  = $variation->save();
 					$out[] = '  variation ' . $v['sku'] . ' → #' . $nvid;

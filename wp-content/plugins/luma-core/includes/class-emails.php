@@ -36,7 +36,7 @@ class Emails {
 		add_filter( 'woocommerce_email_subject_customer_completed_order', fn( $s, $o ) => sprintf( 'Order %s has shipped — Luma Peptides Co.', $o->get_order_number() ), 10, 2 );
 		add_filter( 'woocommerce_email_heading_customer_completed_order', fn() => 'Your order is on its way.' );
 		add_filter( 'woocommerce_email_subject_customer_refunded_order', fn( $s, $o ) => sprintf( 'Order %s refunded — Luma Peptides Co.', $o->get_order_number() ), 10, 2 );
-		add_filter( 'woocommerce_email_subject_new_order', fn( $s, $o ) => sprintf( '[Luma] New order %s · %s', $o->get_order_number(), wp_strip_all_tags( $o->get_formatted_order_total() ) ), 10, 2 );
+		add_filter( 'woocommerce_email_subject_new_order', fn( $s, $o ) => sprintf( '[Luma] New order %s · %s', $o->get_order_number(), html_entity_decode( wp_strip_all_tags( $o->get_formatted_order_total() ), ENT_QUOTES, 'UTF-8' ) ), 10, 2 );
 
 		add_action( 'woocommerce_email_order_details', [ __CLASS__, 'intro' ], 5, 4 );
 		add_action( 'woocommerce_email_after_order_table', [ __CLASS__, 'after_table' ], 10, 4 );
