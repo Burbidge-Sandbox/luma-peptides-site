@@ -114,6 +114,9 @@ class Fulfillment {
 		echo '</select>';
 		echo '<input type="text" name="luma_tracking" value="' . esc_attr( (string) $order->get_meta( '_luma_tracking' ) ) . '" placeholder="Tracking number" style="width:100%">';
 		echo '<p style="margin:.6rem 0 0;color:#646970;font-size:12px">Save the order, then set status to <b>Completed</b> to send the shipped email with this tracking link and reduce the lot count.</p>';
+		$delivered = (string) $order->get_meta( '_luma_delivered' );
+		echo '<p style="margin:.9rem 0 .3rem"><label><input type="checkbox" name="luma_delivered" value="1"' . checked( (bool) $delivered, true, false ) . '> <strong>Delivered</strong></label></p>';
+		echo '<p style="margin:.2rem 0 0;color:#646970;font-size:12px">' . ( $delivered ? 'Marked delivered ' . esc_html( gmdate( 'M j, Y', strtotime( $delivered ) ) ) . ' UTC. Shows as the final step on the customer\'s order page.' : 'Tick once the carrier confirms delivery. Lights up the last step of the customer\'s order timeline.' ) . '</p>';
 	}
 
 	public static function save( $order_id ): void {
@@ -137,6 +140,16 @@ class Fulfillment {
 		$carrier = sanitize_key( wp_unslash( $_POST['luma_tracking_carrier'] ?? 'usps' ) );
 		$order->update_meta_data( '_luma_tracking_carrier', isset( self::CARRIERS[ $carrier ] ) ? $carrier : 'other' );
 		$order->update_meta_data( '_luma_tracking', sanitize_text_field( wp_unslash( $_POST['luma_tracking'] ?? '' ) ) );
+		$was = (string) $order->get_meta( '_luma_delivered' );
+		if ( ! empty( $_POST['luma_delivered'] ) ) {
+			if ( ! $was ) {
+				$order->update_meta_data( '_luma_delivered', gmdate( 'c' ) );
+				$order->add_order_note( 'Marked delivered.' );
+			}
+		} elseif ( $was ) {
+			$order->delete_meta_data( '_luma_delivered' );
+			$order->add_order_note( 'Delivered mark removed.' );
+		}
 		$order->save();
 	}
 
@@ -144,6 +157,10 @@ class Fulfillment {
 		$t = self::tracking( $order );
 		if ( $t ) {
 			echo '<p><strong>Tracking:</strong> ' . esc_html( $t['carrier'] ) . ' ' . ( $t['url'] ? '<a href="' . esc_url( $t['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $t['number'] ) . '</a>' : esc_html( $t['number'] ) ) . '</p>';
+		}
+		$d = (string) $order->get_meta( '_luma_delivered' );
+		if ( $d ) {
+			echo '<p><strong>Delivered:</strong> ' . esc_html( gmdate( 'M j, Y', strtotime( $d ) ) ) . '</p>';
 		}
 	}
 

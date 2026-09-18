@@ -34,7 +34,9 @@ $lots  = luma_order_lots( $order );
 		<?php if ( $lots ) : ?><p style="font-size:.85rem;color:var(--muted);margin:.5rem 0 0"><b>Lots:</b> <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>" style="color:var(--terra);text-decoration:underline"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></p><?php endif; ?>
 		<?php if ( $ack ) : ?><p style="font-size:.78rem;color:var(--muted);margin:.5rem 0 0">Research-use acknowledgement recorded <?php echo esc_html( substr( $ack, 0, 16 ) ); ?> UTC.</p><?php endif; ?>
 		<?php if ( ! $order->has_status( [ 'cancelled', 'refunded', 'failed' ] ) ) : ?>
-		<div class="timeline"><div class="done">Order placed</div><div class="<?php echo $paid ? 'done' : ''; ?>">Payment received</div><div class="<?php echo $order->has_status( 'completed' ) ? 'done' : ''; ?>">Lab release</div><div class="<?php echo $order->has_status( 'completed' ) ? 'done' : ''; ?>">Shipped</div></div>
+		<?php $shipped = $order->has_status( 'completed' ); $delivered_at = (string) $order->get_meta( '_luma_delivered' ); $delivered = (bool) $delivered_at; ?>
+		<?php if ( $delivered ) : ?><p style="font-size:.85rem;color:var(--muted);margin:.5rem 0 0"><b>Delivered:</b> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $delivered_at ) ) ); ?></p><?php endif; ?>
+		<div class="timeline timeline-5"><div class="done">Order placed</div><div class="<?php echo $paid ? 'done' : ''; ?>">Payment received</div><div class="<?php echo $shipped ? 'done' : ''; ?>">Lab release</div><div class="<?php echo $shipped ? 'done' : ''; ?>">Shipped</div><div class="<?php echo $delivered ? 'done' : ''; ?>">Delivered</div></div>
 		<?php endif; ?>
 	</div>
 	<div class="acct-actions" style="margin-top:1rem">

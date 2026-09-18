@@ -78,30 +78,62 @@ function luma_order_pill_label( WC_Order $order ): string {
 	return $map[ $order->get_status() ] ?? wc_get_order_status_name( $order->get_status() );
 }
 
-/** Sidebar shared by the overview and the orders endpoint. */
-function luma_account_sidebar(): void {
+/** Meta strip (Option A) — replaces the old right-hand sidebar. */
+function luma_account_meta_strip(): void {
 	$user     = wp_get_current_user();
-	$u        = luma_catalogue_json()['config']['urls'];
 	$customer = new WC_Customer( $user->ID );
 	$ship     = array_filter( [ $customer->get_shipping_address_1(), $customer->get_shipping_city(), trim( $customer->get_shipping_state() . ' ' . $customer->get_shipping_postcode() ) ] );
 	$count    = wc_get_customer_order_count( $user->ID );
 	?>
-	<aside class="acct-side">
-		<section class="acct-card acct-side-card">
-			<h3>Your account</h3>
-			<dl class="acct-kv">
-				<div><dt>Email</dt><dd><?php echo esc_html( $user->user_email ); ?></dd></div>
-				<div><dt>Shipping to</dt><dd><?php echo $ship ? esc_html( implode( ', ', $ship ) ) : '<span class="muted">No address saved yet</span>'; ?></dd></div>
-				<div><dt>Orders</dt><dd><?php echo esc_html( $count ); ?></dd></div>
-			</dl>
-			<div class="acct-side-links">
-				<a href="<?php echo esc_url( wc_get_account_endpoint_url( 'edit-address' ) ); ?>">Addresses →</a>
-				<a href="<?php echo esc_url( wc_get_account_endpoint_url( 'edit-account' ) ); ?>">Details &amp; password →</a>
-				<a href="<?php echo esc_url( wc_logout_url() ); ?>">Sign out</a>
-			</div>
+	<div class="acct-meta">
+		<div class="acct-meta-cell">
+			<span class="acct-meta-k">Signed in as</span>
+			<span class="acct-meta-v"><?php echo esc_html( $user->user_email ); ?></span>
+		</div>
+		<div class="acct-meta-cell">
+			<span class="acct-meta-k">Ships to</span>
+			<span class="acct-meta-v"><?php echo $ship ? esc_html( implode( ', ', $ship ) ) : '<span class="muted">No address saved yet</span>'; ?></span>
+		</div>
+		<div class="acct-meta-cell acct-meta-count">
+			<span class="acct-meta-k">Orders</span>
+			<span class="acct-meta-v acct-num"><?php echo esc_html( $count ); ?></span>
+		</div>
+		<div class="acct-meta-links">
+			<a class="chip" href="<?php echo esc_url( wc_get_account_endpoint_url( 'edit-address' ) ); ?>">Addresses</a>
+			<a class="chip" href="<?php echo esc_url( wc_get_account_endpoint_url( 'edit-account' ) ); ?>">Details</a>
+			<a class="chip chip-out" href="<?php echo esc_url( wc_logout_url() ); ?>">Sign out</a>
+		</div>
+	</div>
+	<?php
+}
+
+/** Certificates + help, side by side under the ledger. */
+function luma_account_bottom_row(): void {
+	$u    = luma_catalogue_json()['config']['urls'];
+	$lots = [];
+	foreach ( wc_get_orders( [ 'customer' => get_current_user_id(), 'limit' => 50 ] ) as $order ) {
+		$lots = array_merge( $lots, luma_order_lots( $order ) );
+	}
+	$lots = array_values( array_unique( $lots ) );
+	?>
+	<div class="acct-bottom">
+		<section class="acct-card acct-certs">
+			<h2>Your certificates</h2>
+			<?php if ( $lots ) : ?>
+				<p>Independent laboratory certificates for every lot you have received.</p>
+				<div class="lot-list">
+					<?php foreach ( $lots as $l ) : ?>
+						<a class="chip" href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?> ↗</a>
+					<?php endforeach; ?>
+				</div>
+			<?php else : ?>
+				<p>Lot numbers are recorded when an order ships. Certificates for your lots will appear here, and every vial carries its lot number for <a href="<?php echo esc_url( $u['verify'] ); ?>">lookup</a>.</p>
+				<span class="acct-lot-empty">No lots on file yet</span>
+			<?php endif; ?>
 		</section>
-		<section class="acct-card acct-side-card">
-			<h3>Quick links</h3>
+		<section class="acct-card acct-help">
+			<h2>Need a hand?</h2>
+			<p>Questions about an order, a lot or a certificate — email <a href="mailto:<?php echo esc_attr( luma_owner_email() ); ?>"><?php echo esc_html( luma_owner_email() ); ?></a> or text <a href="sms:+13855215259">(385) 521-5259</a>. We reply within one business day.</p>
 			<div class="acct-side-links">
 				<a href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog →</a>
 				<a href="<?php echo esc_url( $u['verify'] ); ?>">Verify a lot →</a>
@@ -109,17 +141,12 @@ function luma_account_sidebar(): void {
 				<a href="<?php echo esc_url( $u['faq'] ); ?>">FAQ →</a>
 			</div>
 		</section>
-		<section class="acct-card acct-side-card acct-help">
-			<h3>Need a hand?</h3>
-			<p>Questions about an order, a lot or a certificate — email <a href="mailto:<?php echo esc_attr( luma_owner_email() ); ?>"><?php echo esc_html( luma_owner_email() ); ?></a> or text <a href="sms:+13855215259">(385) 521-5259</a>. We reply within one business day.</p>
-			<p class="acct-fine" style="margin:.8rem 0 0">Free next-day shipping on every order · same-day in Utah County before 12:00 pm MT.</p>
-		</section>
-	</aside>
+	</div>
 	<?php
 }
 
-/** Orders section (dashboard uses a short list; the orders endpoint pages). */
-function luma_account_orders_section( int $page = 1, int $limit = 0 ): void {
+/** Orders section (dashboard shows a short list; the orders endpoint pages). */
+function luma_account_orders_section( int $page = 1, int $limit = 0, bool $is_dashboard = false ): void {
 	$args = [
 		'customer' => get_current_user_id(),
 		'page'     => $page,
@@ -127,69 +154,83 @@ function luma_account_orders_section( int $page = 1, int $limit = 0 ): void {
 		'limit'    => $limit ?: 10,
 	];
 	$orders = wc_get_orders( apply_filters( 'woocommerce_my_account_my_orders_query', $args ) );
-	luma_account_render_orders( $orders, 0 < $orders->total, $page );
+	luma_account_render_orders( $orders, 0 < $orders->total, $page, $is_dashboard );
 }
 
-function luma_account_render_orders( $customer_orders, bool $has_orders, int $current_page ): void {
+/** The ledger: one full-width row per order. */
+function luma_account_render_orders( $customer_orders, bool $has_orders, int $current_page, bool $is_dashboard = false ): void {
 	$u = luma_catalogue_json()['config']['urls'];
-	echo '<section class="acct-sec" style="margin-top:0"><div class="acct-head"><h2>Orders</h2><a class="text-link" href="' . esc_url( $u['shop'] ) . '">Browse the catalog →</a></div>';
-	if ( $has_orders ) {
-		foreach ( $customer_orders->orders as $order ) {
-			$order = wc_get_order( $order );
-			$lots = luma_order_lots( $order );
-			?>
-			<article class="acct-order">
-				<header class="acct-order-top"><div><b>Order <?php echo esc_html( $order->get_order_number() ); ?></b><span class="acct-date"><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span></div><span class="<?php echo esc_attr( luma_order_pill_class( $order ) ); ?>"><?php echo esc_html( luma_order_pill_label( $order ) ); ?></span></header>
-				<ul class="acct-order-items">
-					<?php foreach ( $order->get_items() as $item ) : ?>
-						<li><span class="qty"><?php echo esc_html( $item->get_quantity() ); ?>×</span><span class="name"><?php echo esc_html( $item->get_name() ); ?></span><span class="amt"><?php echo wp_kses_post( wc_price( (float) $item->get_total(), [ 'currency' => $order->get_currency() ] ) ); ?></span></li>
-					<?php endforeach; ?>
-				</ul>
-				<?php $trk = luma_order_tracking( $order ); if ( $trk || $lots ) : ?>
-				<div class="acct-order-meta"><?php if ( $trk ) : ?><span>Tracking <?php echo $trk['url'] ? '<a href="' . esc_url( $trk['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $trk['carrier'] . ' ' . $trk['number'] ) . '</a>' : esc_html( $trk['carrier'] . ' ' . $trk['number'] ); ?></span><?php endif; ?><?php if ( $lots ) : ?><span>Lots <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></span><?php endif; ?></div>
+	?>
+	<section class="acct-sec acct-sec-orders">
+		<div class="acct-head">
+			<h2>Orders</h2>
+			<span class="acct-head-note">Most recent first</span>
+			<span class="acct-head-links">
+				<?php if ( $is_dashboard && $has_orders ) : ?>
+					<a class="text-link" href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>">All orders →</a>
 				<?php endif; ?>
-				<footer class="acct-order-foot">
-					<div class="acct-order-total"><small>Total</small><b><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></b></div>
-					<div class="acct-actions">
-						<?php foreach ( wc_get_account_orders_actions( $order ) as $key => $a ) : ?>
-							<a class="btn <?php echo 'pay' === $key ? 'btn-primary' : ( 'view' === $key ? 'btn-outline' : 'btn-ghost' ); ?> btn-sm" href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( 'view' === $key ? 'View order' : $a['name'] ); ?></a>
-						<?php endforeach; ?>
-					</div>
-				</footer>
-			</article>
-			<?php
-		}
-		if ( 1 < $customer_orders->max_num_pages ) {
-			echo '<div class="acct-actions" style="justify-content:space-between">';
-			echo 1 !== $current_page ? '<a class="btn btn-outline btn-sm" href="' . esc_url( wc_get_endpoint_url( 'orders', $current_page - 1 ) ) . '">← Newer</a>' : '<span></span>';
-			echo (int) $customer_orders->max_num_pages !== $current_page ? '<a class="btn btn-outline btn-sm" href="' . esc_url( wc_get_endpoint_url( 'orders', $current_page + 1 ) ) . '">Older →</a>' : '';
-			echo '</div>';
-		}
-	} else {
-		echo '<div class="acct-card acct-empty"><p>No orders yet under this email. Every lot is independently tested and ships free next-day.</p><a class="btn btn-primary btn-sm" href="' . esc_url( $u['shop'] ) . '">Browse the catalog</a></div>';
-	}
-	echo '</section>';
-}
+				<a class="text-link" href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog →</a>
+			</span>
+		</div>
 
-/** Certificates section: every lot across the customer's orders. */
-function luma_account_certificates_section(): void {
-	$u    = luma_catalogue_json()['config']['urls'];
-	$lots = [];
-	foreach ( wc_get_orders( [ 'customer' => get_current_user_id(), 'limit' => 50 ] ) as $order ) {
-		$lots = array_merge( $lots, luma_order_lots( $order ) );
-	}
-	$lots = array_values( array_unique( $lots ) );
-	echo '<section class="acct-sec"><div class="acct-head"><h2>Your certificates</h2></div>';
-	if ( $lots ) {
-		echo '<div class="acct-card"><p style="margin:0 0 .6rem;color:var(--ink-2);font-size:.92rem">Independent laboratory certificates for every lot you have received.</p><div class="lot-list">';
-		foreach ( $lots as $l ) {
-			echo '<a class="chip" href="' . esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ) . '">' . esc_html( $l ) . ' ↗</a>';
-		}
-		echo '</div></div>';
-	} else {
-		echo '<div class="acct-card"><p style="margin:0;color:var(--ink-2)">Lot numbers are recorded when an order ships. Certificates for your lots will appear here, and every vial carries its lot number for <a href="' . esc_url( $u['verify'] ) . '" style="color:var(--terra);text-decoration:underline">lookup</a>.</p></div>';
-	}
-	echo '</section>';
+		<?php if ( $has_orders ) : ?>
+			<div class="acct-ledger">
+				<div class="acct-ledger-head">
+					<span>Order</span><span>Date</span><span>Items</span><span>Status</span><span class="num">Total</span><span></span>
+				</div>
+				<?php foreach ( $customer_orders->orders as $order ) :
+					$order = wc_get_order( $order );
+					$lots  = luma_order_lots( $order );
+					$trk   = luma_order_tracking( $order );
+					$view  = $order->get_view_order_url();
+					?>
+					<article class="acct-ledger-row">
+						<span class="lg-id" data-k="Order"><a href="<?php echo esc_url( $view ); ?>">#<?php echo esc_html( $order->get_order_number() ); ?></a></span>
+						<span class="lg-date" data-k="Date"><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span>
+						<span class="lg-items" data-k="Items">
+							<?php foreach ( $order->get_items() as $item ) : ?>
+								<span class="lg-item"><span class="qty"><?php echo esc_html( $item->get_quantity() ); ?>×</span> <?php echo esc_html( $item->get_name() ); ?></span>
+							<?php endforeach; ?>
+							<?php if ( $trk || $lots ) : ?>
+								<span class="lg-sub">
+									<?php if ( $trk ) : ?>
+										<?php echo $trk['url'] ? '<a href="' . esc_url( $trk['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $trk['carrier'] . ' ' . $trk['number'] ) . '</a>' : esc_html( $trk['carrier'] . ' ' . $trk['number'] ); ?>
+									<?php endif; ?>
+									<?php if ( $lots ) : ?>
+										<?php echo $trk ? ' · ' : ''; ?>Lot <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?></a><?php endforeach; ?>
+									<?php endif; ?>
+								</span>
+							<?php endif; ?>
+						</span>
+						<span class="lg-status" data-k="Status"><span class="<?php echo esc_attr( luma_order_pill_class( $order ) ); ?>"><?php echo esc_html( luma_order_pill_label( $order ) ); ?></span></span>
+						<span class="lg-total num" data-k="Total"><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></span>
+						<span class="lg-act">
+							<?php
+							$actions = wc_get_account_orders_actions( $order );
+							if ( isset( $actions['pay'] ) ) :
+								?>
+								<a class="btn btn-primary btn-sm" href="<?php echo esc_url( $actions['pay']['url'] ); ?>">Pay</a>
+							<?php endif; ?>
+							<a class="btn btn-outline btn-sm" href="<?php echo esc_url( $view ); ?>">View</a>
+						</span>
+					</article>
+				<?php endforeach; ?>
+			</div>
+
+			<?php if ( ! $is_dashboard && 1 < $customer_orders->max_num_pages ) : ?>
+				<div class="acct-actions acct-pager">
+					<?php echo 1 !== $current_page ? '<a class="btn btn-outline btn-sm" href="' . esc_url( wc_get_endpoint_url( 'orders', $current_page - 1 ) ) . '">← Newer</a>' : '<span></span>'; ?>
+					<?php echo (int) $customer_orders->max_num_pages !== $current_page ? '<a class="btn btn-outline btn-sm" href="' . esc_url( wc_get_endpoint_url( 'orders', $current_page + 1 ) ) . '">Older →</a>' : ''; ?>
+				</div>
+			<?php endif; ?>
+		<?php else : ?>
+			<div class="acct-card acct-empty">
+				<p>No orders yet under this email. Every lot is independently tested by an outside laboratory, and the certificate is published before the lot ships.</p>
+				<a class="btn btn-primary btn-sm" href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog</a>
+			</div>
+		<?php endif; ?>
+	</section>
+	<?php
 }
 
 /* Don't reveal whether an email exists: one neutral message for any bad email/password combination. */
