@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.6.5
+Version: 0.6.6
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -333,16 +333,17 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .acct-band .page-head h1{margin:0 0 .4rem}
 .acct-band .page-head p{font-size:.98rem;max-width:34rem;margin:0 auto}
 .acct-ledger-page{padding-top:2.6rem}
-.acct-meta{position:relative;z-index:1;background:var(--terra-2);border-color:#7E2F1F;color:#fff;box-shadow:var(--shadow);margin-top:0}
-.acct-meta-cell{border-right-color:rgba(255,255,255,.22)}
-.acct-meta-k{color:rgba(255,255,255,.7)}
-.acct-meta-v{color:#fff}
-.acct-meta-v .muted{color:rgba(255,255,255,.65)}
-.acct-num{font-family:var(--serif);font-size:1.5rem;line-height:1;color:#fff}
-.acct-meta-links .chip{background:transparent;border-color:rgba(255,255,255,.45);color:#fff}
-.acct-meta-links .chip:hover{background:#fff;color:var(--terra-2);border-color:#fff}
-.acct-meta-links .chip-out{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3)}
-@media(max-width:900px){.acct-meta-cell{border-bottom-color:rgba(255,255,255,.22)}}
+:root{--bark:#57483c;--bark-2:#4A3D33;--on-bark:#FBF4E9;--on-bark-muted:#EAD3BE}
+.acct-meta{position:relative;z-index:1;background:var(--bark);border-color:var(--bark-2);color:var(--on-bark);box-shadow:var(--shadow);margin-top:0}
+.acct-meta-cell{border-right-color:rgba(251,244,233,.16)}
+.acct-meta-k{color:var(--on-bark-muted)}
+.acct-meta-v{color:var(--on-bark)}
+.acct-meta-v .muted{color:var(--on-bark-muted)}
+.acct-num{font-family:var(--serif);font-size:1.5rem;line-height:1;color:var(--on-bark)}
+.acct-meta-links .chip{background:transparent;border-color:rgba(251,244,233,.4);color:var(--on-bark)}
+.acct-meta-links .chip:hover{background:var(--on-bark);color:var(--bark);border-color:var(--on-bark)}
+.acct-meta-links .chip-out{color:var(--on-bark-muted);border-color:rgba(251,244,233,.25)}
+@media(max-width:900px){.acct-meta-cell{border-bottom-color:rgba(251,244,233,.16)}}
 .acct-sec-orders .acct-head h2{font-size:1.9rem}
 .acct-ledger{box-shadow:var(--shadow)}
 .acct-ledger-head{background:var(--cream-2);color:var(--ink-2)}
