@@ -245,19 +245,19 @@ class SameDay {
 	public static function check_message( string $zip ): array {
 		$zip = substr( preg_replace( '/\D/', '', $zip ), 0, 5 );
 		if ( strlen( $zip ) !== 5 ) {
-			return [ 'ok' => false, 'state' => 'invalid', 'message' => 'Enter a five-digit ZIP code.' ];
+			return [ 'ok' => false, 'state' => 'invalid', 'title' => 'Enter a five-digit ZIP code.', 'message' => '' ];
 		}
 		if ( ! self::enabled() ) {
-			return [ 'ok' => false, 'state' => 'off', 'message' => 'Same-day delivery is not available right now. Every order ships free next-day.' ];
+			return [ 'ok' => false, 'state' => 'off', 'title' => 'Good news: every order ships free.', 'message' => 'Same-day delivery is paused right now, but your order ships free by next-day service as soon as it is released. No minimum, no code.' ];
 		}
 		if ( ! self::zip_in_radius( $zip ) ) {
-			return [ 'ok' => false, 'state' => 'outside', 'message' => sprintf( 'ZIP %s is outside our same-day area. Orders there ship free by next-day service.', $zip ) ];
+			return [ 'ok' => false, 'state' => 'outside', 'title' => 'Good news: your order still ships free, right away.', 'message' => sprintf( 'ZIP %s is outside our current same-day area, but every order ships free by next-day service the moment it is released. No minimum, no code.', $zip ) ];
+		}
+		if ( self::window_open() ) {
+			return [ 'ok' => true, 'state' => 'open', 'title' => '🎉 Congratulations — you qualify for same-day delivery!', 'message' => sprintf( 'Order by %s today and it is delivered today, free. No minimum, no code.', self::cutoff_label() ) ];
 		}
 		$next = self::next_open();
-		if ( self::window_open() ) {
-			return [ 'ok' => true, 'state' => 'open', 'message' => sprintf( 'ZIP %s qualifies. Order by %s today and it is delivered today, free.', $zip, self::cutoff_label() ) ];
-		}
-		return [ 'ok' => true, 'state' => 'later', 'message' => sprintf( 'ZIP %s qualifies for same-day delivery. The next same-day window is %s — orders placed before then are delivered that day. Until then, orders ship free next-day.', $zip, $next ? $next->format( 'l, F j' ) . ' by ' . self::cutoff_label() : 'soon' ) ];
+		return [ 'ok' => true, 'state' => 'later', 'title' => '🎉 Congratulations — your address qualifies for same-day delivery!', 'message' => sprintf( 'Today\'s window has closed. Order before %s and it is delivered that same day, free. Order now and it ships free next-day instead.', $next ? self::cutoff_label() . ' on ' . $next->format( 'l, F j' ) : self::cutoff_label() . ' on the next open day' ) ];
 	}
 
 	public static function ajax_check(): void {
@@ -265,27 +265,16 @@ class SameDay {
 		wp_send_json( self::check_message( $zip ) );
 	}
 
+	/** Markup only; the theme's site.js binds every .sd-check form (works for markup it injects too). */
 	public static function shortcode(): string {
 		if ( ! self::enabled() ) {
 			return '';
 		}
-		$ajax = esc_url( admin_url( 'admin-ajax.php' ) );
-		ob_start();
-		?>
-		<div class="sd-check" data-ajax="<?php echo $ajax; ?>">
-			<p class="sd-check-lede"><?php echo esc_html( self::promise() ); ?></p>
-			<form class="sd-check-form" autocomplete="postal-code">
-				<label class="sd-check-label" for="sdZip">Check your ZIP code</label>
-				<div class="sd-check-row"><input id="sdZip" class="sd-check-input" inputmode="numeric" maxlength="5" placeholder="84601" required><button class="btn btn-primary" type="submit">Check</button></div>
-			</form>
-			<p class="sd-check-out" role="status" aria-live="polite"></p>
-		</div>
-		<script>
-		(function(){var b=document.currentScript.previousElementSibling,f=b.querySelector('form'),i=b.querySelector('input'),o=b.querySelector('.sd-check-out');
-		f.addEventListener('submit',function(e){e.preventDefault();o.className='sd-check-out';o.textContent='Checking…';
-		fetch(b.dataset.ajax+'?action=luma_same_day_check&zip='+encodeURIComponent(i.value)).then(function(r){return r.json()}).then(function(j){o.textContent=j.message;o.className='sd-check-out is-'+j.state}).catch(function(){o.textContent='Could not check right now. Please try again.'})});})();
-		</script>
-		<?php
-		return (string) ob_get_clean();
+		return '<div class="sd-check" id="same-day" data-ajax="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '">'
+			. '<p class="sd-check-kicker">Same-day delivery</p>'
+			. '<p class="sd-check-lede">' . esc_html( self::promise() ) . '</p>'
+			. '<form class="sd-check-form" autocomplete="postal-code"><label class="sd-check-label" for="sdZip">See if your address qualifies</label>'
+			. '<div class="sd-check-row"><input id="sdZip" class="sd-check-input" inputmode="numeric" maxlength="5" placeholder="ZIP code" required><button class="btn btn-primary" type="submit">Check my ZIP</button></div></form>'
+			. '<div class="sd-check-out" role="status" aria-live="polite"></div></div>';
 	}
 }

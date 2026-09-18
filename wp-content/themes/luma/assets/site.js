@@ -5,6 +5,15 @@
 (function(){
   const D=window.LUMA||{}; const CONFIG=D.config||{}; const A=CONFIG.assets||"/";
   window.LUMA_PRODUCTS=D.products||[]; window.LUMA_CATEGORIES=D.categories||{}; window.LUMA_VOLUME_TIERS=D.tiers||[]; window.LUMA_CONFIG=CONFIG;
+  /* Same-day ZIP checker: one template, one delegated handler, so it works wherever it is injected. */
+  const SD={ on:()=>!!(CONFIG.promises||{}).sameDay,
+    widget:(compact)=>SD.on()?`<div class="sd-check${compact?" sd-compact":""}" data-ajax="${CONFIG.ajax}"><p class="sd-check-kicker">Same-day delivery</p>${compact?"":`<p class="sd-check-lede">${esc(CONFIG.promises.sameDayPromise)}</p>`}<form class="sd-check-form" autocomplete="postal-code"><label class="sd-check-label">See if your address qualifies</label><div class="sd-check-row"><input class="sd-check-input" inputmode="numeric" maxlength="5" placeholder="ZIP code" required aria-label="ZIP code"><button class="btn btn-primary btn-sm" type="submit">Check my ZIP</button></div></form><div class="sd-check-out" role="status" aria-live="polite"></div></div>`:"",
+    link:()=>SD.on()?`<a class="sd-link" href="${CONFIG.urls.shipping||"/shipping-returns/"}#same-day">Same-day delivery near you? Check your ZIP →</a>`:"" };
+  document.addEventListener("submit",async e=>{ const f=e.target.closest(".sd-check-form"); if(!f) return; e.preventDefault();
+    const box=f.closest(".sd-check"), out=box.querySelector(".sd-check-out"), zip=f.querySelector("input").value.trim(); out.className="sd-check-out is-busy"; out.textContent="Checking…";
+    try{ const r=await fetch(`${box.dataset.ajax}?action=luma_same_day_check&zip=${encodeURIComponent(zip)}`); const j=await r.json();
+      out.className="sd-check-out is-"+j.state; out.innerHTML=`<b>${esc(j.title||"")}</b>${j.message?`<span>${esc(j.message)}</span>`:""}`; if(j.ok&&j.state==="open") box.classList.add("sd-party"); }
+    catch(_){ out.className="sd-check-out is-invalid"; out.textContent="Could not check right now. Please try again."; } });
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const money=n=>"$"+(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,"");
   const byId=id=>window.LUMA_PRODUCTS.find(p=>p.id===id);
@@ -93,7 +102,7 @@
     const t=cartData.totals, mi=t.currency_minor_unit, sub=cents(t.total_items,mi), disc=cents(t.total_discount,mi); const thr=Number(CONFIG.freeShipThreshold??150); const left=Math.max(0,thr-(sub-disc));
     body.innerHTML=cartData.items.map(lineHTML).join("");
     const P=CONFIG.promises||{};
-    foot.innerHTML=`<div class="ship-bar">${thr>0?(left>0?`You're <b>${money(left)}</b> away from free shipping`:`🎉 You've unlocked <b>free shipping</b>`):`<b>Free next-day shipping</b> on every order${P.sameDay?` · same-day ${esc(P.sameDayArea)} before ${esc(P.sameDayCutoff)}`:""}`}${thr>0?`<div class="track"><div class="fill" style="width:${Math.min(100,((sub-disc)/thr)*100)}%"></div></div>`:""}</div>
+    foot.innerHTML=`<div class="ship-bar">${thr>0?(left>0?`You're <b>${money(left)}</b> away from free shipping`:`🎉 You've unlocked <b>free shipping</b>`):`<b>Free next-day shipping</b> on every order${P.sameDay?` · same-day ${esc(P.sameDayArea)} before ${esc(P.sameDayCutoff)}`:""}`}${thr>0?`<div class="track"><div class="fill" style="width:${Math.min(100,((sub-disc)/thr)*100)}%">`:""}${SD.link()}</div>
 <div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>Volume discount</span><b>−${money(disc)}</b></div>`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div></div>
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Checkout</a>
 <a class="btn btn-ghost btn-block" href="${CONFIG.urls.cart}" style="margin-top:.3rem">View full cart</a>`;
@@ -106,7 +115,7 @@
     const ship=thr>0&&(sub-disc)<thr?8:0; const coupon=(cartData.coupons||[])[0]; const P=CONFIG.promises||{};
     list.innerHTML=cartData.items.map(lineHTML).join("");
     sum.innerHTML=`<div class="promo"><input id="promoIn" placeholder="Promo code" value="${coupon?esc(coupon.code):""}" aria-label="Promo code"><button class="btn btn-dark btn-sm" id="promoBtn">${coupon?"Remove":"Apply"}</button></div><div class="promo-msg" id="promoMsg"></div>
-<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?"Promo "+esc(coupon.code):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>${thr>0?"Standard shipping":"Next-day shipping"}</span><b>${ship?money(ship):"Free"}</b></div>${P.sameDay?`<div style="font-size:.78rem;color:var(--muted);padding:0 0 .4rem">${esc(P.sameDayPromise)} Eligibility is confirmed at checkout.</div>`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
+<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?"Promo "+esc(coupon.code):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>${thr>0?"Standard shipping":"Next-day shipping"}</span><b>${ship?money(ship):"Free"}</b></div>${P.sameDay?`<div style="font-size:.78rem;color:var(--muted);padding:0 0 .4rem">${esc(P.sameDayPromise)}</div>${SD.widget(true)}`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Proceed to checkout</a>
 <div class="secure"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Secure checkout · All sales final on shipped goods</div>`;
     $("#promoBtn").onclick=async()=>{ const m=$("#promoMsg"); const code=$("#promoIn").value.trim();

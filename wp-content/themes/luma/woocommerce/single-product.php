@@ -57,6 +57,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   <span><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Lot-tested &amp; COA published</span>
   <span><svg viewBox="0 0 24 24"><path d="M3 7h13v10H3zM16 10h4l1 3v4h-5z"/><circle cx="7" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>Ships within 24h, US only, plain packaging</span>
   <span><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>All sales final · replacement for damaged goods</span>
+  <?php if ( class_exists( 'Luma\\Core\\SameDay' ) && Luma\Core\SameDay::enabled() ) : ?>
+  <span class="pdp-meta-sd"><svg viewBox="0 0 24 24"><path d="M12 22s7-5.5 7-12a7 7 0 0 0-14 0c0 6.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><a class="sd-link" href="<?php echo esc_url( home_url( '/shipping-returns/#same-day' ) ); ?>">Same-day delivery near <?php echo esc_html( (string) Luma\Core\Settings::get( 'same_day_place' ) ); ?>? Check your ZIP →</a></span>
+  <?php endif; ?>
  </div>
  <div class="tabs">
   <div class="tab-list" role="tablist">

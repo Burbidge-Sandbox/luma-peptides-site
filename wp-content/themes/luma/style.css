@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.6.4
+Version: 0.6.5
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -333,14 +333,14 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .acct-band .page-head h1{margin:0 0 .4rem}
 .acct-band .page-head p{font-size:.98rem;max-width:34rem;margin:0 auto}
 .acct-ledger-page{padding-top:2.6rem}
-.acct-meta{position:relative;z-index:1;background:var(--terra);border-color:var(--terra-2);color:#fff;box-shadow:var(--shadow);margin-top:0}
+.acct-meta{position:relative;z-index:1;background:var(--terra-2);border-color:#7E2F1F;color:#fff;box-shadow:var(--shadow);margin-top:0}
 .acct-meta-cell{border-right-color:rgba(255,255,255,.22)}
 .acct-meta-k{color:rgba(255,255,255,.7)}
 .acct-meta-v{color:#fff}
 .acct-meta-v .muted{color:rgba(255,255,255,.65)}
 .acct-num{font-family:var(--serif);font-size:1.5rem;line-height:1;color:#fff}
 .acct-meta-links .chip{background:transparent;border-color:rgba(255,255,255,.45);color:#fff}
-.acct-meta-links .chip:hover{background:#fff;color:var(--terra);border-color:#fff}
+.acct-meta-links .chip:hover{background:#fff;color:var(--terra-2);border-color:#fff}
 .acct-meta-links .chip-out{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3)}
 @media(max-width:900px){.acct-meta-cell{border-bottom-color:rgba(255,255,255,.22)}}
 .acct-sec-orders .acct-head h2{font-size:1.9rem}
@@ -374,3 +374,28 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .sd-check-out.is-open{color:#4E6144;font-weight:600}
 .sd-check-out.is-later{color:var(--ink)}
 .sd-check-out.is-outside,.sd-check-out.is-invalid{color:var(--terra)}
+
+/* Same-day checker: celebration states + placements (0.6.5) */
+.sd-check-kicker{margin:0 0 .3rem;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--terra);font-weight:600}
+.sd-check-out{display:grid;gap:.25rem}
+.sd-check-out:empty{display:none}
+.sd-check-out b{font-family:var(--serif);font-weight:500;font-size:1.25rem;line-height:1.2;color:var(--ink)}
+.sd-check-out span{font-size:.92rem;color:var(--ink-2);line-height:1.5}
+.sd-check-out.is-open,.sd-check-out.is-later{margin-top:.9rem;padding:.9rem 1rem;border-radius:10px;background:#EDF1EA;border:1px solid #cfdac8}
+.sd-check-out.is-open b,.sd-check-out.is-later b{color:#4E6144}
+.sd-check-out.is-outside,.sd-check-out.is-off{margin-top:.9rem;padding:.9rem 1rem;border-radius:10px;background:var(--cream);border:1px solid var(--line)}
+.sd-check-out.is-outside b,.sd-check-out.is-off b{color:var(--terra)}
+.sd-check-out.is-invalid b{font-family:var(--sans);font-size:.9rem;color:var(--terra)}
+.sd-check-out.is-busy{color:var(--muted);font-size:.9rem}
+@keyframes sd-pop{0%{transform:scale(.97);opacity:0}100%{transform:scale(1);opacity:1}}
+.sd-party .sd-check-out{animation:sd-pop .35s var(--ease,ease-out)}
+@media(prefers-reduced-motion:reduce){.sd-party .sd-check-out{animation:none}}
+.sd-link{color:var(--terra);font-weight:600;text-decoration:none;border-bottom:1px solid var(--terra-soft);white-space:nowrap}
+.sd-link:hover{border-bottom-color:var(--terra)}
+.ship-bar .sd-link{display:block;margin-top:.4rem;font-size:.8rem}
+.promise-tile .sd-link{display:inline-block;margin-top:.3rem}
+.pdp-meta .pdp-meta-sd a{font-size:inherit}
+.sd-compact{margin:.6rem 0 .9rem;padding:.9rem 1rem;border-left-width:1px}
+.sd-compact .sd-check-row{gap:.4rem}
+.sd-compact .sd-check-input{flex:1 1 7rem;min-width:0;padding:.6rem .8rem}
+.sd-compact .sd-check-out b{font-size:1.05rem}
