@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.5.8
+Version: 0.5.9
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -323,4 +323,5 @@ body.order-received .page-head{display:none}
 @media(max-width:520px){.timeline-5{grid-template-columns:repeat(2,1fr);row-gap:.9rem}}
 
 /* Interior pages: a hairline under the header so the page starts on a rule (0.5.8). */
-body:not(.home) .header{border-bottom-color:var(--line)}
+body:not(.home) .header{border-bottom-color:var(--line);background:rgba(255,255,255,.72);box-shadow:0 1px 0 var(--line),0 6px 18px -14px rgba(0,0,0,.35)}
+body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px rgba(0,0,0,.45)}
