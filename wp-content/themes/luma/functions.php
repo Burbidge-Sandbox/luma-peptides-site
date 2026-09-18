@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.6.2' );
+define( 'LUMA_THEME_VERSION', '0.6.3' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -113,6 +113,24 @@ add_filter( 'document_title_parts', function ( array $parts ): array {
  * same text, so a re-seed (Luma → Tools → Seed) makes each patch a no-op.
  */
 function luma_legacy_content_patch( string $html ): string {
+	if ( class_exists( 'Luma\\Core\\SameDay' ) && ( is_page( 'faq' ) || is_page( 'shipping-returns' ) ) ) {
+		$sd   = Luma\Core\SameDay::enabled();
+		$html = str_replace(
+			'Utah County orders placed before noon Mountain Time are delivered the same day.',
+			$sd ? sprintf( 'Addresses %s qualify for free same-day delivery, %s, when the order is placed before %s (holidays excluded).', Luma\Core\SameDay::area_label(), Luma\Core\SameDay::days_label(), Luma\Core\SameDay::cutoff_label() ) : '',
+			$html
+		);
+		$html = preg_replace(
+			'#<li><b>Same-day delivery in Utah County\.</b>[^<]*</li>#',
+			$sd ? '<li><b>Same-day delivery near ' . esc_html( (string) Luma\Core\Settings::get( 'same_day_place' ) ) . '.</b> ' . esc_html( Luma\Core\SameDay::promise() ) . ' Eligibility is confirmed at checkout from your ZIP code and the time of the order.</li>' : '',
+			$html,
+			1
+		);
+		if ( $sd && is_page( 'shipping-returns' ) && ! str_contains( $html, 'sd-check' ) ) {
+			$widget = do_shortcode( '[luma_same_day_check]' );
+			$html   = preg_replace_callback( '#<h2 id="returns">#', fn( $m ) => $widget . $m[0], $html, 1 );
+		}
+	}
 	if ( is_page( 'contact' ) ) {
 		$html = preg_replace(
 			'#<div><b>Phone</b><span><a href="tel:\+13855215259"[^>]*>\(385\) 521-5259</a></span></div>#',

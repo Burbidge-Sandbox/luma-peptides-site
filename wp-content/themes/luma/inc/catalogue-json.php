@@ -90,7 +90,7 @@ function luma_catalogue_json(): array {
 		'tiers'      => (array) get_option( 'luma_volume_tiers', [ [ 'min' => 3, 'pct' => 5 ], [ 'min' => 5, 'pct' => 10 ], [ 'min' => 10, 'pct' => 15 ] ] ),
 		'config'     => [
 			'freeShipThreshold' => 0,
-			'promises'          => [ 'shipDays' => 1, 'freeShipAlways' => true, 'nextDay' => true, 'sameDayCounty' => 'Utah County', 'sameDayCutoff' => '12:00 pm MT', 'deliveryPromiseDays' => 0 ],
+			'promises'          => [ 'shipDays' => 1, 'freeShipAlways' => true, 'nextDay' => true, 'sameDay' => class_exists( 'Luma\\Core\\SameDay' ) && Luma\Core\SameDay::enabled(), 'sameDayArea' => class_exists( 'Luma\\Core\\SameDay' ) ? Luma\Core\SameDay::area_label() : '', 'sameDayCutoff' => class_exists( 'Luma\\Core\\SameDay' ) ? Luma\Core\SameDay::cutoff_label() : '', 'sameDayDays' => class_exists( 'Luma\\Core\\SameDay' ) ? Luma\Core\SameDay::days_label() : '', 'sameDayPromise' => class_exists( 'Luma\\Core\\SameDay' ) ? Luma\Core\SameDay::promise() : '', 'deliveryPromiseDays' => 0 ],
 			'siteUrl'           => home_url(),
 			'assets'            => luma_assets_url(),
 			'urls'              => [

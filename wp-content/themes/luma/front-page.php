@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  const ids=["glp-2-t","glp-3-rt","glp-1-sm","glow-klow","bpc-157"];
  (function(){ const C=window.LUMA_CONFIG, P=C.promises||{}; const tiles=[
    {k:"Ships fast",t:`Ships within ${P.shipDays||1} business day${(P.shipDays||1)>1?"s":""}`,d:"Every order leaves within one business day of lab release, in plain packaging."},
-   {k:"Free delivery",t:P.nextDay?"Free next-day shipping, always":"Free US shipping",d:P.sameDayCounty?`No minimum, no code. ${P.sameDayCounty} orders placed before ${P.sameDayCutoff||"noon"} are delivered the same day.`:"On every US order. No minimum, no code."},
+   {k:"Free delivery",t:P.nextDay?"Free next-day shipping, always":"Free US shipping",d:P.sameDay?`No minimum, no code. ${P.sameDayPromise}`:"On every US order. No minimum, no code."},
    P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every order online",d:"Look up any order by number to see payment, lab release, and shipping status."}
  ]; document.getElementById("promiseStrip").innerHTML=tiles.map(x=>`<div class="promise-tile"><span class="promise-kicker">${x.k}</span><b>${x.t}</b><p>${x.d}</p></div>`).join(""); })();
  document.getElementById("topSellers").innerHTML=ids.map(id=>window.LUMA_PRODUCTS.find(p=>p.id===id)).filter(Boolean).map(productCard).join("");

@@ -1,15 +1,15 @@
 <?php
 /**
- * Shipping (policy 2026-09-15): free next-day shipping on every US order, plus
- * free same-day delivery for Utah County addresses ordered before 12 pm MT.
- * Seeded idempotently by SEED_VERSION; edit later in WooCommerce → Shipping.
+ * Shipping (policy 2026-09-18): free next-day shipping on every US order, plus
+ * free same-day delivery by radius + cutoff (see class-same-day.php). Seeded
+ * idempotently by SEED_VERSION; edit later in WooCommerce → Shipping.
  */
 namespace Luma\Core;
 
 defined( 'ABSPATH' ) || exit;
 
 class Shipping {
-	const SEED_VERSION = '2';
+	const SEED_VERSION = '3';
 
 	/** Utah County ZIPs (explicit — a range would sweep in Salt Lake County). */
 	const UTAH_COUNTY_ZIPS = [
@@ -56,7 +56,7 @@ class Shipping {
 		foreach ( $us->get_shipping_methods() as $m ) {
 			if ( 'free_shipping' === $m->id ) {
 				$free[] = (int) $m->get_instance_id();
-			} else {
+			} elseif ( SameDay::METHOD_ID !== $m->id ) {
 				$us->delete_shipping_method( $m->get_instance_id() );
 			}
 		}
@@ -65,30 +65,23 @@ class Shipping {
 			$us->delete_shipping_method( $extra );
 		}
 
-		/* Utah County: same-day (before noon MT) + next-day, both free. */
-		if ( ! $uc ) {
-			$uc = new \WC_Shipping_Zone();
-			$uc->set_zone_name( 'Utah County (same-day)' );
-			$uc->set_zone_order( 0 );
-			foreach ( self::UTAH_COUNTY_ZIPS as $zip ) {
-				$uc->add_location( $zip, 'postcode' );
-			}
-			$uc->save();
-		}
-		$ucfree = [];
-		foreach ( $uc->get_shipping_methods() as $m ) {
-			if ( 'free_shipping' === $m->id ) {
-				$ucfree[] = (int) $m->get_instance_id();
+		/* Same-day by radius: one instance on the US zone; it emits a rate only when eligible. */
+		$has_sd = false;
+		foreach ( $us->get_shipping_methods() as $m ) {
+			if ( SameDay::METHOD_ID === $m->id ) {
+				$has_sd = true;
 			}
 		}
-		$same = self::set_free( $uc, 'Same-day delivery — free (order by 12 pm MT)', $ucfree );
-		$next = self::set_free( $uc, 'Next-day shipping — free', $ucfree );
-		foreach ( [ $same => 1, $next => 2 ] as $id => $order ) {
-			$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zone_methods', [ 'method_order' => $order, 'is_enabled' => 1 ], [ 'instance_id' => $id ] );
+		if ( ! $has_sd ) {
+			$sd = $us->add_shipping_method( SameDay::METHOD_ID );
+			$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zone_methods', [ 'method_order' => 0, 'is_enabled' => 1 ], [ 'instance_id' => $sd ] );
+			$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zone_methods', [ 'method_order' => 1 ], [ 'instance_id' => $us_next ] );
 		}
-		/* Utah County zone must be evaluated before the US zone. */
-		$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zones', [ 'zone_order' => 0 ], [ 'zone_id' => $uc->get_id() ] );
-		$wpdb->update( $wpdb->prefix . 'woocommerce_shipping_zones', [ 'zone_order' => 1 ], [ 'zone_id' => $us->get_id() ] );
+
+		/* The old fixed Utah County zone is superseded by the radius rule. */
+		if ( $uc ) {
+			$uc->delete();
+		}
 
 		\WC_Cache_Helper::get_transient_version( 'shipping', true );
 		update_option( 'luma_shipping_seed', self::SEED_VERSION );
