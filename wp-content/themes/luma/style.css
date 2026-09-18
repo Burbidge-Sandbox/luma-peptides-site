@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.5.3
+Version: 0.5.4
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -223,3 +223,25 @@ body.order-received .page-head{display:none}
 .payments .pay-amex{color:#006FCF;border-color:#006FCF}
 .payments .pay-disc{color:#E55C20;border-color:#E55C20}
 .payments .pay-apple,.payments .pay-google{color:#000;border-color:#000}
+
+/* 0.5.4 — Orders view: overview layout, itemised cards, Woo notice as a small secondary action */
+.acct-content .woocommerce-info,.acct-content .woocommerce-message{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;padding:.85rem 1.1rem;margin:0 0 1.2rem;border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:10px;background:var(--cream);font-size:.92rem}
+.woo-page .acct-content .woocommerce-info a.button,.woo-page .acct-content .woocommerce-message a.button{order:2;margin:0 0 0 auto;display:inline-block;width:auto;background:transparent!important;color:var(--terra)!important;border:1.5px solid var(--terra)!important;border-radius:6px!important;padding:.5rem .9rem!important;font-size:.72rem!important;letter-spacing:.08em;text-transform:uppercase;font-weight:600;text-decoration:none!important;white-space:nowrap;min-height:0;line-height:1.2}
+.woo-page .acct-content .woocommerce-info a.button:hover,.woo-page .acct-content .woocommerce-message a.button:hover{background:var(--terra)!important;color:#fff!important}
+@media(max-width:600px){.woo-page .acct-content .woocommerce-info a.button,.woo-page .acct-content .woocommerce-message a.button{margin-left:0;width:100%;text-align:center}}
+.acct-order{padding:0;overflow:hidden}
+.acct-order-top{padding:.95rem 1.2rem;border-bottom:1px solid var(--line);background:var(--cream)}
+.acct-order-top b{font-family:var(--sans);font-size:.98rem}
+.acct-order-items{list-style:none;margin:0;padding:.35rem 1.2rem}
+.acct-order-items li{display:grid;grid-template-columns:2.6rem 1fr auto;gap:.6rem;align-items:baseline;padding:.6rem 0;border-bottom:1px dashed var(--line);font-size:.93rem}
+.acct-order-items li:last-child{border-bottom:0}
+.acct-order-items .qty,.acct-order-items .amt{font-variant-numeric:tabular-nums}
+.acct-order-items .qty{color:var(--muted)}
+.acct-order .acct-order-meta{padding:0 1.2rem .7rem;margin:0;font-size:.85rem}
+.acct-order-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:.85rem 1.2rem 1rem;border-top:1px solid var(--line)}
+.acct-order-total{display:flex;align-items:baseline;gap:.5rem}
+.acct-order-total small{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.acct-order-total b{font-size:1.1rem;font-variant-numeric:tabular-nums}
+.acct-order .acct-actions{margin:0}
+/* Contact: text-only line note */
+.contact-info small{display:block;color:var(--muted);font-size:.82rem;line-height:1.45;margin-top:.25rem}

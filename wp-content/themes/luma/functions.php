@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.5.3' );
+define( 'LUMA_THEME_VERSION', '0.5.4' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -98,6 +98,23 @@ add_filter( 'document_title_parts', function ( array $parts ): array {
 	}
 	return $parts;
 } );
+
+/* ---------- Legacy page content patches ----------
+ * The contact page body was seeded from contact.html into the database, so a
+ * copy change there does not ship on Pull by itself. Patch on output until the
+ * page is re-seeded (Luma → Tools → Seed); the source file carries the same text.
+ */
+add_filter( 'the_content', function ( $content ) {
+	if ( ! is_page( 'contact' ) ) {
+		return $content;
+	}
+	return preg_replace(
+		'#<div><b>Phone</b><span><a href="tel:\+13855215259"[^>]*>\(385\) 521-5259</a></span></div>#',
+		'<div><b>Text us</b><span><a href="sms:+13855215259" style="color:var(--terra)">(385) 521-5259</a><small>Text only — this line does not take voice calls. Include your order number for the fastest reply.</small></span></div>',
+		$content,
+		1
+	);
+}, 5 );
 
 /* ---------- Product helpers used by catalogue-json ---------- */
 function luma_current_lot_number( WC_Product $product ): string {

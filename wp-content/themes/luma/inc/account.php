@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 /* No downloadable products; keep the menu to what the legacy page offered. */
 add_filter( 'woocommerce_account_menu_items', function ( array $items ): array {
-	unset( $items['downloads'] );
+	unset( $items['downloads'], $items['payment-methods'] ); // no saved-card rail yet; Venmo is manual
 	if ( isset( $items['dashboard'] ) ) {
 		$items['dashboard'] = 'Overview';
 	}
@@ -78,6 +78,46 @@ function luma_order_pill_label( WC_Order $order ): string {
 	return $map[ $order->get_status() ] ?? wc_get_order_status_name( $order->get_status() );
 }
 
+/** Sidebar shared by the overview and the orders endpoint. */
+function luma_account_sidebar(): void {
+	$user     = wp_get_current_user();
+	$u        = luma_catalogue_json()['config']['urls'];
+	$customer = new WC_Customer( $user->ID );
+	$ship     = array_filter( [ $customer->get_shipping_address_1(), $customer->get_shipping_city(), trim( $customer->get_shipping_state() . ' ' . $customer->get_shipping_postcode() ) ] );
+	$count    = wc_get_customer_order_count( $user->ID );
+	?>
+	<aside class="acct-side">
+		<section class="acct-card acct-side-card">
+			<h3>Your account</h3>
+			<dl class="acct-kv">
+				<div><dt>Email</dt><dd><?php echo esc_html( $user->user_email ); ?></dd></div>
+				<div><dt>Shipping to</dt><dd><?php echo $ship ? esc_html( implode( ', ', $ship ) ) : '<span class="muted">No address saved yet</span>'; ?></dd></div>
+				<div><dt>Orders</dt><dd><?php echo esc_html( $count ); ?></dd></div>
+			</dl>
+			<div class="acct-side-links">
+				<a href="<?php echo esc_url( wc_get_account_endpoint_url( 'edit-address' ) ); ?>">Addresses →</a>
+				<a href="<?php echo esc_url( wc_get_account_endpoint_url( 'edit-account' ) ); ?>">Details &amp; password →</a>
+				<a href="<?php echo esc_url( wc_logout_url() ); ?>">Sign out</a>
+			</div>
+		</section>
+		<section class="acct-card acct-side-card">
+			<h3>Quick links</h3>
+			<div class="acct-side-links">
+				<a href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog →</a>
+				<a href="<?php echo esc_url( $u['verify'] ); ?>">Verify a lot →</a>
+				<a href="<?php echo esc_url( $u['shipping'] ?? home_url( '/shipping-returns/' ) ); ?>">Shipping &amp; returns →</a>
+				<a href="<?php echo esc_url( $u['faq'] ); ?>">FAQ →</a>
+			</div>
+		</section>
+		<section class="acct-card acct-side-card acct-help">
+			<h3>Need a hand?</h3>
+			<p>Questions about an order, a lot or a certificate — email <a href="mailto:<?php echo esc_attr( luma_owner_email() ); ?>"><?php echo esc_html( luma_owner_email() ); ?></a> or text <a href="sms:+13855215259">(385) 521-5259</a>. We reply within one business day.</p>
+			<p class="acct-fine" style="margin:.8rem 0 0">Free next-day shipping on every order · same-day in Utah County before 12:00 pm MT.</p>
+		</section>
+	</aside>
+	<?php
+}
+
 /** Orders section (dashboard uses a short list; the orders endpoint pages). */
 function luma_account_orders_section( int $page = 1, int $limit = 0 ): void {
 	$args = [
@@ -96,23 +136,27 @@ function luma_account_render_orders( $customer_orders, bool $has_orders, int $cu
 	if ( $has_orders ) {
 		foreach ( $customer_orders->orders as $order ) {
 			$order = wc_get_order( $order );
-			$items = [];
-			foreach ( $order->get_items() as $item ) {
-				$items[] = $item->get_quantity() . '× ' . $item->get_name();
-			}
 			$lots = luma_order_lots( $order );
 			?>
-			<div class="acct-order">
-				<div class="acct-order-top"><div><b>Order <?php echo esc_html( $order->get_order_number() ); ?></b><span class="acct-date"><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span></div><span class="<?php echo esc_attr( luma_order_pill_class( $order ) ); ?>"><?php echo esc_html( luma_order_pill_label( $order ) ); ?></span></div>
-				<p class="acct-items"><?php echo esc_html( implode( ' · ', $items ) ); ?></p>
-				<?php $trk = luma_order_tracking( $order ); ?>
-				<div class="acct-order-meta"><span><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></span><?php if ( $trk ) : ?><span>Tracking <?php echo $trk['url'] ? '<a href="' . esc_url( $trk['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $trk['carrier'] . ' ' . $trk['number'] ) . '</a>' : esc_html( $trk['carrier'] . ' ' . $trk['number'] ); ?></span><?php endif; ?><?php if ( $lots ) : ?><span>Lots <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></span><?php endif; ?></div>
-				<div class="acct-actions">
-					<?php foreach ( wc_get_account_orders_actions( $order ) as $key => $a ) : ?>
-						<a class="btn <?php echo 'pay' === $key ? 'btn-primary' : ( 'view' === $key ? 'btn-outline' : 'btn-ghost' ); ?> btn-sm" href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a>
+			<article class="acct-order">
+				<header class="acct-order-top"><div><b>Order <?php echo esc_html( $order->get_order_number() ); ?></b><span class="acct-date"><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span></div><span class="<?php echo esc_attr( luma_order_pill_class( $order ) ); ?>"><?php echo esc_html( luma_order_pill_label( $order ) ); ?></span></header>
+				<ul class="acct-order-items">
+					<?php foreach ( $order->get_items() as $item ) : ?>
+						<li><span class="qty"><?php echo esc_html( $item->get_quantity() ); ?>×</span><span class="name"><?php echo esc_html( $item->get_name() ); ?></span><span class="amt"><?php echo wp_kses_post( wc_price( (float) $item->get_total(), [ 'currency' => $order->get_currency() ] ) ); ?></span></li>
 					<?php endforeach; ?>
-				</div>
-			</div>
+				</ul>
+				<?php $trk = luma_order_tracking( $order ); if ( $trk || $lots ) : ?>
+				<div class="acct-order-meta"><?php if ( $trk ) : ?><span>Tracking <?php echo $trk['url'] ? '<a href="' . esc_url( $trk['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $trk['carrier'] . ' ' . $trk['number'] ) . '</a>' : esc_html( $trk['carrier'] . ' ' . $trk['number'] ); ?></span><?php endif; ?><?php if ( $lots ) : ?><span>Lots <?php foreach ( $lots as $i => $l ) : ?><?php echo $i ? ', ' : ''; ?><a href="<?php echo esc_url( add_query_arg( 'lot', rawurlencode( $l ), $u['verify'] ) ); ?>"><?php echo esc_html( $l ); ?></a><?php endforeach; ?></span><?php endif; ?></div>
+				<?php endif; ?>
+				<footer class="acct-order-foot">
+					<div class="acct-order-total"><small>Total</small><b><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></b></div>
+					<div class="acct-actions">
+						<?php foreach ( wc_get_account_orders_actions( $order ) as $key => $a ) : ?>
+							<a class="btn <?php echo 'pay' === $key ? 'btn-primary' : ( 'view' === $key ? 'btn-outline' : 'btn-ghost' ); ?> btn-sm" href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( 'view' === $key ? 'View order' : $a['name'] ); ?></a>
+						<?php endforeach; ?>
+					</div>
+				</footer>
+			</article>
 			<?php
 		}
 		if ( 1 < $customer_orders->max_num_pages ) {
