@@ -31,7 +31,7 @@ function luma_account_head(): array {
 		return [ 'Order details', '' ];
 	}
 	$first = wp_get_current_user()->first_name;
-	return [ $first ? 'Welcome back, ' . $first . '.' : 'Welcome back.', '' ];
+	return [ $first ? 'Welcome back, ' . $first . '.' : 'Welcome back.', 'Orders, tracking and the laboratory certificate for every lot you have received.' ];
 }
 
 /** Lot numbers attached to an order's line items (set at shipment; falls back to nothing). */
@@ -118,6 +118,7 @@ function luma_account_bottom_row(): void {
 	?>
 	<div class="acct-bottom">
 		<section class="acct-card acct-certs">
+			<svg class="acct-certs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 15.5h5"/></svg>
 			<h2>Your certificates</h2>
 			<?php if ( $lots ) : ?>
 				<p>Independent laboratory certificates for every lot you have received.</p>
@@ -130,6 +131,11 @@ function luma_account_bottom_row(): void {
 				<p>Lot numbers are recorded when an order ships. Certificates for your lots will appear here, and every vial carries its lot number for <a href="<?php echo esc_url( $u['verify'] ); ?>">lookup</a>.</p>
 				<span class="acct-lot-empty">No lots on file yet</span>
 			<?php endif; ?>
+			<ol class="acct-steps" aria-label="How certificates reach you">
+				<li><b>01</b><span>Order ships</span></li>
+				<li><b>02</b><span>Lot number recorded</span></li>
+				<li><b>03</b><span>Certificate linked here</span></li>
+			</ol>
 		</section>
 		<section class="acct-card acct-help">
 			<h2>Need a hand?</h2>

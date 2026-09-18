@@ -1,7 +1,7 @@
 <?php get_header(); ?>
 <main id="main">
 <?php if ( function_exists( 'is_account_page' ) && is_account_page() ) : [ $title, $lede ] = luma_account_head(); ?>
-<div class="wrap page-head" style="text-align:center"><span class="eyebrow">Account</span><h1 id="acctTitle"><?php echo esc_html( $title ); ?></h1><?php if ( $lede ) : ?><p id="acctLede" style="margin-inline:auto"><?php echo esc_html( $lede ); ?></p><?php endif; ?></div>
+<div class="acct-band"><div class="wrap page-head" style="text-align:center"><span class="eyebrow">Account</span><h1 id="acctTitle"><?php echo esc_html( $title ); ?></h1><?php if ( $lede ) : ?><p id="acctLede" style="margin-inline:auto"><?php echo esc_html( $lede ); ?></p><?php endif; ?></div></div>
 <div class="wrap woo-page account-page" style="padding-bottom:5rem">
 	<?php while ( have_posts() ) : the_post(); the_content(); endwhile; ?>
 </div>
