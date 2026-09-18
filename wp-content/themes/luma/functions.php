@@ -100,21 +100,22 @@ add_filter( 'document_title_parts', function ( array $parts ): array {
 } );
 
 /* ---------- Legacy page content patches ----------
- * The contact page body was seeded from contact.html into the database, so a
- * copy change there does not ship on Pull by itself. Patch on output until the
- * page is re-seeded (Luma → Tools → Seed); the source file carries the same text.
+ * Legacy pages were seeded from the repo's HTML into the database, so a copy
+ * change in the source file does not ship on Pull by itself. page-legacy.php
+ * runs the stored body through this before output; the source files carry the
+ * same text, so a re-seed (Luma → Tools → Seed) makes each patch a no-op.
  */
-add_filter( 'the_content', function ( $content ) {
-	if ( ! is_page( 'contact' ) ) {
-		return $content;
+function luma_legacy_content_patch( string $html ): string {
+	if ( is_page( 'contact' ) ) {
+		$html = preg_replace(
+			'#<div><b>Phone</b><span><a href="tel:\+13855215259"[^>]*>\(385\) 521-5259</a></span></div>#',
+			'<div><b>Text us</b><span><a href="sms:+13855215259" style="color:var(--terra)">(385) 521-5259</a><small>Text only — this line does not take voice calls. Include your order number for the fastest reply.</small></span></div>',
+			$html,
+			1
+		);
 	}
-	return preg_replace(
-		'#<div><b>Phone</b><span><a href="tel:\+13855215259"[^>]*>\(385\) 521-5259</a></span></div>#',
-		'<div><b>Text us</b><span><a href="sms:+13855215259" style="color:var(--terra)">(385) 521-5259</a><small>Text only — this line does not take voice calls. Include your order number for the fastest reply.</small></span></div>',
-		$content,
-		1
-	);
-}, 5 );
+	return $html;
+}
 
 /* ---------- Product helpers used by catalogue-json ---------- */
 function luma_current_lot_number( WC_Product $product ): string {

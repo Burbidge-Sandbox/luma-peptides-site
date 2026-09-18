@@ -10,7 +10,7 @@ get_header();
 <?php
 while ( have_posts() ) :
 	the_post();
-	echo get_the_content(); // phpcs:ignore WordPress.Security.EscapeOutput -- authored HTML from the repo
+	echo luma_legacy_content_patch( get_the_content() ); // phpcs:ignore WordPress.Security.EscapeOutput -- authored HTML from the repo
 endwhile;
 ?>
 </main>
