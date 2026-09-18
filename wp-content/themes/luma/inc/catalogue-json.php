@@ -134,3 +134,5 @@ function luma_label_lines( string $name, string $strength ): array {
 
 add_action( 'woocommerce_update_product', fn() => wp_cache_delete( 'luma_catalogue_json', 'luma' ) );
 add_action( 'woocommerce_product_set_stock', fn() => wp_cache_delete( 'luma_catalogue_json', 'luma' ) );
+/* Delivery promises are read from Luma Core settings; drop the cached JSON when they change. */
+add_action( 'update_option_luma_core', fn() => wp_cache_delete( 'luma_catalogue_json', 'luma' ) );
