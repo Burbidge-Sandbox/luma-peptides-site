@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.5.4' );
+define( 'LUMA_THEME_VERSION', '0.5.5' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -32,6 +32,13 @@ add_action( 'init', function () {
 		if ( function_exists( 'wc_clear_template_cache' ) ) {
 			wc_clear_template_cache();
 		}
+		/* Breeze serves anonymous pages from disk before templates run, so a
+		 * deploy is invisible until its cache is flushed. Do it here on every
+		 * version bump; the Cloudways "Purge" only clears Varnish. */
+		if ( class_exists( 'Breeze_PurgeCache' ) && method_exists( 'Breeze_PurgeCache', 'breeze_cache_flush' ) ) {
+			Breeze_PurgeCache::breeze_cache_flush();
+		}
+		do_action( 'breeze_clear_all_cache' );
 		update_option( 'luma_theme_version', LUMA_THEME_VERSION );
 	}
 }, 99 );
