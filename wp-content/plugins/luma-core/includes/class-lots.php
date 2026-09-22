@@ -74,15 +74,33 @@ class Lots {
 
 	public static function render_meta_box( \WP_Post $post ): void {
 		wp_nonce_field( 'luma_lot_save', 'luma_lot_nonce' );
-		echo '<table class="form-table">';
-		foreach ( self::labels() as $key => $label ) {
-			$v = get_post_meta( $post->ID, $key, true );
+		$get   = fn( $k ) => (string) get_post_meta( $post->ID, $k, true );
+		$pid   = (int) $get( '_lot_variation_id' ) ?: (int) $get( '_lot_product_id' );
+		$coa   = (int) $get( '_lot_coa_id' );
+		$photo = (int) $get( '_lot_photo_id' );
+		$text  = [ '_lot_lab' => 'Testing lab', '_lot_tested' => 'Test date (YYYY-MM-DD)', '_lot_method' => 'Method', '_lot_purity' => 'Assay purity', '_lot_identity' => 'Identity', '_lot_net_content' => 'Net content', '_lot_endotoxin' => 'Endotoxin', '_lot_expires' => 'Best before (YYYY-MM)', '_lot_qty_received' => 'Qty received', '_lot_qty_remaining' => 'Qty remaining' ];
+		echo '<table class="form-table"><tr><th><label for="_lot_sellable">Product</label></th><td><select id="_lot_sellable" name="_lot_sellable" style="min-width:24em"><option value="0">— none —</option>';
+		foreach ( Receive::sellables() as $id => $label ) {
+			echo '<option value="' . (int) $id . '"' . selected( $pid, $id, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select></td></tr>';
+		echo '<tr><th>Result</th><td><select name="_lot_status">';
+		foreach ( [ 'PENDING' => 'Pending — COA not issued yet', 'PASS' => 'PASS — released', 'FAIL' => 'FAIL — quarantined' ] as $k => $l ) {
+			echo '<option value="' . esc_attr( $k ) . '"' . selected( $get( '_lot_status' ) ?: 'PENDING', $k, false ) . '>' . esc_html( $l ) . '</option>';
+		}
+		echo '</select></td></tr>';
+		foreach ( $text as $key => $label ) {
+			printf( '<tr><th><label for="%1$s">%2$s</label></th><td><input type="text" class="regular-text" id="%1$s" name="%1$s" value="%3$s"></td></tr>', esc_attr( $key ), esc_html( $label ), esc_attr( $get( $key ) ) );
+		}
+		foreach ( [ '_lot_coa_id' => [ 'Certificate (PDF)', $coa, 'application/pdf' ], '_lot_photo_id' => [ 'Vial photo', $photo, 'image' ] ] as $key => [ $label, $id, $type ] ) {
+			$url = $id ? wp_get_attachment_url( $id ) : '';
 			printf(
-				'<tr><th><label for="%1$s">%2$s</label></th><td><input type="text" class="regular-text" id="%1$s" name="%1$s" value="%3$s"></td></tr>',
-				esc_attr( $key ), esc_html( $label ), esc_attr( (string) $v )
+				'<tr><th>%2$s</th><td><input type="hidden" id="%1$s" name="%1$s" value="%3$d"><button type="button" class="button luma-pick" data-target="%1$s" data-type="%5$s">Choose file</button> <button type="button" class="button-link luma-clear" data-target="%1$s">Remove</button> <span class="luma-file" id="%1$s_name">%4$s</span></td></tr>',
+				esc_attr( $key ), esc_html( $label ), $id, $url ? '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( basename( $url ) ) . '</a>' : '<em>none</em>', esc_attr( $type )
 			);
 		}
-		echo '</table><p class="description">Lot number is the title, format LP-YYMM-CODE. Upload the COA PDF to the Media Library and paste its attachment ID above. Analytical values must match the COA exactly.</p>';
+		echo '</table><p class="description">Lot number is the title (LP-YYMM-SKU). Analytical values must match the certificate exactly — customers compare them at /testing/.</p>';
+		echo '<script>(function(){document.querySelectorAll(".luma-pick").forEach(function(b){b.onclick=function(e){e.preventDefault();var t=b.dataset.target,f=wp.media({title:"Choose file",library:{type:b.dataset.type},multiple:false});f.on("select",function(){var a=f.state().get("selection").first().toJSON();document.getElementById(t).value=a.id;document.getElementById(t+"_name").innerHTML="<a href=\""+a.url+"\" target=\"_blank\">"+(a.filename||a.title)+"</a>";});f.open();};});document.querySelectorAll(".luma-clear").forEach(function(b){b.onclick=function(e){e.preventDefault();var t=b.dataset.target;document.getElementById(t).value=0;document.getElementById(t+"_name").innerHTML="<em>none</em>";};});})();</script>';
 	}
 
 	public static function save_meta( int $post_id, \WP_Post $post ): void {
@@ -92,15 +110,25 @@ class Lots {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
+		if ( isset( $_POST['_lot_sellable'] ) ) {
+			$sel = (int) $_POST['_lot_sellable'];
+			$sp  = $sel ? wc_get_product( $sel ) : null;
+			update_post_meta( $post_id, '_lot_product_id', $sp ? ( $sp->is_type( 'variation' ) ? $sp->get_parent_id() : $sp->get_id() ) : 0 );
+			update_post_meta( $post_id, '_lot_variation_id', $sp && $sp->is_type( 'variation' ) ? $sp->get_id() : 0 );
+		}
 		foreach ( self::schema() as $key => $sanitize ) {
 			if ( isset( $_POST[ $key ] ) ) {
 				update_post_meta( $post_id, $key, call_user_func( $sanitize, wp_unslash( $_POST[ $key ] ) ) );
 			}
 		}
+		$coa = (int) get_post_meta( $post_id, '_lot_coa_id', true );
+		if ( $coa ) {
+			wp_update_post( [ 'ID' => $coa, 'post_parent' => $post_id ] );
+		}
 	}
 
 	public static function columns( array $cols ): array {
-		return [ 'cb' => $cols['cb'], 'title' => 'Lot', 'lot_product' => 'Product', 'lot_status' => 'Status', 'lot_purity' => 'Purity', 'lot_tested' => 'Tested', 'lot_qty' => 'Remaining' ];
+		return [ 'cb' => $cols['cb'], 'title' => 'Lot', 'lot_product' => 'Product', 'lot_status' => 'Status', 'lot_purity' => 'Purity', 'lot_tested' => 'Tested', 'lot_qty' => 'Remaining', 'lot_coa' => 'COA', 'lot_current' => 'Current' ];
 	}
 
 	public static function column( string $col, int $post_id ): void {
@@ -121,6 +149,14 @@ class Lots {
 				break;
 			case 'lot_qty':
 				echo esc_html( (string) get_post_meta( $post_id, '_lot_qty_remaining', true ) );
+				break;
+			case 'lot_coa':
+				$c = (int) get_post_meta( $post_id, '_lot_coa_id', true );
+				echo $c ? '<a href="' . esc_url( wp_get_attachment_url( $c ) ) . '" target="_blank" rel="noopener">PDF</a>' : '<span style="color:#b32d2e">missing</span>';
+				break;
+			case 'lot_current':
+				$pid = (int) get_post_meta( $post_id, '_lot_variation_id', true ) ?: (int) get_post_meta( $post_id, '_lot_product_id', true );
+				echo $pid && (int) get_post_meta( $pid, '_luma_current_lot', true ) === $post_id ? '✔' : '';
 				break;
 		}
 	}

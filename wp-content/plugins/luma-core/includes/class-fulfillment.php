@@ -198,7 +198,7 @@ class Fulfillment {
 				echo "\nTracking: {$t['carrier']} {$t['number']}" . ( $t['url'] ? " {$t['url']}" : '' ) . "\n";
 			}
 			if ( $lots ) {
-				echo 'Lot(s): ' . implode( ', ', $lots ) . "\n";
+				echo 'Lot(s): ' . implode( ', ', $lots ) . "\nVerify the certificate for your lot at " . home_url( '/testing/' ) . "\n";
 			}
 			return;
 		}
@@ -206,7 +206,8 @@ class Fulfillment {
 			echo '<p><b>Tracking:</b> ' . esc_html( $t['carrier'] ) . ' ' . ( $t['url'] ? '<a href="' . esc_url( $t['url'] ) . '">' . esc_html( $t['number'] ) . '</a>' : esc_html( $t['number'] ) ) . '</p>';
 		}
 		if ( $lots ) {
-			echo '<p><b>Lot number' . ( count( $lots ) > 1 ? 's' : '' ) . ':</b> ' . esc_html( implode( ', ', $lots ) ) . '</p>';
+			$links = array_map( fn( $l ) => '<a href="' . esc_url( home_url( '/testing/?lot=' . rawurlencode( $l ) ) ) . '">' . esc_html( $l ) . '</a>', $lots );
+			echo '<p><b>Lot number' . ( count( $lots ) > 1 ? 's' : '' ) . ':</b> ' . implode( ', ', $links ) . '<br><span style="color:#6e625b;font-size:13px">Each vial is labelled with its lot number. Open the link, or type the number at lumaresearchco.com/testing, to see the independent certificate of analysis for exactly what you received.</span></p>';
 		}
 	}
 }
