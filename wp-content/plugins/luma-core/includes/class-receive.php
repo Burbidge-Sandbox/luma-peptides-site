@@ -19,6 +19,7 @@ class Receive {
 	public static function init(): void {
 		add_action( 'admin_menu', [ __CLASS__, 'menu' ], 21 );
 		add_action( 'admin_post_luma_receive_lot', [ __CLASS__, 'handle' ] );
+		add_action( 'admin_post_luma_file_coa', [ __CLASS__, 'handle_file_coa' ] );
 		add_action( 'admin_enqueue_scripts', [ __CLASS__, 'assets' ] );
 		/* Trace: stamp the product's current lot on every order line at checkout. */
 		add_action( 'woocommerce_checkout_create_order_line_item', [ __CLASS__, 'stamp_line' ], 10, 4 );
@@ -158,13 +159,46 @@ class Receive {
 					<tr><th scope="row"><label for="rc_purity">Assay purity</label></th><td><input type="text" id="rc_purity" name="purity" placeholder="99.4%" class="regular-text"></td></tr>
 					<tr><th scope="row"><label for="rc_identity">Identity</label></th><td><input type="text" id="rc_identity" name="identity" placeholder="Confirmed (LC-MS)" class="regular-text"></td></tr>
 					<tr><th scope="row"><label for="rc_net">Net content</label></th><td><input type="text" id="rc_net" name="net_content" placeholder="10.2 mg" class="regular-text"></td></tr>
-					<tr><th scope="row"><label for="rc_endo">Endotoxin</label></th><td><input type="text" id="rc_endo" name="endotoxin" placeholder="< 0.5 EU/mg" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="rc_endo">Endotoxin</label></th><td><input type="text" id="rc_endo" name="endotoxin" placeholder="leave blank if not on the certificate" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="rc_labeled">Labeled quantity</label></th><td><input type="text" id="rc_labeled" name="labeled_qty" placeholder="15 mg" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="rc_cap">Cap colour</label></th><td><input type="text" id="rc_cap" name="cap" placeholder="Red" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="rc_report">Lab report #</label></th><td><input type="text" id="rc_report" name="report_no" placeholder="KVR-2026-XXXXXX" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="rc_access">Lab access code</label></th><td><input type="text" id="rc_access" name="access_code" placeholder="from the certificate footer" class="regular-text"><p class="description">Shown to customers with a link to the lab's own verify page.</p></td></tr>
 					<tr><th scope="row"><label for="rc_expires">Best before (YYYY-MM)</label></th><td><input type="month" id="rc_expires" name="expires"></td></tr>
 					<tr><th scope="row"><label for="rc_status">Result</label></th>
 						<td><select id="rc_status" name="status"><option value="PENDING">Pending — COA not issued yet</option><option value="PASS">PASS — released for sale</option><option value="FAIL">FAIL — quarantine (not sold, stock not added)</option></select></td></tr>
 					<tr><th scope="row">Make current</th><td><label><input type="checkbox" name="make_current" value="1" checked> Ship this lot on new orders from now on</label></td></tr>
 				</table>
 				<?php submit_button( 'Receive lot' ); ?>
+			</form>
+
+			<hr style="margin:2.5rem 0">
+			<h2>File a certificate for an existing lot</h2>
+			<p class="description" style="max-width:60em">For lots received before the lab issued its certificate. Upload the PDF, copy the results, and set the result to PASS to release it. Stock is not changed.</p>
+			<?php $pending = get_posts( [ 'post_type' => Lots::CPT, 'post_status' => 'publish', 'posts_per_page' => 100, 'orderby' => 'title', 'order' => 'ASC' ] ); ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
+				<?php wp_nonce_field( 'luma_file_coa' ); ?>
+				<input type="hidden" name="action" value="luma_file_coa">
+				<table class="form-table" role="presentation">
+					<tr><th scope="row"><label for="fc_lot">Lot</label></th><td><select id="fc_lot" name="lot_id" required style="min-width:24em"><option value="">— choose —</option>
+						<?php foreach ( $pending as $l ) : $st = (string) get_post_meta( $l->ID, '_lot_status', true ) ?: 'PENDING'; ?><option value="<?php echo (int) $l->ID; ?>"><?php echo esc_html( $l->post_title . ' · ' . Lots::view( $l )['product'] . ' · ' . $st . ( (int) get_post_meta( $l->ID, '_lot_coa_id', true ) ? ' · COA filed' : ' · no COA' ) ); ?></option><?php endforeach; ?>
+					</select></td></tr>
+					<tr><th scope="row"><label for="fc_coa">Certificate (PDF)</label></th><td><input type="file" id="fc_coa" name="lot_coa" accept="application/pdf" required></td></tr>
+					<tr><th scope="row"><label for="fc_lab">Testing lab</label></th><td><input type="text" id="fc_lab" name="lab" value="Kovera Labs" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_tested">Certified date</label></th><td><input type="date" id="fc_tested" name="tested" required></td></tr>
+					<tr><th scope="row"><label for="fc_method">Method</label></th><td><input type="text" id="fc_method" name="method" value="RP-HPLC (C18, DAD 214 nm); LC-MS identity" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_purity">Purity</label></th><td><input type="text" id="fc_purity" name="purity" placeholder="99.844%" class="regular-text" required></td></tr>
+					<tr><th scope="row"><label for="fc_identity">Identity</label></th><td><input type="text" id="fc_identity" name="identity" placeholder="Confirmed — GLP 2T" class="regular-text" required></td></tr>
+					<tr><th scope="row"><label for="fc_net">Net content</label></th><td><input type="text" id="fc_net" name="net_content" placeholder="15.48 mg" class="regular-text" required></td></tr>
+					<tr><th scope="row"><label for="fc_labeled">Labeled quantity</label></th><td><input type="text" id="fc_labeled" name="labeled_qty" placeholder="15 mg" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_endo">Endotoxin</label></th><td><input type="text" id="fc_endo" name="endotoxin" placeholder="leave blank if not on the certificate" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_cap">Cap colour</label></th><td><input type="text" id="fc_cap" name="cap" placeholder="Red" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_report">Lab report #</label></th><td><input type="text" id="fc_report" name="report_no" placeholder="KVR-2026-XXXXXX" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_access">Lab access code</label></th><td><input type="text" id="fc_access" name="access_code" class="regular-text"></td></tr>
+					<tr><th scope="row"><label for="fc_expires">Best before (YYYY-MM)</label></th><td><input type="month" id="fc_expires" name="expires"></td></tr>
+					<tr><th scope="row"><label for="fc_status">Result</label></th><td><select id="fc_status" name="status"><option value="PASS">PASS — released for sale</option><option value="FAIL">FAIL — quarantine</option><option value="PENDING">Pending</option></select></td></tr>
+				</table>
+				<?php submit_button( 'File certificate', 'secondary' ); ?>
 			</form>
 
 			<h2 style="margin-top:2.5rem">Lots on hand</h2>
@@ -196,6 +230,62 @@ class Receive {
 			);
 		}
 		echo '</tbody></table>';
+	}
+
+	private static function upload_coa( string $field ): int {
+		if ( empty( $_FILES[ $field ]['name'] ) ) {
+			return 0;
+		}
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		$check = wp_check_filetype_and_ext( $_FILES[ $field ]['tmp_name'], $_FILES[ $field ]['name'] ); // phpcs:ignore
+		if ( 'application/pdf' !== ( $check['type'] ?? '' ) ) {
+			return -1;
+		}
+		$up = media_handle_upload( $field, 0 );
+		return is_wp_error( $up ) ? -1 : (int) $up;
+	}
+
+	public static function handle_file_coa(): void {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( 'Forbidden' );
+		}
+		check_admin_referer( 'luma_file_coa' );
+		$back = admin_url( 'admin.php?page=' . self::PAGE );
+		$lot  = get_post( (int) ( $_POST['lot_id'] ?? 0 ) );
+		if ( ! $lot || Lots::CPT !== $lot->post_type ) {
+			set_transient( 'luma_receive_log', 'Error: choose a lot.', 300 );
+			wp_safe_redirect( $back );
+			exit;
+		}
+		$coa_id = self::upload_coa( 'lot_coa' );
+		if ( $coa_id < 0 ) {
+			set_transient( 'luma_receive_log', 'Error: the certificate must be a PDF and the upload must succeed.', 300 );
+			wp_safe_redirect( $back );
+			exit;
+		}
+		$t      = fn( $k ) => sanitize_text_field( wp_unslash( $_POST[ $k ] ?? '' ) );
+		$status = in_array( $t( 'status' ), [ 'PENDING', 'PASS', 'FAIL' ], true ) ? $t( 'status' ) : 'PASS';
+		$meta   = [
+			'_lot_lab' => $t( 'lab' ), '_lot_tested' => $t( 'tested' ), '_lot_method' => $t( 'method' ), '_lot_purity' => $t( 'purity' ), '_lot_identity' => $t( 'identity' ),
+			'_lot_net_content' => $t( 'net_content' ), '_lot_labeled_qty' => $t( 'labeled_qty' ), '_lot_endotoxin' => $t( 'endotoxin' ), '_lot_cap' => $t( 'cap' ),
+			'_lot_report_no' => $t( 'report_no' ), '_lot_access_code' => $t( 'access_code' ), '_lot_expires' => $t( 'expires' ), '_lot_status' => $status,
+		];
+		if ( $coa_id ) {
+			$meta['_lot_coa_id'] = $coa_id;
+			wp_update_post( [ 'ID' => $coa_id, 'post_parent' => $lot->ID, 'post_title' => 'COA ' . $lot->post_title ] );
+		}
+		foreach ( $meta as $k => $v ) {
+			update_post_meta( $lot->ID, $k, $v );
+		}
+		if ( 'FAIL' === $status ) {
+			update_post_meta( $lot->ID, '_lot_qty_remaining', 0 );
+		}
+		wp_cache_delete( 'luma_catalogue_json', 'luma' );
+		set_transient( 'luma_receive_log', sprintf( 'Certificate filed for <b>%s</b> — %s. <a href="%s" target="_blank" rel="noopener">View public certificate</a>', esc_html( $lot->post_title ), esc_html( $status ), esc_url( home_url( '/testing/?lot=' . rawurlencode( $lot->post_title ) ) ) ), 300 );
+		wp_safe_redirect( $back );
+		exit;
 	}
 
 	public static function handle(): void {
@@ -259,6 +349,10 @@ class Receive {
 			'_lot_endotoxin'     => $t( 'endotoxin' ),
 			'_lot_status'        => $status,
 			'_lot_expires'       => $t( 'expires' ),
+			'_lot_labeled_qty'   => $t( 'labeled_qty' ),
+			'_lot_cap'           => $t( 'cap' ),
+			'_lot_report_no'     => $t( 'report_no' ),
+			'_lot_access_code'   => $t( 'access_code' ),
 			'_lot_coa_id'        => $coa_id,
 			'_lot_qty_received'  => $qty,
 			'_lot_qty_remaining' => 'FAIL' === $status ? 0 : $qty,

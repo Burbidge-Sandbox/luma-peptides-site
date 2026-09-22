@@ -33,6 +33,10 @@ class Lots {
 			'_lot_photo_id'     => 'absint',              // attachment (vial photo)
 			'_lot_qty_received' => 'absint',
 			'_lot_qty_remaining'=> 'absint',
+			'_lot_report_no'    => 'sanitize_text_field', // lab report number (e.g. KVR-2026-C03CC0)
+			'_lot_access_code'  => 'sanitize_text_field', // lab verify-portal code
+			'_lot_cap'          => 'sanitize_text_field', // cap colour printed on the COA
+			'_lot_labeled_qty'  => 'sanitize_text_field', // e.g. 15 mg
 		];
 	}
 
@@ -78,7 +82,7 @@ class Lots {
 		$pid   = (int) $get( '_lot_variation_id' ) ?: (int) $get( '_lot_product_id' );
 		$coa   = (int) $get( '_lot_coa_id' );
 		$photo = (int) $get( '_lot_photo_id' );
-		$text  = [ '_lot_lab' => 'Testing lab', '_lot_tested' => 'Test date (YYYY-MM-DD)', '_lot_method' => 'Method', '_lot_purity' => 'Assay purity', '_lot_identity' => 'Identity', '_lot_net_content' => 'Net content', '_lot_endotoxin' => 'Endotoxin', '_lot_expires' => 'Best before (YYYY-MM)', '_lot_qty_received' => 'Qty received', '_lot_qty_remaining' => 'Qty remaining' ];
+		$text  = [ '_lot_lab' => 'Testing lab', '_lot_tested' => 'Test date (YYYY-MM-DD)', '_lot_method' => 'Method', '_lot_purity' => 'Assay purity', '_lot_identity' => 'Identity', '_lot_net_content' => 'Net content', '_lot_endotoxin' => 'Endotoxin', '_lot_expires' => 'Best before (YYYY-MM)', '_lot_report_no' => 'Lab report #', '_lot_access_code' => 'Lab access code', '_lot_cap' => 'Cap colour', '_lot_labeled_qty' => 'Labeled qty', '_lot_qty_received' => 'Qty received', '_lot_qty_remaining' => 'Qty remaining' ];
 		echo '<table class="form-table"><tr><th><label for="_lot_sellable">Product</label></th><td><select id="_lot_sellable" name="_lot_sellable" style="min-width:24em"><option value="0">— none —</option>';
 		foreach ( Receive::sellables() as $id => $label ) {
 			echo '<option value="' . (int) $id . '"' . selected( $pid, $id, false ) . '>' . esc_html( $label ) . '</option>';
@@ -183,6 +187,10 @@ class Lots {
 			'endotoxin'   => $get( '_lot_endotoxin' ),
 			'status'      => $get( '_lot_status' ) ?: 'PENDING',
 			'expires'     => $get( '_lot_expires' ),
+			'report_no'   => $get( '_lot_report_no' ),
+			'access_code' => $get( '_lot_access_code' ),
+			'cap'         => $get( '_lot_cap' ),
+			'labeled_qty' => $get( '_lot_labeled_qty' ),
 			'coa_url'     => $coa ? wp_get_attachment_url( $coa ) : '',
 			'photo_url'   => $pho ? wp_get_attachment_image_url( $pho, 'medium' ) : '',
 		];
@@ -229,21 +237,42 @@ class Lots {
 	public static function render_card( array $v ): void {
 		$pending = $v['status'] === 'PENDING';
 		$pass    = $v['status'] === 'PASS';
-		$cell    = fn( $val, $ok = false ) => $val !== '' ? '<b' . ( $ok && $pass ? ' class="pass"' : '' ) . '>' . esc_html( $val ) . '</b>' : '<b style="color:var(--muted);font-weight:400">Pending</b>';
+		$rows    = [
+			[ 'Laboratory', $v['lab'], false ],
+			[ 'Certified', $v['tested'], false ],
+			[ 'Purity (HPLC)', $v['purity'], true ],
+			[ 'Identity (LC-MS)', $v['identity'], true ],
+			[ 'Net content', $v['net_content'], false ],
+			[ 'Labeled quantity', $v['labeled_qty'], false ],
+			[ 'Endotoxin', $v['endotoxin'], false ],
+			[ 'Cap colour', $v['cap'], false ],
+			[ 'Lab report #', $v['report_no'], false ],
+			[ 'Best before', $v['expires'], false ],
+			[ 'Overall', $v['status'], true ],
+		];
 		echo '<div class="coa-card">';
 		echo '<div class="coa-badge' . ( $pending ? '' : ( $pass ? '' : ' fail' ) ) . '">' . ( $pending ? 'Testing in progress' : 'Certificate of analysis · ' . esc_html( $v['status'] ) ) . '</div>';
 		echo '<div class="coa-head"><div><b style="font-size:1.15rem">' . esc_html( $v['product'] ) . '</b><br><span style="font-size:.85rem;color:var(--muted)">Lot ' . esc_html( $v['lot'] ) . '</span></div>' . ( $pass ? '<span class="coa-stamp">TESTED</span>' : '' ) . '</div>';
 		echo '<div class="coa-grid">';
-		echo '<div class="coa-row"><span>Laboratory</span>' . $cell( $v['lab'] ) . '</div><div class="coa-row"><span>Test date</span>' . $cell( $v['tested'] ) . '</div>';
-		echo '<div class="coa-row"><span>Purity (HPLC)</span>' . $cell( $v['purity'], true ) . '</div><div class="coa-row"><span>Identity</span>' . $cell( $v['identity'], true ) . '</div>';
-		echo '<div class="coa-row"><span>Net content</span>' . $cell( $v['net_content'] ) . '</div><div class="coa-row"><span>Endotoxin</span>' . $cell( $v['endotoxin'] ) . '</div>';
-		echo '<div class="coa-row"><span>Best before</span>' . $cell( $v['expires'] ) . '</div><div class="coa-row"><span>Overall</span>' . $cell( $v['status'], true ) . '</div>';
+		foreach ( $rows as [ $label, $val, $ok ] ) {
+			if ( '' === $val && ! $pending ) {
+				continue; // released lots only show what the certificate states
+			}
+			echo '<div class="coa-row"><span>' . esc_html( $label ) . '</span>' . ( '' !== $val ? '<b' . ( $ok && $pass ? ' class="pass"' : '' ) . '>' . esc_html( $val ) . '</b>' : '<b style="color:var(--muted);font-weight:400">Pending</b>' ) . '</div>';
+		}
 		echo '</div>';
 		if ( $pending ) {
 			echo '<p style="font-size:.85rem;color:var(--ink-2);margin:1.2rem 0 0">Third-party testing for this lot is in progress. The certificate of analysis is published here when it is issued.</p>';
 		}
+		$actions = [];
 		if ( $v['coa_url'] ) {
-			echo '<p style="margin:1.2rem 0 0"><a class="btn btn-outline btn-sm" href="' . esc_url( $v['coa_url'] ) . '" target="_blank" rel="noopener">Open certificate (PDF)</a></p>';
+			$actions[] = '<a class="btn btn-outline btn-sm" href="' . esc_url( $v['coa_url'] ) . '" target="_blank" rel="noopener">Open certificate (PDF)</a>';
+		}
+		if ( $v['report_no'] && $v['access_code'] && stripos( $v['lab'], 'kovera' ) !== false ) {
+			$actions[] = '<a class="btn btn-ghost btn-sm" href="https://koveralabs.com/verify" target="_blank" rel="noopener">Verify at Kovera Labs ↗</a><span style="font-size:.8rem;color:var(--muted)">Report ' . esc_html( $v['report_no'] ) . ' · access code <b style="font-family:var(--mono,monospace)">' . esc_html( $v['access_code'] ) . '</b></span>';
+		}
+		if ( $actions ) {
+			echo '<p style="margin:1.2rem 0 0;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center">' . implode( '', $actions ) . '</p>';
 		}
 		if ( $v['photo_url'] ) {
 			echo '<img class="lot-photo" src="' . esc_url( $v['photo_url'] ) . '" alt="' . esc_attr( 'Vial photo, lot ' . $v['lot'] ) . '" loading="lazy">';
