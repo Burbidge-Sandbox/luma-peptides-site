@@ -27,6 +27,8 @@ class Fulfillment {
 		add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'deduct_lots' ] );
 		add_action( 'woocommerce_email_after_order_table', [ __CLASS__, 'email' ], 9, 4 );
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ __CLASS__, 'admin_summary' ] );
+		/* ShipStation pushes the label's tracking back; store it where the emails, account and tracking page read it. */
+		add_action( 'woocommerce_shipstation_shipnotify', [ __CLASS__, 'from_shipstation' ], 10, 2 );
 	}
 
 	/* ---------- helpers (also used by the theme) ---------- */
@@ -162,6 +164,37 @@ class Fulfillment {
 		if ( $d ) {
 			echo '<p><strong>Delivered:</strong> ' . esc_html( gmdate( 'M j, Y', strtotime( $d ) ) ) . '</p>';
 		}
+	}
+
+	/** ShipStation ship-notify: carrier + tracking number, before it flips the order to Completed. */
+	public static function from_shipstation( $order, array $args ): void {
+		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+		$num = sanitize_text_field( (string) ( $args['tracking_number'] ?? '' ) );
+		$car = strtolower( (string) ( $args['carrier'] ?? '' ) );
+		$key = 'other';
+		foreach ( [ 'usps', 'ups', 'fedex' ] as $k ) {
+			if ( str_contains( $car, $k ) ) {
+				$key = $k;
+			}
+		}
+		if ( $num ) {
+			$order->update_meta_data( '_luma_tracking', $num );
+			$order->update_meta_data( '_luma_tracking_carrier', $key );
+		}
+		/* No lot chosen yet? Fall back to each product's current lot so the shipped email still carries certificates. */
+		foreach ( $order->get_items() as $item ) {
+			if ( ! $item->get_meta( '_luma_lot' ) ) {
+				$prod = $item->get_product();
+				$lot  = $prod && class_exists( 'Luma\\Core\\Receive' ) ? Receive::current_lot_for( $prod ) : null;
+				if ( $lot ) {
+					$item->update_meta_data( '_luma_lot', $lot->post_title );
+					$item->save();
+				}
+			}
+		}
+		$order->save();
 	}
 
 	/** Reduce each assigned lot's remaining count once per order. */
