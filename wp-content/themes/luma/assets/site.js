@@ -198,7 +198,7 @@
     const sizes = v0 ? `<div class="card-sizes" role="group" aria-label="Vial size">${p.variants.map((v,i)=>`<button type="button" class="card-size${i===0?" is-on":""}${v.stock==="out"?" is-out":""}" data-size="${v.key}" aria-pressed="${i===0}">${v.label}</button>`).join("")}</div>` : "";
     return `<article class="card reveal${oos?" oos":""}" data-pid="${p.id}"${v0?` data-variant="${v0.key}"`:""}>
  ${oos?`<span class="badge soft">Waitlist</span>`:(p.badge?`<span class="badge">${p.badge}</span>`:"")}
- <a class="stretch" href="${esc(p.url)}${v0?"?dose="+v0.key:""}" aria-label="${esc(p.name)}"></a>
+ <a class="stretch" href="${esc(p.url)}${v0?"?size="+v0.key:""}" aria-label="${esc(p.name)}"></a>
  <div class="card-vial">${vialSVG(v0?{...p,strength:strength,label:[p.label[0],v0.key.toUpperCase()]}:p)}</div>
  <h3>${esc(p.name)}</h3>
  <div class="strength"><span class="card-strength">${esc(strength)}</span>${oos?' · <span class="oos-text">Out of stock</span>':''}</div>
@@ -217,7 +217,7 @@
     card.querySelector(".card-strength").textContent=v.strength;
     card.querySelector(".card-vial").innerHTML=vialSVG({...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]});
     const add=card.querySelector("[data-add]"); if(add){ add.dataset.variant=v.key; add.disabled=v.stock==="out"; add.textContent=v.stock==="out"?"Out of stock":"Add to cart"; }
-    card.querySelector("a.stretch").href=`${p.url}?dose=${v.key}`;
+    card.querySelector("a.stretch").href=`${p.url}?size=${v.key}`;
   });
 
   /* ---------- Waitlist ---------- */

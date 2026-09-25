@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   const P=window.LUMA_PRODUCTS; const p=P.find(x=>x.id===id)||P[0]; if(!p) return;
   const money=Cart.money, U=window.LUMA_CONFIG.urls;
   const variants=p.variants||null;
-  let dose=variants?(variants.find(v=>v.key===params.get("dose"))||variants[0]).key:null;
+  let dose=variants?(variants.find(v=>v.key===params.get("size")||params.get("dose"))||variants[0]).key:null;
   document.getElementById("crumbName").textContent=p.name;
   document.getElementById("gallery").innerHTML=vialSVG(p,{eager:true});
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -38,14 +38,14 @@ document.addEventListener("DOMContentLoaded",()=>{
     const oos=p.stock==="out"||v.stock==="out";
     const lot=(v&&v.lot)||p.lot||"";
     document.title=`${p.name} ${v.strength} — Luma Peptides Co.`;
-    if(variants){ const u=new URL(location); u.searchParams.set("dose",v.key); history.replaceState(null,"",u); }
+    if(variants){ const u=new URL(location); u.searchParams.delete("dose"); u.searchParams.set("size",v.key); history.replaceState(null,"",u); }
     document.getElementById("info").innerHTML=`
  <span class="eyebrow">${esc(window.LUMA_CATEGORIES[p.category]||"")}</span>
  <h1>${esc(p.name)}</h1>
  <div class="sub">${esc(v.strength)} · Lyophilized · For laboratory research use only</div>
  <p style="color:var(--ink-2);font-size:1.05rem">${esc(p.tagline)}</p>
  <div class="pdp-price" id="priceLine"></div>
- ${variants?`<div class="dose-picker"><div class="dose-label">Vial size</div><div class="dose-options" role="radiogroup" aria-label="Dosage">${variants.map(x=>`<button type="button" class="dose${x.key===v.key?" is-selected":""}${x.stock==="out"?" is-out":""}" data-dose="${x.key}" role="radio" aria-checked="${x.key===v.key}">${esc(x.label)}${x.stock==="out"?'<small>Waitlist</small>':''}</button>`).join("")}</div></div>`:""}
+ ${variants?`<div class="size-picker"><div class="size-label">Vial size</div><div class="size-options" role="radiogroup" aria-label="Dosage">${variants.map(x=>`<button type="button" class="size${x.key===v.key?" is-selected":""}${x.stock==="out"?" is-out":""}" data-size="${x.key}" role="radio" aria-checked="${x.key===v.key}">${esc(x.label)}${x.stock==="out"?'<small>Waitlist</small>':''}</button>`).join("")}</div></div>`:""}
  ${oos?`<div class="oos-banner"><b>Currently out of stock.</b> Join the waitlist to be notified when the next tested lot is released. No payment is taken.</div>`:""}
  <form id="buyForm">
   <div class="buy-row">
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   </div>
   <div class="tab-panel" id="t1"><p>${esc(p.description)}</p><p style="font-size:.85rem;color:var(--muted)">For laboratory research use only. Not for human or animal use. Bodily introduction of any kind into humans or animals is strictly forbidden by law. This product is not a drug, food, cosmetic, or medical device. Luma Peptides Co. does not provide reconstitution, handling, or usage guidance.</p></div>
   <div class="tab-panel" id="t2" hidden><p>${esc(p.inside)}</p><table class="spec">${Object.entries({"Net content":v.strength.replace(" vial",""),...(lot?{"Current lot":lot}:{}),...p.specs}).map(([k,val])=>`<tr><td>${esc(k)}</td><td>${esc(val)}</td></tr>`).join("")}</table></div>
-  <div class="tab-panel" id="t3" hidden><p>Each lot is sent to an independent U.S. laboratory for purity (HPLC), identity (LC-MS), net content, and endotoxin testing before release. <a href="${U.verify}${lot?"?lot="+encodeURIComponent(lot):""}" style="color:var(--terra);text-decoration:underline">Look up the lot number</a> printed on the vial to view the certificate of analysis.</p>${lot?`<p><b>Current lot:</b> ${esc(lot)}</p>`:""}<p><b>Latest lot purity:</b> ${esc(p.specs["Purity (last lot, HPLC)"]||p.specs["Purity (last lot)"]||"—")}</p></div>
+  <div class="tab-panel" id="t3" hidden><p>Each lot is sent to an independent U.S. laboratory for purity (HPLC), identity (LC-MS), and net content before release. <a href="${U.verify}${lot?"?lot="+encodeURIComponent(lot):""}" style="color:var(--terra);text-decoration:underline">Look up the lot number</a> printed on the vial to view the certificate of analysis.</p>${lot?`<p><b>Current lot:</b> ${esc(lot)}</p>`:""}<p><b>Latest lot purity:</b> ${esc(p.specs["Purity (last lot, HPLC)"]||p.specs["Purity (last lot)"]||"—")}</p></div>
  </div>`;
     const priceLine=document.getElementById("priceLine");
     const form=document.getElementById("buyForm"), qty=document.getElementById("qtyInput");
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     document.querySelector(".tab-list").addEventListener("click",e=>{const b=e.target.closest("[role=tab]"); if(!b) return;
       document.querySelectorAll("[role=tab]").forEach(t=>t.setAttribute("aria-selected",t===b));
       document.querySelectorAll(".tab-panel").forEach(pn=>pn.hidden=pn.id!==b.dataset.tab);});
-    document.querySelectorAll(".dose").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.dose===dose) return; dose=b.dataset.dose; render(); document.getElementById("priceLine").scrollIntoView({block:"nearest"}); }));
+    document.querySelectorAll(".size").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.size===dose) return; dose=b.dataset.size; render(); document.getElementById("priceLine").scrollIntoView({block:"nearest"}); }));
   }
   render();
   const rel=P.filter(x=>x.id!==p.id&&x.category===p.category).concat(P.filter(x=>x.id!==p.id&&x.category!==p.category)).slice(0,4);

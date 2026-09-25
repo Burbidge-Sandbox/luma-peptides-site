@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.6.9
+Version: 0.7.0
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -401,3 +401,23 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .sd-compact .sd-check-input{flex:1 1 7rem;min-width:0;padding:.6rem .8rem}
 .sd-compact .sd-check-out b{font-size:1.05rem}
 .promise-tile p .sd-strong{display:inline;font:inherit;font-weight:600;color:var(--ink)}
+
+/* Express checkout: Stripe renders an empty container when no wallet is available (0.7.0) */
+.checkout-page .wc-block-components-express-payment:not(:has(iframe,button,.wc-block-components-express-payment__event-buttons>li)){display:none}
+.checkout-page .wc-block-components-express-payment:not(:has(iframe,button,.wc-block-components-express-payment__event-buttons>li))+.wc-block-components-express-payment-continue-rule{display:none}
+/* Guest order tracking page (0.7.0) */
+.track-page .woocommerce-form-track-order{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.6rem;max-width:560px}
+.track-page .woocommerce-form-track-order p{margin:0 0 1rem;color:var(--ink-2);font-size:.95rem}
+.track-page .woocommerce-form-track-order .form-row{display:grid;gap:.35rem;margin:0 0 1rem}
+.track-page .woocommerce-form-track-order label{font-size:.8rem;font-weight:600;color:var(--ink-2)}
+.track-page .woocommerce-form-track-order .input-text{padding:.85rem 1rem;border:1.5px solid var(--line);border-radius:8px;background:#fff;font:inherit;width:100%}
+.track-page .woocommerce-form-track-order .input-text:focus{outline:0;border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-soft)}
+.track-page .woocommerce-form-track-order button.button{background:var(--terra)!important;color:#fff!important;border:0;border-radius:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;padding:.8rem 1.4rem;cursor:pointer}
+.track-page .track-help{margin:1.2rem 0 0;font-size:.88rem;color:var(--muted);max-width:560px}
+.track-page .woocommerce-order-details,.track-page .woocommerce-customer-details{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.6rem;margin-top:1.4rem;max-width:760px}
+.track-page .woocommerce-order-details__title,.track-page .woocommerce-column__title{font-family:var(--serif);font-weight:500;font-size:1.35rem;margin:0 0 .8rem}
+.track-page table.shop_table{width:100%;border-collapse:collapse;font-size:.92rem}
+.track-page table.shop_table th,.track-page table.shop_table td{text-align:left;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.track-page table.shop_table tfoot th{font-weight:600}
+.track-page .track-status{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin:1.4rem 0 0;max-width:760px}
+.track-page .track-status p{margin:0;color:var(--ink-2)}

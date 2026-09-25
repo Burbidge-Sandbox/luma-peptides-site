@@ -100,6 +100,7 @@ function luma_catalogue_json(): array {
 				'checkout' => wc_get_checkout_url(),
 				'account'  => wc_get_page_permalink( 'myaccount' ),
 				'orders'   => wc_get_account_endpoint_url( 'orders' ),
+				'track'    => is_user_logged_in() ? wc_get_account_endpoint_url( 'orders' ) : ( class_exists( 'Luma\\Core\\Housekeeping' ) ? Luma\Core\Housekeeping::track_url() : wc_get_account_endpoint_url( 'orders' ) ),
 				'verify'   => home_url( '/testing/' ),
 				'contact'  => home_url( '/contact/' ),
 				'faq'      => home_url( '/faq/' ),

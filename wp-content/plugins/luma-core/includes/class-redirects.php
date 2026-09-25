@@ -38,10 +38,12 @@ class Redirects {
 				break;
 			case 'product':
 				$id = sanitize_title( $q['id'] ?? '' );
+				$id = Housekeeping::RENAMED_PRODUCTS[ $id ] ?? $id;
 				$p  = $id ? get_page_by_path( $id, OBJECT, 'product' ) : null;
 				$to = $p ? get_permalink( $p ) : wc_get_page_permalink( 'shop' );
-				if ( $p && ! empty( $q['dose'] ) ) {
-					$to = add_query_arg( 'dose', sanitize_key( $q['dose'] ), $to );
+				$size = $q['size'] ?? $q['dose'] ?? '';
+				if ( $p && $size ) {
+					$to = add_query_arg( 'size', sanitize_key( $size ), $to );
 				}
 				break;
 			case 'verify':

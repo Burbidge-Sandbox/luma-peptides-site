@@ -16,7 +16,7 @@ get_header();
    <div class="hero-cta"><a class="btn btn-primary" href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog <span aria-hidden="true">↗</span></a><a class="text-link" href="<?php echo esc_url( $u['verify'] ); ?>">Our approach to verification <span aria-hidden="true">→</span></a></div>
   </div>
   <figure class="hero-visual">
-   <img class="hero-scene" src="<?php echo esc_url( luma_assets_url( 'assets/hero-editorial.jpg' ) ); ?>" width="1536" height="1024" alt="Luma BPC-157 vial on textured travertine in warm directional light" fetchpriority="high">
+   <img class="hero-scene" src="<?php echo esc_url( luma_assets_url( 'assets/hero-editorial-10mg.jpg' ) ); ?>" width="1536" height="1024" alt="Luma BPC-157 vial on textured travertine in warm directional light" fetchpriority="high">
    <figcaption><span>THE LUMA COLLECTION</span></figcaption>
   </figure>
  </div>
@@ -32,7 +32,7 @@ get_header();
 </section>
 <section class="section approach-section">
  <div class="wrap split">
-  <div><span class="eyebrow">A closer look</span><h2>Clarity starts <br>with the details.</h2><p>What is in a vial matters, and so does the documentation that comes with it. Every lot is characterized by an independent laboratory for identity, purity, net content, and endotoxin before it is released for sale.</p><a class="text-link" href="<?php echo esc_url( $u['verify'] ); ?>">Explore lot verification <span aria-hidden="true">↗</span></a></div>
+  <div><span class="eyebrow">A closer look</span><h2>Clarity starts <br>with the details.</h2><p>What is in a vial matters, and so does the documentation that comes with it. Every lot is characterized by an independent laboratory for identity, purity, and net content before it is released for sale.</p><a class="text-link" href="<?php echo esc_url( $u['verify'] ); ?>">Explore lot verification <span aria-hidden="true">↗</span></a></div>
   <div class="detail-list">
    <div><span>01</span><div><h3>Review the specification</h3><p>Each listing states the compound, net content, form, purity of the most recent lot, and storage conditions.</p></div></div>
    <div><span>02</span><div><h3>Check the certificate</h3><p>Every vial carries a lot number. The certificate of analysis for that exact lot is published before the first vial ships.</p></div></div>
@@ -55,11 +55,11 @@ get_header();
 </section>
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
- const ids=["glp-2-t","glp-3-rt","glp-1-sm","glow-klow","bpc-157"];
+ const ids=["glp-2-t","glp-3-rt","glp-1-sm","bpc-157-ghk-cu-tb-500-blend","bpc-157"];
  (function(){ const C=window.LUMA_CONFIG, P=C.promises||{}; const tiles=[
    {k:"Ships fast",t:`Ships within ${P.shipDays||1} business day${(P.shipDays||1)>1?"s":""}`,d:"Every order leaves within one business day of lab release, in plain packaging."},
    {k:"Free delivery",t:P.nextDay?"Free next-day shipping, always":"Free US shipping",d:P.sameDay?`No minimum, no code. ${P.sameDayPromise.replace(/^Free same-day delivery/,"<strong class=\"sd-strong\">Free same-day delivery</strong>")} <a class="sd-link" href="${C.urls.shipping||"/shipping-returns/"}#same-day">Check your ZIP →</a>`:"On every US order. No minimum, no code."},
-   P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every order online",d:"Look up any order by number to see payment, lab release, and shipping status."}
+   P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every order online",d:"Look up any order by number and email to see payment, lab release, shipping and its certificates. <a class="sd-link" href="${C.urls.track}">Track an order →</a>"}
  ]; document.getElementById("promiseStrip").innerHTML=tiles.map(x=>`<div class="promise-tile"><span class="promise-kicker">${x.k}</span><b>${x.t}</b><p>${x.d}</p></div>`).join(""); })();
  document.getElementById("topSellers").innerHTML=ids.map(id=>window.LUMA_PRODUCTS.find(p=>p.id===id)).filter(Boolean).map(productCard).join("");
  document.querySelectorAll("#topSellers .reveal").forEach(el=>el.classList.add("in"));

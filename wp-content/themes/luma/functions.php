@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.6.9' );
+define( 'LUMA_THEME_VERSION', '0.7.0' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -129,6 +129,25 @@ function luma_legacy_content_patch( string $html ): string {
 		if ( $sd && is_page( 'shipping-returns' ) && ! str_contains( $html, 'sd-check' ) ) {
 			$widget = do_shortcode( '[luma_same_day_check]' );
 			$html   = preg_replace_callback( '#<h2 id="returns">#', fn( $m ) => $widget . $m[0], $html, 1 );
+		}
+	}
+	/* Copy corrections for seeded pages whose database copy predates the source file. */
+	$fixes = [
+		'faq' => [
+			'Confirm the research-use acknowledgement and pay by Venmo using the QR or link shown.' => 'Confirm the research-use acknowledgement and pay securely by card, Apple Pay, Google Pay or Link. Card details are handled by Stripe and never touch our server.',
+			'for purity (HPLC), identity (LC-MS), net content, and endotoxin.' => 'for purity (HPLC), identity (LC-MS), and net content.',
+		],
+		'privacy' => [
+			'Payments are made through Venmo, whose own privacy policy applies to the transaction.' => 'Payments are processed by Stripe, whose own privacy policy applies to the transaction.',
+			'Shipping carriers (name and address), Venmo (payment), Google (order records are stored in Google Sheets and email is sent through Google), and' => 'Shipping carriers (name and address), Stripe (payment processing), the hosting provider that stores the store\'s order records, the email service that delivers order notifications, and',
+		],
+		'about' => [
+			'Purity by HPLC, identity by LC-MS, net content, and endotoxin, on every lot' => 'Purity by HPLC, identity by LC-MS, and net content, on every lot',
+		],
+	];
+	foreach ( $fixes as $slug => $map ) {
+		if ( is_page( $slug ) ) {
+			$html = strtr( $html, $map );
 		}
 	}
 	if ( is_page( 'contact' ) ) {

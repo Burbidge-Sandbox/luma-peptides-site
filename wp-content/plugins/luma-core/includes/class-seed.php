@@ -20,10 +20,10 @@ class Seed {
 		'glp-1-sm'        => 'SM10',
 		'tesamorelin'     => 'TESA5',
 		'bpc-157'         => 'BPC10',
-		'wolverine-stack' => 'BPCTB',
+		'bpc-157-tb-500-blend' => 'BPCTB',
 		'cjc-ipamorelin'  => 'CJCIP',
 		'ghk-cu'          => 'GHK5',
-		'glow-klow'       => 'GLOW',
+		'bpc-157-ghk-cu-tb-500-blend'       => 'GLOW',
 		'nad-500'         => 'NAD500',
 		'mots-c'          => 'MOTS10',
 		'epithalon'       => 'EPI10',
@@ -32,15 +32,14 @@ class Seed {
 
 	/** Compound-family categories (never goal- or outcome-based). */
 	/** Categories exactly as the live static site had them (products.js LUMA_CATEGORIES). */
+	/* Organised by format, never by goal (CLAUDE.md rule 9). */
 	const CATEGORIES = [
-		'metabolic' => [ 'Metabolic Research', [ 'glp-2-t', 'glp-3-rt', 'glp-1-sm', 'tesamorelin' ] ],
-		'tissue'    => [ 'Tissue Research',    [ 'bpc-157', 'wolverine-stack' ] ],
-		'dermal'    => [ 'Dermal Research',    [ 'ghk-cu', 'glow-klow' ] ],
-		'longevity' => [ 'Longevity Research', [ 'cjc-ipamorelin', 'nad-500', 'mots-c', 'epithalon' ] ],
-		'supplies'  => [ 'Solvents',           [ 'bac-water' ] ],
+		'peptides' => [ 'Single peptides', [ 'glp-2-t', 'glp-3-rt', 'glp-1-sm', 'tesamorelin', 'bpc-157', 'ghk-cu', 'nad-500', 'mots-c', 'epithalon' ] ],
+		'blends'   => [ 'Peptide blends',  [ 'bpc-157-tb-500-blend', 'bpc-157-ghk-cu-tb-500-blend', 'cjc-ipamorelin' ] ],
+		'supplies' => [ 'Solvents',        [ 'bac-water' ] ],
 	];
-	/** Earlier scaffold categories, removed on the next seed run. */
-	const RETIRED_CATEGORIES = [ 'incretin-analogs', 'ghrh-ghs-analogs', 'short-peptides', 'cofactors' ];
+	/** Earlier categories, removed on the next seed run. */
+	const RETIRED_CATEGORIES = [ 'incretin-analogs', 'ghrh-ghs-analogs', 'short-peptides', 'cofactors', 'metabolic', 'tissue', 'dermal', 'longevity' ];
 
 	/** Static pages imported verbatim from the legacy site (main inner HTML). */
 	const LEGACY_PAGES = [ 'about', 'faq', 'contact', 'shipping-returns', 'privacy', 'terms' ];
