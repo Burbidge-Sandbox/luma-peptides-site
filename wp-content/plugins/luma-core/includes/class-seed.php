@@ -324,18 +324,20 @@ class Seed {
 			$meta   = [
 				'_lot_product_id'   => $prod ? ( $prod->is_type( 'variation' ) ? $prod->get_parent_id() : $pid ) : 0,
 				'_lot_variation_id' => $prod && $prod->is_type( 'variation' ) ? $pid : 0,
-				'_lot_lab'          => $lot['lab'] ?? 'Kovera Labs',
-				'_lot_status'       => $lot['status'] ?? 'PENDING',
-				'_lot_tested'       => $lot['tested'] ?? '',
-				'_lot_method'       => $lot['method'] ?? '',
-				'_lot_purity'       => $lot['purity'] ?? '',
-				'_lot_identity'     => $lot['identity'] ?? '',
-				'_lot_net_content'  => $lot['net_content'] ?? '',
-				'_lot_expires'      => $lot['expires'] ?? '',
 			];
-			if ( ! $post ) { // quantities are maintained by Receive inventory after first creation
-				$meta['_lot_qty_received']  = (int) ( $lot['qty_received'] ?? 0 );
-				$meta['_lot_qty_remaining'] = (int) ( $lot['qty_remaining'] ?? $lot['qty_received'] ?? 0 );
+			if ( ! $post ) { // analytical values, status, COA and quantities are owned by Receive batch after creation
+				$meta += [
+					'_lot_lab'           => $lot['lab'] ?? 'Kovera Labs',
+					'_lot_status'        => $lot['status'] ?? 'PENDING',
+					'_lot_tested'        => $lot['tested'] ?? '',
+					'_lot_method'        => $lot['method'] ?? '',
+					'_lot_purity'        => $lot['purity'] ?? '',
+					'_lot_identity'      => $lot['identity'] ?? '',
+					'_lot_net_content'   => $lot['net_content'] ?? '',
+					'_lot_expires'       => $lot['expires'] ?? '',
+					'_lot_qty_received'  => (int) ( $lot['qty_received'] ?? 0 ),
+					'_lot_qty_remaining' => (int) ( $lot['qty_remaining'] ?? $lot['qty_received'] ?? 0 ),
+				];
 			}
 			foreach ( $meta as $k => $v ) {
 				update_post_meta( $lot_id, $k, $v );

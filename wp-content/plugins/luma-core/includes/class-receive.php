@@ -183,7 +183,7 @@ class Receive {
 					<tr><th scope="row"><label for="fc_lot">Lot</label></th><td><select id="fc_lot" name="lot_id" required style="min-width:24em"><option value="">— choose —</option>
 						<?php foreach ( $pending as $l ) : $st = (string) get_post_meta( $l->ID, '_lot_status', true ) ?: 'PENDING'; ?><option value="<?php echo (int) $l->ID; ?>"><?php echo esc_html( $l->post_title . ' · ' . Lots::view( $l )['product'] . ' · ' . $st . ( (int) get_post_meta( $l->ID, '_lot_coa_id', true ) ? ' · COA filed' : ' · no COA' ) ); ?></option><?php endforeach; ?>
 					</select></td></tr>
-					<tr><th scope="row"><label for="fc_coa">Certificate (PDF)</label></th><td><input type="file" id="fc_coa" name="lot_coa" accept="application/pdf" required></td></tr>
+					<tr><th scope="row"><label for="fc_coa">Certificate (PDF)</label></th><td><input type="file" id="fc_coa" name="lot_coa" accept="application/pdf"><p class="description">Leave empty to keep the certificate already filed on this lot.</p></td></tr>
 					<tr><th scope="row"><label for="fc_lab">Testing lab</label></th><td><input type="text" id="fc_lab" name="lab" value="Kovera Labs" class="regular-text"></td></tr>
 					<tr><th scope="row"><label for="fc_tested">Certified date</label></th><td><input type="date" id="fc_tested" name="tested" required></td></tr>
 					<tr><th scope="row"><label for="fc_method">Method</label></th><td><input type="text" id="fc_method" name="method" value="RP-HPLC (C18, DAD 214 nm); LC-MS identity" class="regular-text"></td></tr>
