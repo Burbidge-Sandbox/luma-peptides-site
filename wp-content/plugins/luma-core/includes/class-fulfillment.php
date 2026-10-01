@@ -21,6 +21,9 @@ class Fulfillment {
 		'other' => [ 'Other', '' ],
 	];
 
+	/** Set by the theme's shipped-email template when it already showed tracking at the top. */
+	public static bool $tracking_in_intro = false;
+
 	public static function init(): void {
 		add_action( 'add_meta_boxes', [ __CLASS__, 'add_box' ] );
 		add_action( 'woocommerce_process_shop_order_meta', [ __CLASS__, 'save' ], 20, 1 );
@@ -235,7 +238,7 @@ class Fulfillment {
 			}
 			return;
 		}
-		if ( $t ) {
+		if ( $t && ! self::$tracking_in_intro ) {
 			echo '<p><b>Tracking:</b> ' . esc_html( $t['carrier'] ) . ' ' . ( $t['url'] ? '<a href="' . esc_url( $t['url'] ) . '">' . esc_html( $t['number'] ) . '</a>' : esc_html( $t['number'] ) ) . '</p>';
 		}
 		if ( $lots ) {

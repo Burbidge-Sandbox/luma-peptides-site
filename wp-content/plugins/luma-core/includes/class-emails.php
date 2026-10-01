@@ -122,7 +122,11 @@ table.td th { font-size:11px !important; letter-spacing:.1em; text-transform:upp
 		} elseif ( $order->has_status( 'processing' ) ) {
 			echo '<p>Your order is queued for lab release. You will get a second email with tracking when it ships, usually within one business day.</p>';
 		}
-		if ( ! $closed ) {
+		$carrier_shown = $order->has_status( 'completed' ) && Fulfillment::$tracking_in_intro;
+		if ( $carrier_shown ) {
+			/* The carrier Track button is already at the top of the shipped email. */
+			echo '<p style="margin:18px 0"><a href="' . esc_url( $verify ) . '" style="font-size:13px">Verify a lot →</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' . esc_url( $orders ) . '" style="font-size:13px">View this order in your account</a></p>';
+		} elseif ( ! $closed ) {
 			echo '<p style="margin:18px 0"><a class="luma-btn" href="' . esc_url( $orders ) . '">Track this order</a>&nbsp;&nbsp;<a href="' . esc_url( $verify ) . '" style="font-size:13px">Verify a lot →</a></p>';
 		}
 		if ( $ack ) {
