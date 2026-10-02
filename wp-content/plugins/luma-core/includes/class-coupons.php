@@ -27,7 +27,7 @@ class Coupons {
 			return;
 		}
 		$codes = [
-			[ 'family20', 20, false, 'Friends & Family: 20% off, reusable. Share privately.' ],
+			[ 'family20', 25, false, 'Friends & Family: 25% off, reusable. Share privately.' ],
 			[ 'welcome10', 10, true, 'First-time buyers: 10% off their first order, once per customer (account or email).' ],
 		];
 		foreach ( $codes as [ $code, $pct, $first, $desc ] ) {
