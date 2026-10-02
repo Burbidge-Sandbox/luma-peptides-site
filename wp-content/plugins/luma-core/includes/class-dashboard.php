@@ -47,7 +47,7 @@ class Dashboard {
 			}
 		}
 		/* WooCommerce submenu: Orders, Lots, Receive batch, Luma Core only. */
-		$keep_sub = [ 'wc-orders', 'edit.php?post_type=shop_order', 'edit.php?post_type=luma_lot', 'luma-receive', 'luma-core', 'wc-admin&path=/customers', 'woocommerce' ];
+		$keep_sub = [ 'edit.php?post_type=shop_coupon', 'wc-orders', 'edit.php?post_type=shop_order', 'edit.php?post_type=luma_lot', 'luma-receive', 'luma-core', 'wc-admin&path=/customers', 'woocommerce' ];
 		if ( ! empty( $submenu['woocommerce'] ) ) {
 			foreach ( $submenu['woocommerce'] as $i => $sub ) {
 				$ok = false;
@@ -124,7 +124,7 @@ class Dashboard {
 				<div class="luma-card"><b><?php echo count( $in_transit ); ?></b><span>In transit</span></div>
 				<div class="luma-card"><b><?php echo count( $awaiting ); ?></b><span>Awaiting payment</span></div>
 				<div class="luma-card"><b><?php echo count( $low ); ?></b><span>Lots at 5 or fewer</span></div>
-				<div class="luma-card"><a class="button button-primary" style="margin-top:6px" href="<?php echo esc_url( admin_url( 'admin.php?page=luma-receive' ) ); ?>">Receive a batch</a></div>
+				<div class="luma-card"><a class="button button-primary" style="margin-top:6px" href="<?php echo esc_url( admin_url( 'admin.php?page=luma-receive' ) ); ?>">Receive a batch</a><br><a class="button" style="margin-top:6px" href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_coupon' ) ); ?>">Discount codes</a></div>
 			</div>
 
 			<h2>To ship</h2>
