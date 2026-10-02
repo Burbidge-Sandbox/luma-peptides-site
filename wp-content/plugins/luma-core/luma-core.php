@@ -3,7 +3,7 @@
  * Plugin Name: Luma Core
  * Plugin URI:  https://lumaresearchco.com
  * Description: Luma Peptides Co. store logic — RUO acknowledgement gate, catalogue rules, lots & certificates of analysis, operational facts. Enforces CLAUDE.md; not optional.
- * Version:     0.7.2
+ * Version:     0.8.0
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Author:      Luma Peptides Co.
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_CORE_VERSION', '0.7.2' );
+define( 'LUMA_CORE_VERSION', '0.8.0' );
 define( 'LUMA_CORE_FILE', __FILE__ );
 define( 'LUMA_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LUMA_CORE_TERMS_VERSION', '2026-09-14' ); // bump when RUO terms wording changes
@@ -35,6 +35,7 @@ require_once LUMA_CORE_DIR . 'includes/class-housekeeping.php';
 require_once LUMA_CORE_DIR . 'includes/class-dashboard.php';
 require_once LUMA_CORE_DIR . 'includes/class-venmo.php';
 require_once LUMA_CORE_DIR . 'includes/class-redirects.php';
+require_once LUMA_CORE_DIR . 'includes/class-reviews.php';
 
 add_action( 'plugins_loaded', function () {
 	Luma\Core\Settings::init();
@@ -61,6 +62,7 @@ add_action( 'plugins_loaded', function () {
 	Luma\Core\Dashboard::init();
 	Luma\Core\Venmo::init();
 	Luma\Core\Redirects::init();
+	Luma\Core\Reviews::init();
 } );
 
 /* Rewrite flush without relying on activation hooks (the plugin may be loaded by luma-bootstrap). */

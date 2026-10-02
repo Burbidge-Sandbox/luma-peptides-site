@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.7.2
+Version: 0.7.3
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -421,3 +421,26 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .track-page table.shop_table tfoot th{font-weight:600}
 .track-page .track-status{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin:1.4rem 0 0;max-width:760px}
 .track-page .track-status p{margin:0;color:var(--ink-2)}
+
+/* Reviews page + homepage strip (luma-core Reviews, theme 0.7.3). */
+.rev-summary{display:flex;align-items:center;justify-content:center;gap:.9rem;margin:0 0 1.4rem}
+.rev-summary .rev-score{font-family:var(--serif);font-size:3.2rem;line-height:1;color:var(--ink)}
+.rev-summary small{display:block;color:var(--muted);font-size:.82rem;margin-top:.15rem}
+.rev-stars{color:var(--gold);letter-spacing:.12em;font-size:1rem}
+.rev-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin:0 0 2.6rem}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+.rev-card{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:.8rem}
+.rev-card blockquote{margin:0;color:var(--ink-2);font-size:.95rem;line-height:1.6;flex:1}
+.rev-card blockquote p{margin:0 0 .6rem}
+.rev-card figcaption{display:flex;align-items:center;gap:.7rem;font-size:.88rem}
+.rev-card figcaption b a{color:var(--ink)}
+.rev-card figcaption small{display:block;color:var(--muted);font-size:.78rem}
+.rev-card figcaption small a{color:var(--muted);text-decoration:underline}
+.rev-avatar{width:36px;height:36px;border-radius:50%;flex:none;object-fit:cover}
+.rev-initial{display:grid;place-items:center;background:var(--terra-soft);color:var(--terra);font-weight:600}
+.rev-empty{text-align:center;border:1px dashed var(--line);border-radius:var(--radius);padding:2.4rem 1.5rem;color:var(--ink-2);background:var(--paper)}
+.rev-empty a,.rev-note a{color:var(--terra);text-decoration:underline}
+.rev-note{max-width:680px;margin:2.4rem auto 0;text-align:center;color:var(--muted);font-size:.8rem;line-height:1.6}
+.rev-strip .section-heading .rev-summary{margin:0}
+.rev-strip .rev-more{margin:1.6rem 0 0;text-align:center}
+@media(max-width:760px){.rev-strip .section-heading{flex-direction:column;align-items:start}.rev-summary .rev-score{font-size:2.6rem}}

@@ -40,6 +40,7 @@ get_header();
   </div>
  </div>
 </section>
+<?php echo class_exists( 'Luma\\Core\\Reviews' ) ? Luma\Core\Reviews::strip() : ''; // dormant until the Google profile has 50 reviews ?>
 <section class="section collection-note">
  <div class="wrap"><span class="eyebrow">Our position</span><h2>Tested. <br><em>Documented.</em></h2><p>A chemical supplier for the research community. Not a pharmacy, not a clinic. Every lot tested by an independent laboratory, every result published.</p><a class="btn btn-outline" href="<?php echo esc_url( $u['about'] ); ?>">About Luma <span aria-hidden="true">↗</span></a></div>
 </section>
