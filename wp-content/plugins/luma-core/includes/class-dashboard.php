@@ -18,6 +18,7 @@ class Dashboard {
 		add_action( 'admin_bar_menu', [ __CLASS__, 'admin_bar' ], 100 );
 		add_action( 'admin_post_luma_ship', [ __CLASS__, 'handle_ship' ] );
 		add_action( 'admin_post_luma_delivered', [ __CLASS__, 'handle_delivered' ] );
+		add_action( 'admin_post_luma_mark_paid', [ __CLASS__, 'handle_mark_paid' ] );
 		add_action( 'admin_post_luma_toggle_admin', [ __CLASS__, 'handle_toggle' ] );
 		add_filter( 'login_redirect', [ __CLASS__, 'login_redirect' ], 10, 3 );
 		add_action( 'admin_init', [ __CLASS__, 'land_here' ] );
@@ -192,9 +193,11 @@ class Dashboard {
 
 			<?php if ( $awaiting ) : ?>
 			<h2>Awaiting payment</h2>
-			<table class="widefat striped"><thead><tr><th>Order</th><th>Customer</th><th>Placed</th><th>Total</th></tr></thead><tbody>
-			<?php foreach ( $awaiting as $o ) : ?>
-				<tr><td><a href="<?php echo esc_url( $o->get_edit_order_url() ); ?>">#<?php echo esc_html( $o->get_order_number() ); ?></a></td><td><?php echo esc_html( $o->get_formatted_billing_full_name() ); ?></td><td><?php echo esc_html( wc_format_datetime( $o->get_date_created(), 'M j, g:i a' ) ); ?></td><td><?php echo wp_kses_post( $o->get_formatted_order_total() ); ?></td></tr>
+			<p style="color:#646970;font-size:12px;margin:-4px 0 8px">Venmo orders: check Venmo for a payment from the customer with the order number in the note, then click Payment received. Unpaid Venmo orders cancel themselves after 48 hours.</p>
+			<table class="widefat striped"><thead><tr><th>Order</th><th>Customer</th><th>Placed</th><th>Method</th><th>Total</th><th></th></tr></thead><tbody>
+			<?php foreach ( $awaiting as $o ) : $is_v = 'luma_venmo' === $o->get_payment_method(); ?>
+				<tr><td><a href="<?php echo esc_url( $o->get_edit_order_url() ); ?>">#<?php echo esc_html( $o->get_order_number() ); ?></a></td><td><?php echo esc_html( $o->get_formatted_billing_full_name() ); ?></td><td><?php echo esc_html( wc_format_datetime( $o->get_date_created(), 'M j, g:i a' ) ); ?></td><td><?php echo esc_html( $o->get_payment_method_title() ?: '—' ); ?></td><td><?php echo wp_kses_post( $o->get_formatted_order_total() ); ?></td>
+				<td><?php if ( $is_v ) : ?><a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=luma_mark_paid&order_id=' . $o->get_id() ), 'luma_mark_paid_' . $o->get_id() ) ); ?>" onclick="return confirm('Confirm you received <?php echo esc_js( wp_strip_all_tags( $o->get_formatted_order_total() ) ); ?> on Venmo for order #<?php echo esc_js( $o->get_order_number() ); ?>?');">Payment received</a><?php endif; ?></td></tr>
 			<?php endforeach; ?>
 			</tbody></table>
 			<?php endif; ?>
@@ -239,6 +242,24 @@ class Dashboard {
 		$order->save();
 		$order->update_status( 'completed', 'Marked shipped from the Luma dashboard.' );
 		set_transient( 'luma_dash_log_' . get_current_user_id(), sprintf( 'Order #%s marked shipped. The customer has been emailed.', esc_html( $order->get_order_number() ) ), 120 );
+		wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE ) );
+		exit;
+	}
+
+	public static function handle_mark_paid(): void {
+		$id = (int) ( $_GET['order_id'] ?? 0 );
+		check_admin_referer( 'luma_mark_paid_' . $id );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( 'Forbidden' );
+		}
+		$order = wc_get_order( $id );
+		if ( $order && ! $order->is_paid() && class_exists( 'Luma\\Core\\Venmo' ) ) {
+			Venmo::mark_paid( $order );
+			$msg = sprintf( 'Order #%s marked paid. It is now in To ship, and the customer has been emailed.', esc_html( $order->get_order_number() ) );
+		} else {
+			$msg = 'That order is already paid or no longer exists.';
+		}
+		set_transient( 'luma_dash_log_' . get_current_user_id(), $msg, 120 );
 		wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE ) );
 		exit;
 	}
