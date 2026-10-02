@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.7.3
+Version: 0.7.4
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -444,3 +444,11 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .rev-strip .section-heading .rev-summary{margin:0}
 .rev-strip .rev-more{margin:1.6rem 0 0;text-align:center}
 @media(max-width:760px){.rev-strip .section-heading{flex-direction:column;align-items:start}.rev-summary .rev-score{font-size:2.6rem}}
+
+/* Home v2 (2026-10-02): bigger hero headline + promise strip, lede removed */
+.editorial-hero h1{font-size:clamp(4.2rem,6.4vw,6.6rem)}
+.promise-tile{padding:1.8rem 1.8rem}
+.promise-tile b{font-size:1.8rem;line-height:1.12;margin-bottom:.5rem}
+.promise-tile p{font-size:.98rem}
+@media(max-width:760px){.editorial-hero h1{font-size:2.65rem}.promise-tile{padding:1.2rem 4%}.promise-tile b{font-size:1.45rem}.promise-tile p{font-size:.92rem}}
+@media(max-width:400px){.editorial-hero h1{font-size:2.35rem}}
