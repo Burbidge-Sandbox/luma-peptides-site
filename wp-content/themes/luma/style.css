@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.7.9
+Version: 0.8.0
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -527,3 +527,31 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .bs9-pur svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:980px){.bs9-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.bs9-head{flex-direction:column;align-items:start;gap:1rem}.bs9-head h2{font-size:2.3rem}.bs9-grid{gap:14px}.bs9-ov{left:12px;right:52px;bottom:12px}.bs9-ov h3{font-size:1.3rem}.bs9-ov small{font-size:.6rem}.bs9-plus{width:34px;height:34px;right:10px;bottom:10px;font-size:1.15rem}.bs9-media{border-radius:14px}.bs9-foot{flex-direction:column;align-items:start;gap:.45rem;padding-top:.7rem}.bs9-price{font-size:1rem}.bs9-price small{font-size:.66rem}.bs9-pur{font-size:.68rem}}
+
+/* 0.8.0 — promise strip v3: the hero's footer, not a floating band.
+   Same ground as the hero, hairline only between photo and strip, type +33%
+   (kicker 10.6->14px, title 28.8->38.4px, link 15.7->20.8px at full width),
+   section-eyebrow tracking, content-sized columns spread edge to edge so every
+   title stays on one line, and all three links share one baseline. Type scales
+   down with the viewport so the row always fits; stacks below 920px. */
+:root{--hero-ground:#eee5da}
+.editorial-hero{background:var(--hero-ground)}
+.promise-section{background:var(--hero-ground);border-top:1px solid var(--line);border-bottom:0}
+.promise-kicker{font-size:.88rem;letter-spacing:.2em;font-weight:600;margin-bottom:.75rem}
+.promise-tile{display:flex;flex-direction:column;padding:2.6rem 0 2.9rem;border:0}
+.promise-tile p{margin-top:auto}
+.promise-tile .sd-link{margin-top:0;font-weight:500}
+@media(min-width:920px){
+  .promise{grid-template-columns:repeat(3,auto);justify-content:space-between;column-gap:2.5rem;align-items:stretch}
+  .promise-tile b{font-size:clamp(1.5rem,calc(3.036vw - .165rem),2.4rem);line-height:1.1;margin-bottom:1rem;white-space:nowrap}
+  .promise-tile p{font-size:clamp(.95rem,calc((3.036vw - .165rem)*.5417),1.3rem);line-height:1.3;white-space:nowrap}
+}
+@media(max-width:919px){
+  .promise{grid-template-columns:minmax(0,1fr);row-gap:0}
+  .promise-tile .sd-link{white-space:normal}
+  .promise-tile{padding:1.6rem 0;border-top:1px solid var(--line)}
+  .promise-tile:first-child{border-top:0}
+  .promise-kicker{font-size:.8rem;margin-bottom:.5rem}
+  .promise-tile b{font-size:1.95rem;line-height:1.12;margin-bottom:.7rem}
+  .promise-tile p{font-size:1.15rem}
+}
