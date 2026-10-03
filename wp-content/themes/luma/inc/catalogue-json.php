@@ -46,6 +46,7 @@ function luma_catalogue_json(): array {
 			'image'       => $gallery ? wp_get_attachment_image_url( $gallery[0], 'full' ) : null,
 			'imageFocus'  => '50% 55%',
 			'lot'         => function_exists( 'luma_current_lot_number' ) ? luma_current_lot_number( $p ) : '',
+			'lotPurity'   => function_exists( 'luma_current_lot_purity' ) ? luma_current_lot_purity( $p ) : '',
 		];
 		if ( $p->is_type( 'variable' ) ) {
 			$row['variants'] = [];
@@ -66,6 +67,7 @@ function luma_catalogue_json(): array {
 					'sku'      => $v->get_sku(),
 					'wc_id'    => $vid,
 					'lot'      => function_exists( 'luma_current_lot_number' ) ? luma_current_lot_number( $v ) : '',
+					'lotPurity'=> function_exists( 'luma_current_lot_purity' ) ? luma_current_lot_purity( $v ) : '',
 				];
 				$min = $min === null ? (float) $v->get_regular_price() : min( $min, (float) $v->get_regular_price() );
 			}

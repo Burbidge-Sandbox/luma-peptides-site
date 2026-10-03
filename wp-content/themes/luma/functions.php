@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.7.6' );
+define( 'LUMA_THEME_VERSION', '0.7.7' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -166,6 +166,12 @@ function luma_current_lot_number( WC_Product $product ): string {
 	$lot_id = (int) $product->get_meta( '_luma_current_lot' );
 	$lot    = $lot_id ? get_post( $lot_id ) : null;
 	return $lot ? $lot->post_title : '';
+}
+
+/** Assay purity recorded on the product's current lot (e.g. "99.844%"); empty when not entered. */
+function luma_current_lot_purity( WC_Product $product ): string {
+	$lot_id = (int) $product->get_meta( '_luma_current_lot' );
+	return $lot_id ? trim( (string) get_post_meta( $lot_id, '_lot_purity', true ) ) : '';
 }
 
 /* ---------- AJAX: contact form + waitlist (replace the old Apps Script capture) ---------- */

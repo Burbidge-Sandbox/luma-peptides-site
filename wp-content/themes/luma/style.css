@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.7.6
+Version: 0.7.7
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -501,3 +501,29 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .track-page .track-help{max-width:560px;margin:1.2rem auto 0}
 .track-page .woocommerce{width:100%;max-width:760px;text-align:left}
 .track-page .woocommerce-order-details,.track-page .woocommerce-customer-details,.track-page .track-status{margin-inline:auto}
+
+/* Best sellers v2 (2026-10-02, concept A9): name on photo, quick-add, price + lot, purity pill */
+.bs9-head{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:2.2rem}
+.bs9-head h2{font-size:clamp(2.6rem,3.6vw,3.4rem);line-height:1;margin:.5rem 0 .7rem}
+.bs9-head h2 em{color:var(--terra)}
+.bs9-head p{margin:0;color:var(--ink-2);max-width:34rem;font-size:1rem}
+.bs9-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.bs9-media{position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#e9dccb}
+.bs9-link{position:absolute;inset:0;display:block;color:#fff;text-decoration:none}
+.bs9-media .vial{position:absolute;inset:0;display:block;width:100%;height:100%;background:none!important;transition:transform .6s}
+.bs9-media .vial img{width:100%;height:100%;object-fit:cover}
+.bs9-card:hover .bs9-media .vial{transform:scale(1.04)}
+.bs9-link::after{content:"";position:absolute;inset:auto 0 0 0;height:46%;background:linear-gradient(to top,rgba(35,25,20,.72),rgba(35,25,20,.25) 55%,transparent);pointer-events:none}
+.bs9-ov{position:absolute;left:18px;right:70px;bottom:16px;z-index:2;display:block}
+.bs9-ov h3{font-family:var(--serif);font-size:1.9rem;line-height:.95;margin:0;color:#fff;font-weight:500}
+.bs9-ov small{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.82);margin-top:.35rem}
+.bs9-plus{position:absolute;right:16px;bottom:16px;z-index:3;width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:var(--ink);font-size:1.4rem;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12);transition:transform .2s,background .2s,color .2s}
+.bs9-plus:hover,.bs9-plus:focus-visible{background:var(--terra);color:#fff;transform:scale(1.06)}
+.bs9-foot{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.9rem .2rem 0}
+.bs9-price{font-size:1.1rem;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.bs9-price small{display:block;font-size:.72rem;font-weight:500;color:var(--muted);letter-spacing:.02em;margin-top:.1rem}
+.bs9-pur{flex:none;display:inline-flex;align-items:center;gap:.35rem;font-size:.74rem;font-weight:600;color:#2E6B47;background:#E8F1EA;border-radius:999px;padding:.3rem .65rem;text-decoration:none}
+.bs9-pur:hover{background:#D9EADD}
+.bs9-pur svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:980px){.bs9-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.bs9-head{flex-direction:column;align-items:start;gap:1rem}.bs9-head h2{font-size:2.3rem}.bs9-grid{gap:14px}.bs9-ov{left:12px;right:52px;bottom:12px}.bs9-ov h3{font-size:1.3rem}.bs9-ov small{font-size:.6rem}.bs9-plus{width:34px;height:34px;right:10px;bottom:10px;font-size:1.15rem}.bs9-media{border-radius:14px}.bs9-foot{flex-direction:column;align-items:start;gap:.45rem;padding-top:.7rem}.bs9-price{font-size:1rem}.bs9-price small{font-size:.66rem}.bs9-pur{font-size:.68rem}}
