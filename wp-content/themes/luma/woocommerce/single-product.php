@@ -30,13 +30,13 @@ document.addEventListener("DOMContentLoaded",()=>{
   const variants=p.variants||null;
   let dose=variants?(variants.find(v=>v.key===params.get("size")||params.get("dose"))||variants[0]).key:null;
   document.getElementById("crumbName").textContent=p.name;
-  document.getElementById("gallery").innerHTML=vialSVG(p,{eager:true});
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   function render(){
     const v=Cart.variantOf(p,dose);
     const oos=p.stock==="out"||v.stock==="out";
     const lot=(v&&v.lot)||p.lot||"";
+    document.getElementById("gallery").innerHTML=vialSVG(variants?{...p,strength:v.strength}:p,{eager:true}); /* label follows the selected size */
     document.title=`${p.name} ${v.strength} — Luma Peptides Co.`;
     if(variants){ const u=new URL(location); u.searchParams.delete("dose"); u.searchParams.set("size",v.key); history.replaceState(null,"",u); }
     document.getElementById("info").innerHTML=`
