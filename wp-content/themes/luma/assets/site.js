@@ -21,18 +21,35 @@
   const track=(e,d)=>{ try{ window.dataLayer&&dataLayer.push({event:e,...d}); }catch(x){} };
 
   /* ---------- Vial artwork (verbatim) ---------- */
-  function labelSVG(lines, strength){
-    const L=30, R=70, X0=34.5, SAG=0.45;
-    const arc=(y,id)=>`<path id="${id}" d="M${L},${y} Q50,${y+SAG*2} ${R},${y}" fill="none"/>`;
-    const txt=(id,str,fs,fam,w,fill,ls)=>`<text font-size="${fs}" font-family="${fam}" font-weight="${w}" fill="${fill}" letter-spacing="${ls||0}"><textPath href="#${id}" startOffset="${((X0-L)/(R-L)*100).toFixed(1)}%">${str}</textPath></text>`;
-    const uid="l"+Math.random().toString(36).slice(2,7);
-    const serif="Cormorant Garamond, Georgia, serif", sans="Inter, system-ui, sans-serif";
-    let ys=[69.6,76.6,83.5], defs="", body="";
-    ["luma","peptides","co."].forEach((t,i)=>{ defs+=arc(ys[i],uid+"b"+i); body+=txt(uid+"b"+i,t,8,serif,500,"#a23f25","-0.25"); });
-    let y=92.3; lines.forEach((t,i)=>{ defs+=arc(y,uid+"p"+i); body+=txt(uid+"p"+i,t,lines.length>1&&t.length>13?2.5:2.85,sans,600,"#292721","-0.05"); y+=3.6; });
-    y+=0.8; defs+=arc(y,uid+"s"); body+=txt(uid+"s",strength,2.6,sans,500,"#292721","0");
-    defs+=arc(108,uid+"d"); body+=txt(uid+"d","FOR RESEARCH USE ONLY",1.25,sans,500,"#a23f25","-0.02");
-    return `<svg class="photo-label" viewBox="0 0 100 150" aria-hidden="true"><defs>${defs}<linearGradient id="${uid}g" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".06"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".07"/></linearGradient></defs><rect x="${L}" y="58" width="${R-L}" height="55" fill="url(#${uid}g)"/>${body}</svg>`;
+  /* Vial label v2: glyph-by-glyph cylindrical wrap calibrated to vial-studio photo, softened ("gentle wrap": half bend, half tilt, ~55% foreshortening). */
+  const LABEL_W={"s":[.234,.252,.289,.526,.414,.574,.703,.143,.309,.309,.448,.398,.222,.323,.2,.344,.477,.332,.402,.391,.453,.409,.465,.429,.489,.465,.2,.227,.407,.468,.407,.332,.722,.706,.57,.684,.696,.542,.513,.719,.761,.335,.327,.652,.537,.842,.73,.766,.546,.766,.681,.499,.637,.7,.664,.925,.65,.612,.598,.274,.344,.274,.392,.398,.213,.42,.512,.415,.512,.411,.305,.447,.502,.27,.259,.491,.261,.768,.52,.482,.511,.492,.369,.338,.338,.497,.436,.675,.439,.432,.405,.289,.168,.283,.443],"i5":[.267,.304,.494,.639,.646,.993,.653,.313,.369,.369,.521,.667,.303,.462,.303,.37,.646,.415,.616,.627,.656,.603,.63,.571,.629,.63,.303,.315,.667,.667,.667,.527,.982,.709,.657,.733,.722,.603,.589,.748,.745,.272,.575,.688,.565,.913,.756,.767,.642,.769,.648,.646,.653,.74,.709,1.003,.701,.696,.641,.369,.37,.369,.477,.463,.337,.568,.618,.577,.618,.587,.379,.62,.602,.252,.252,.559,.252,.888,.602,.604,.618,.618,.387,.539,.34,.602,.575,.829,.557,.575,.559,.44,.346,.44,.667],"i6":[.252,.321,.523,.644,.65,1.004,.663,.326,.373,.373,.54,.673,.319,.465,.319,.379,.66,.423,.623,.636,.666,.612,.64,.576,.64,.64,.319,.329,.673,.673,.673,.543,.999,.728,.659,.737,.722,.605,.588,.749,.746,.277,.58,.703,.565,.922,.759,.769,.645,.773,.652,.65,.66,.736,.728,1.02,.72,.713,.652,.373,.379,.373,.481,.469,.351,.574,.624,.583,.624,.591,.389,.625,.612,.262,.262,.569,.262,.9,.612,.609,.624,.624,.397,.549,.353,.612,.587,.839,.569,.588,.566,.455,.359,.455,.673]};
+  function labelSVG(lines, strength, O={}){
+    const CX=50.6, R=20.4, U0=(O.u0??-13), BK=(O.bend??.5), TK=(O.tilt??.5), SK=(O.squeeze??.55);
+    const bend=y=>1.45+(y-58)*0.031;                 /* smile depth grows toward the band, measured from the photo */
+    const unesc=s=>String(s).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,"&");
+    const e=c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]||c);
+    const run=(str,y,fs,font,ls,attrs)=>{
+      const W=LABEL_W[font]; let u=U0, out=""; const B=bend(y)*BK;
+      for(const ch of unesc(str)){
+        const cc=ch.charCodeAt(0), adv=((cc>=32&&cc<127)?W[cc-32]:.55)*fs;
+        if(ch!==" "){
+          const uc=u+adv/2, t=uc/R, x=CX+uc+SK*(R*Math.sin(t)-uc), yy=y-B*(1-Math.cos(t));
+          const a=TK*Math.atan(-B*Math.tan(t)/R)*180/Math.PI, s=1-SK*(1-Math.cos(t));
+          out+=`<text transform="translate(${x.toFixed(2)} ${yy.toFixed(2)}) rotate(${a.toFixed(2)}) scale(${s.toFixed(3)} 1)">${e(ch)}</text>`;
+        }
+        u+=adv+ls;
+      }
+      return `<g ${attrs} font-size="${fs}" text-anchor="middle">${out}</g>`;
+    };
+    const serif='font-family="Cormorant Garamond, Georgia, serif" font-weight="500" fill="#a23f25"';
+    const sans6='font-family="Inter, system-ui, sans-serif" font-weight="600" fill="#292721"';
+    const sans5='font-family="Inter, system-ui, sans-serif" font-weight="500" fill="#292721"';
+    let body="";
+    [["luma",69.6],["peptides",76.6],["co.",83.5]].forEach(([t,y])=>{ body+=run(t,y,8.2,"s",-0.25,serif); });
+    let y=92.3; lines.forEach(t=>{ body+=run(t,y,lines.length>1&&unesc(t).length>13?2.5:2.85,"i6",-0.05,sans6); y+=3.6; });
+    y+=0.8; body+=run(strength,y,2.6,"i5",0,sans5);
+    body+=run("FOR RESEARCH USE ONLY",108,1.25,"i5",-0.02,'font-family="Inter, system-ui, sans-serif" font-weight="500" fill="#a23f25"');
+    return `<svg class="photo-label" viewBox="0 0 100 150" aria-hidden="true"><g opacity=".94">${body}</g></svg>`;
   }
   function vialSVG(p, opts={}){
     if(p.image && opts.eager){
