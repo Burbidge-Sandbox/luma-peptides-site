@@ -57,9 +57,9 @@ get_header();
 document.addEventListener("DOMContentLoaded",()=>{
  const ids=["glp-2-t","glp-3-rt","glp-1-sm","bpc-157-ghk-cu-tb-500-blend","bpc-157"];
  (function(){ const C=window.LUMA_CONFIG, P=C.promises||{}; const tiles=[
-   {k:"Ships fast",t:`Ships within ${P.shipDays||1} business day${(P.shipDays||1)>1?"s":""}`,d:`<a class="sd-link" href="${C.urls.shipping||"/shipping-returns/"}">Shipping details →</a>`},
-   {k:"Free delivery",t:P.nextDay?"Free next-day shipping, always":"Free US shipping",d:P.sameDay?`<a class="sd-link" href="${C.urls.shipping||"/shipping-returns/"}#same-day">Check your ZIP for same-day delivery →</a>`:""},
-   P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every order",d:`<a class="sd-link" href="${C.urls.track}">Track an order →</a>`}
+   {k:"Ships fast",t:`Ships within<br>${P.shipDays||1} business day${(P.shipDays||1)>1?"s":""}`,d:`<a class="sd-link" href="${C.urls.shipping||"/shipping-returns/"}">Shipping details →</a>`},
+   {k:"Free delivery",t:P.nextDay?"Free next-day<br>shipping, always":"Free US<br>shipping",d:P.sameDay?`<a class="sd-link" href="${C.urls.shipping||"/shipping-returns/"}#same-day">Check your ZIP for same-day delivery →</a>`:""},
+   P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every<br>order",d:`<a class="sd-link" href="${C.urls.track}">Track an order →</a>`}
  ]; document.getElementById("promiseStrip").innerHTML=tiles.map(x=>`<div class="promise-tile"><span class="promise-kicker">${x.k}</span><b>${x.t}</b>${x.d?`<p>${x.d}</p>`:""}</div>`).join(""); })();
  (function(){ /* Best sellers v2 (A9): in-stock only, name on photo, price + current lot below, purity from the lot record */
   const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
