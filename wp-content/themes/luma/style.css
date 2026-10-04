@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.8.2
+Version: 0.8.3
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -559,3 +559,23 @@ body:not(.home) .header.scrolled{box-shadow:0 1px 0 var(--line),0 8px 22px -14px
 .promise-section{background:var(--paper)}
 .promise-tile{text-align:center}
 .promise-kicker{display:block}
+
+/* Hero v3 (2026-10-03, concept H1): full-bleed photo, headline over the open wall, vial lined up with the copy */
+.fh-hero{position:relative;display:flex;align-items:center;height:calc(100svh - var(--fh-top,150px));min-height:600px;max-height:1000px;overflow:hidden;background:#e9dccb;padding:0}
+.fh-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%}
+.fh-hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(244,236,226,.88) 0%,rgba(244,236,226,.55) 34%,rgba(244,236,226,0) 58%)}
+.fh-hero .fh-in{position:relative;z-index:2;display:block;width:min(var(--wrap),92%);margin-inline:auto}
+.fh-hero .eyebrow{color:var(--terra)}
+.fh-hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(4rem,min(7.6vw,12.5vh),8.4rem);line-height:.92;letter-spacing:-.035em;color:#231c18;margin:22px 0 0;max-width:9.5ch}
+.fh-hero h1 em{color:var(--terra)}
+.fh-cta{display:flex;align-items:center;flex-wrap:wrap;gap:28px;margin-top:38px}
+.fh-cta .btn{border-radius:999px;height:56px;padding:0 1.8rem;display:inline-flex;align-items:center;gap:.6rem}
+@media(max-width:760px){
+ .fh-hero{display:block;height:auto;min-height:0;max-height:none;background:var(--hero-ground,#EEE5DA)}
+ .fh-bg{position:relative;inset:auto;display:block;height:min(108vw,560px);object-position:68% 72%}
+ .fh-hero::after{inset:auto 0 auto 0;top:calc(min(108vw,560px) - 90px);height:90px;background:linear-gradient(to bottom,rgba(238,229,218,0),var(--hero-ground,#EEE5DA))}
+ .fh-hero .fh-in{width:88%;padding-top:22px;padding-bottom:34px}
+ .fh-hero h1{font-size:2.9rem;max-width:none;margin-top:12px}
+ .fh-cta{gap:18px;margin-top:24px}
+}
+@media(max-width:400px){.fh-hero h1{font-size:2.5rem}}

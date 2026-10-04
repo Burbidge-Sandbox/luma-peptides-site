@@ -7,19 +7,15 @@ $u = luma_catalogue_json()['config']['urls'];
 get_header();
 ?>
 <main id="main">
-<section class="hero editorial-hero">
- <div class="wrap">
-  <div class="hero-copy">
-   <span class="eyebrow">For laboratory research use only</span>
-   <h1>A clearer <br>perspective <br>on <em>peptides.</em></h1>
-   <div class="hero-cta"><a class="btn btn-primary" href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog <span aria-hidden="true">↗</span></a><a class="text-link" href="<?php echo esc_url( $u['verify'] ); ?>">Our approach to verification <span aria-hidden="true">→</span></a></div>
-  </div>
-  <figure class="hero-visual">
-   <img class="hero-scene" src="<?php echo esc_url( luma_assets_url( 'assets/hero-editorial-10mg-v2.jpg' ) ); ?>" width="1536" height="1024" alt="Luma BPC-157 vial on textured travertine in warm directional light" fetchpriority="high">
-   <figcaption><span>THE LUMA COLLECTION</span></figcaption>
-  </figure>
+<section class="fh-hero" id="fhHero">
+ <img class="fh-bg" src="<?php echo esc_url( luma_assets_url( 'assets/hero-editorial-vial-65.jpg' ) ); ?>" width="1536" height="884" alt="Luma BPC-157 vial on textured travertine in warm directional light" fetchpriority="high">
+ <div class="wrap fh-in">
+  <span class="eyebrow">For laboratory research use only</span>
+  <h1>A clearer perspective on <em>peptides.</em></h1>
+  <div class="fh-cta"><a class="btn btn-primary" href="<?php echo esc_url( $u['shop'] ); ?>">Browse the catalog <span aria-hidden="true">↗</span></a><a class="text-link" href="<?php echo esc_url( $u['verify'] ); ?>">Our approach to verification <span aria-hidden="true">→</span></a></div>
  </div>
 </section>
+<script>(function(){var h=document.getElementById("fhHero");if(!h)return;function f(){document.documentElement.style.setProperty("--fh-top",Math.round(h.getBoundingClientRect().top+window.scrollY)+"px");}f();window.addEventListener("resize",f);})();</script>
 <section class="promise-section" aria-label="Shipping and service">
  <div class="wrap"><div class="promise" id="promiseStrip"></div></div>
 </section>
