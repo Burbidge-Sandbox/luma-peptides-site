@@ -2,8 +2,9 @@
 /**
  * Template Name: Research labs
  *
- * /labs/ — new-lab discount landing page. Two sections (hero + form,
- * guarantee + button), logo only, no nav, no cart, no gate. Every number is live: the discount and expiry from Luma Core settings,
+ * /labs/ — new-lab discount landing page. One centered stack (kicker +
+ * headline, subhead, tiles, form), plus the guarantee line when that setting
+ * is on. Logo only, no nav, no cart, no gate. Every number is live: the discount and expiry from Luma Core settings,
  * purity from released lots (CLAUDE.md rule 11). Styles: labs.css.
  */
 
@@ -68,15 +69,14 @@ $nonce    = wp_create_nonce( 'luma_claim' );
 </section>
 
 
+<?php if ( $guaranty ) : ?>
 <section class="lb-close">
  <div class="lb-wrap">
-  <?php if ( $guaranty ) : ?>
   <h2>Under 98% pure? Full refund.</h2>
   <p>Every lot tested. Every certificate public. You take zero risk.</p>
-  <?php endif; ?>
-  <a class="lb-btn" href="#claim" data-claim>Claim My Discount</a>
  </div>
 </section>
+<?php endif; ?>
 </main>
 
 <footer class="lb-foot"><div class="lb-wrap">For laboratory research use only. Not for human or veterinary use. Not a drug, food or supplement. © <?php echo esc_html( wp_date( 'Y' ) ); ?> Luma Peptides Co. LLC</div></footer>
