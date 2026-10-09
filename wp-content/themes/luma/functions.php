@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_THEME_VERSION', '0.8.4' );
+define( 'LUMA_THEME_VERSION', '0.9.0' );
 
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/catalogue-json.php';
@@ -63,7 +63,48 @@ add_action( 'wp_enqueue_scripts', function () {
 		wp_dequeue_style( 'woocommerce-layout' );
 		wp_dequeue_style( 'woocommerce-smallscreen' );
 	}
+	/* New-lab discount state for this visitor (null when none). Not part of the cached catalogue JSON. */
+	$offer = class_exists( 'Luma\\Core\\LabOffer' ) ? Luma\Core\LabOffer::client_state() : null;
+	wp_add_inline_script( 'luma-site', 'window.LUMA_OFFER=' . wp_json_encode( $offer ) . ';window.LUMA_OFFER_URL=' . wp_json_encode( esc_url_raw( rest_url( 'luma/v1/offer' ) ) ) . ';', 'before' );
 }, 20 );
+
+/* ---------- /labs/ (page-labs.php): its own lean asset set, never indexed, never cached ---------- */
+function luma_is_labs(): bool {
+	return is_page_template( 'page-labs.php' );
+}
+add_action( 'wp_enqueue_scripts', function () {
+	if ( ! luma_is_labs() ) {
+		return;
+	}
+	wp_dequeue_script( 'luma-site' ); // no cart drawer, menu or gate on this page
+	wp_dequeue_style( 'luma' );
+	wp_dequeue_style( 'luma-fonts' );
+	wp_enqueue_style( 'luma-labs-fonts', 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap', [], null ); // Cormorant + Inter come with luma-fonts
+	wp_enqueue_style( 'luma-labs', get_template_directory_uri() . '/labs.css', [ 'luma-legacy' ], LUMA_THEME_VERSION );
+	/* No blocks on this page: drop the block-library, global and Woo block styles and their font faces. */
+	foreach ( [ 'wp-block-library', 'wp-block-library-theme', 'classic-theme-styles', 'global-styles', 'wc-blocks-style', 'woocommerce-inline' ] as $h ) {
+		wp_dequeue_style( $h );
+	}
+	remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+	remove_action( 'wp_head', 'wp_print_font_faces', 50 );
+	remove_action( 'wp_head', 'wp_print_font_faces_from_style_variations', 50 );
+}, 30 );
+add_filter( 'wp_robots', fn( array $r ): array => luma_is_labs() ? array_merge( $r, [ 'noindex' => true, 'follow' => true ] ) : $r );
+add_action( 'template_redirect', function () {
+	if ( luma_is_labs() ) {
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true ); // the form carries a nonce
+		}
+		nocache_headers();
+	}
+} );
+add_filter( 'wp_sitemaps_posts_query_args', function ( array $args, string $type ): array {
+	if ( 'page' === $type ) {
+		$labs = get_pages( [ 'meta_key' => '_wp_page_template', 'meta_value' => 'page-labs.php' ] ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$args['post__not_in'] = array_merge( (array) ( $args['post__not_in'] ?? [] ), wp_list_pluck( $labs, 'ID' ) );
+	}
+	return $args;
+}, 10, 2 );
 
 /* Legacy body classes (index.html used home-editorial). */
 add_filter( 'body_class', function ( array $c ): array {

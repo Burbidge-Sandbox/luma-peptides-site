@@ -20,7 +20,9 @@ $luma_nav  = [
 ];
 ?>
 <a class="skip" href="#main">Skip to content</a>
+<?php $luma_offer = class_exists( 'Luma\\Core\\LabOffer' ) ? Luma\Core\LabOffer::client_state() : null; ?>
 <div class="announce"><span class="full">For laboratory research use only &nbsp;·&nbsp; Not for human or animal use &nbsp;·&nbsp; Every lot independently tested</span><span class="short">For laboratory research use only · Not for human use</span></div>
+<div class="offer-bar" id="offerBar"<?php echo $luma_offer ? '' : ' hidden'; ?>><?php if ( $luma_offer ) : ?><b>✓ Your <?php echo esc_html( (string) $luma_offer['pct'] ); ?>% off is applied</b> <span>· Free next-day delivery · Expires <?php echo esc_html( $luma_offer['expires'] ); ?></span><?php endif; ?></div>
 <header class="header" id="header"><div class="wrap nav">
  <a class="logo" href="<?php echo esc_url( $luma_urls['home'] ); ?>" aria-label="Luma Peptides Co. home"><span>luma</span><span>peptides</span><span>co.</span></a>
  <ul class="nav-links"><?php foreach ( $luma_nav as [ $h, $t, $cur ] ) : ?><li><a href="<?php echo esc_url( $h ); ?>"<?php echo $cur ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $t ); ?></a></li><?php endforeach; ?></ul>

@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  </div>`;
     const priceLine=document.getElementById("priceLine");
     const form=document.getElementById("buyForm"), qty=document.getElementById("qtyInput");
-    priceLine.innerHTML=`${money(v.once)} <small>per vial</small>`;
+    priceLine.innerHTML=`${window.LumaOffer?LumaOffer.html(v.once,v.wc_id):money(v.once)} <small>per vial</small>`;
     document.getElementById("inc").onclick=()=>qty.value=Math.min(10,+qty.value+1);
     document.getElementById("dec").onclick=()=>qty.value=Math.max(1,+qty.value-1);
     form.addEventListener("submit",e=>{e.preventDefault(); if(oos){joinWaitlist(p.id);return;} Cart.add(p.id,"once",+qty.value,dose);});
@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     document.querySelectorAll(".size").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.size===dose) return; dose=b.dataset.size; render(); document.getElementById("priceLine").scrollIntoView({block:"nearest"}); }));
   }
   render();
+  document.addEventListener("luma:offer",()=>{ render(); document.getElementById("related").innerHTML=rel.map(productCard).join(""); document.querySelectorAll("#related .reveal").forEach(el=>el.classList.add("in")); });
   const rel=P.filter(x=>x.id!==p.id&&x.category===p.category).concat(P.filter(x=>x.id!==p.id&&x.category!==p.category)).slice(0,4);
   document.getElementById("related").innerHTML=rel.map(productCard).join("");
   document.querySelectorAll("#related .reveal").forEach(el=>el.classList.add("in"));

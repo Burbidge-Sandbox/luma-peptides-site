@@ -9,8 +9,11 @@ get_header();
 <main id="main">
 <div class="wrap page-head">
  <div class="breadcrumb"><a href="<?php echo esc_url( $u['home'] ); ?>">Home</a> › Catalog</div>
- <h1 id="shopTitle">All compounds</h1>
- <p>Lyophilized research peptides, sold per vial with volume pricing. Every lot independently tested; every certificate published. For laboratory research use only.</p>
+ <?php $offer = class_exists( 'Luma\\Core\\LabOffer' ) ? Luma\Core\LabOffer::client_state() : null; ?>
+ <?php if ( isset( $_GET['offer'] ) && 'used' === $_GET['offer'] && ! $offer ) : // phpcs:ignore WordPress.Security.NonceVerification ?><p class="offer-used" role="status">This offer has already been used</p><?php endif; ?>
+ <span class="offer-kicker" id="offerKicker"<?php echo $offer ? '' : ' hidden'; ?>>Your discount is live</span>
+ <h1 id="shopTitle"><?php echo $offer ? 'Every compound, <em>' . esc_html( (string) $offer['pct'] ) . '% off.</em>' : 'All compounds'; ?></h1>
+ <p id="shopSub" data-default="Lyophilized research peptides, sold per vial with volume pricing. Every lot independently tested; every certificate published. For laboratory research use only."><?php echo $offer ? 'Prices below already include your discount. It carries through to checkout automatically.' : 'Lyophilized research peptides, sold per vial with volume pricing. Every lot independently tested; every certificate published. For laboratory research use only.'; ?></p>
 </div>
 <div class="wrap">
  <div class="shop-toolbar">
@@ -41,8 +44,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     grid.querySelectorAll(".reveal").forEach(el=>el.classList.add("in"));
     count.textContent=`${list.length} compound${list.length===1?"":"s"}`;
     const u=new URL(location); cat==="all"?u.searchParams.delete("cat"):u.searchParams.set("cat",cat); order==="featured"?u.searchParams.delete("sort"):u.searchParams.set("sort",order); inOnly?u.searchParams.set("stock","in"):u.searchParams.delete("stock"); history.replaceState(null,"",u);
-    document.getElementById("shopTitle").textContent = cat==="all"?"All compounds":(C[cat]||"All compounds");
+    const O=window.LumaOffer&&LumaOffer.get(), t=document.getElementById("shopTitle");
+    if(O&&cat==="all") t.innerHTML=`Every compound, <em>${O.pct}% off.</em>`; else t.textContent = cat==="all"?"All compounds":(C[cat]||"All compounds");
   }
+  document.addEventListener("luma:offer",()=>{ const O=LumaOffer.get(); if(!O) return; document.getElementById("offerKicker").hidden=false; document.getElementById("shopSub").textContent="Prices below already include your discount. It carries through to checkout automatically."; draw(); });
   chips.addEventListener("click",e=>{const b=e.target.closest(".chip[data-cat]"); if(!b) return; cat=b.dataset.cat; chips.querySelectorAll(".chip[data-cat]").forEach(c=>c.setAttribute("aria-pressed",c===b)); draw();});
   sort.addEventListener("change",()=>{order=sort.value; draw();});
   draw();

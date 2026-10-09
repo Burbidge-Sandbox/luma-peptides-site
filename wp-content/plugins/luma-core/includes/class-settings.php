@@ -35,6 +35,11 @@ class Settings {
 			'same_day_days'         => '1,2,3,4,5,6',
 			'same_day_holidays'     => '1',
 			'same_day_closed_dates' => '',
+			/* New-lab discount (/labs/). Every number in the landing copy, coupon and email reads these. */
+			'lab_offer_pct'         => '25',
+			'lab_offer_days'        => '14',
+			'ships_same_day'        => '0', // off: landing subhead says "Shipped within 1 business day"
+			'purity_guarantee'      => '0', // off: landing section 3 shows only the button
 		];
 	}
 
@@ -82,6 +87,10 @@ class Settings {
 		$out['same_day_days']          = implode( ',', $days );
 		$out['same_day_holidays']      = empty( $in['same_day_holidays'] ) ? '0' : '1';
 		$out['same_day_closed_dates']  = sanitize_textarea_field( $in['same_day_closed_dates'] ?? '' );
+		$out['lab_offer_pct']          = (string) max( 1, min( 90, (int) ( $in['lab_offer_pct'] ?? 25 ) ) );
+		$out['lab_offer_days']         = (string) max( 1, min( 90, (int) ( $in['lab_offer_days'] ?? 14 ) ) );
+		$out['ships_same_day']         = empty( $in['ships_same_day'] ) ? '0' : '1';
+		$out['purity_guarantee']       = empty( $in['purity_guarantee'] ) ? '0' : '1';
 		$out['same_day_lat']           = $prev['same_day_lat'];
 		$out['same_day_lng']           = $prev['same_day_lng'];
 		if ( $out['same_day_origin'] && $out['same_day_origin'] !== $prev['same_day_origin'] ) {
@@ -189,6 +198,27 @@ class Settings {
 						<th scope="row">Holidays</th>
 						<td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[same_day_holidays]" value="1" <?php checked( '1', $o['same_day_holidays'] ); ?>> Closed on observed US federal holidays and Pioneer Day</label>
 						<p><label for="luma_sd_closed">Extra closed dates (one per line, YYYY-MM-DD)</label><br><textarea id="luma_sd_closed" name="<?php echo esc_attr( self::OPTION ); ?>[same_day_closed_dates]" rows="3" class="regular-text"><?php echo esc_textarea( $o['same_day_closed_dates'] ); ?></textarea></p></td>
+					</tr>
+				</table>
+
+				<h2>New-lab discount (/labs/)</h2>
+				<p class="description">Drives the landing page copy, each lead's coupon and the code email. Operational claims below must be true before they are switched on (CLAUDE.md rule 11).</p>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="luma_lab_pct">Discount (%)</label></th>
+						<td><input type="number" id="luma_lab_pct" name="<?php echo esc_attr( self::OPTION ); ?>[lab_offer_pct]" value="<?php echo esc_attr( $o['lab_offer_pct'] ); ?>" min="1" max="90" class="small-text"><p class="description">Applies to codes created after saving; codes already sent keep their amount.</p></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="luma_lab_days">Code valid for (days)</label></th>
+						<td><input type="number" id="luma_lab_days" name="<?php echo esc_attr( self::OPTION ); ?>[lab_offer_days]" value="<?php echo esc_attr( $o['lab_offer_days'] ); ?>" min="1" max="90" class="small-text"></td>
+					</tr>
+					<tr>
+						<th scope="row">Same-day dispatch</th>
+						<td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[ships_same_day]" value="1" <?php checked( '1', $o['ships_same_day'] ); ?>> Every order ships the same day it is placed</label><p class="description">Off: the landing page says "Shipped within 1 business day".</p></td>
+					</tr>
+					<tr>
+						<th scope="row">Purity guarantee</th>
+						<td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[purity_guarantee]" value="1" <?php checked( '1', $o['purity_guarantee'] ); ?>> Full refund if a lot tests under 98% pure</label><p class="description">Off: the landing page shows only the button in its last section.</p></td>
 					</tr>
 				</table>
 				<?php submit_button(); ?>

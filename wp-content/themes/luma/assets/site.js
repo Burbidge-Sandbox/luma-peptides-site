@@ -20,6 +20,25 @@
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const track=(e,d)=>{ try{ window.dataLayer&&dataLayer.push({event:e,...d}); }catch(x){} };
 
+  /* ---------- New-lab discount: display only. The visitor's LAB coupon does the discounting,
+     so these numbers come from the server (same rounding as the coupon) and only show while
+     the luma_lab_offer cookie names the same code. ---------- */
+  const readCookie=n=>{ const m=document.cookie.match(new RegExp("(?:^|; )"+n+"=([^;]*)")); return m?decodeURIComponent(m[1]):""; };
+  const Offer={
+    get(){ const s=window.LUMA_OFFER, c=readCookie("luma_lab_offer").toUpperCase(); return s&&c&&String(s.code).toUpperCase()===c?s:null; },
+    now(id){ const s=Offer.get(); return s&&s.now&&s.now[id]!=null?+s.now[id]:null; },
+    html(was,id){ const n=Offer.now(id); return n==null?money(was):`<del class="was">${money(was)}</del> <ins class="now">${money(n)}</ins>`; },
+    pill(id){ return Offer.now(id)!=null?`<span class="off-pill">${Offer.get().pct}% OFF</span>`:""; },
+    isLab:code=>/^lab\d+-/i.test(code||""),
+    label(code){ const s=Offer.get(), m=/^lab(\d+)-/i.exec(code||""); return `New lab discount (${s?s.pct:(m?m[1]:"")}%)`; },
+    bar(){ const s=Offer.get(), b=document.getElementById("offerBar"); if(!s||!b||!b.hidden) return; b.innerHTML=`<b>✓ Your ${esc(s.pct)}% off is applied</b> <span>· Free next-day delivery · Expires ${esc(s.expires)}</span>`; b.hidden=false; },
+    /* A page served from cache doesn't know this visitor's discount: ask once, then redraw. */
+    async sync(){ if(!readCookie("luma_lab_offer")||Offer.get()) return;
+      try{ const r=await fetch((window.LUMA_OFFER_URL||"/wp-json/luma/v1/offer")+"?cb="+Date.now(),{credentials:"same-origin"}); const j=await r.json();
+        if(j&&j.offer){ window.LUMA_OFFER=j.offer; Offer.bar(); document.dispatchEvent(new CustomEvent("luma:offer")); } }catch(e){} }
+  };
+  window.LumaOffer=Offer;
+
   /* ---------- Vial artwork (verbatim) ---------- */
   /* Vial label v2: glyph-by-glyph cylindrical wrap calibrated to vial-studio photo, softened ("gentle wrap": half bend, half tilt, ~55% foreshortening). */
   const LABEL_W={"s":[.234,.252,.289,.526,.414,.574,.703,.143,.309,.309,.448,.398,.222,.323,.2,.344,.477,.332,.402,.391,.453,.409,.465,.429,.489,.465,.2,.227,.407,.468,.407,.332,.722,.706,.57,.684,.696,.542,.513,.719,.761,.335,.327,.652,.537,.842,.73,.766,.546,.766,.681,.499,.637,.7,.664,.925,.65,.612,.598,.274,.344,.274,.392,.398,.213,.42,.512,.415,.512,.411,.305,.447,.502,.27,.259,.491,.261,.768,.52,.482,.511,.492,.369,.338,.338,.497,.436,.675,.439,.432,.405,.289,.168,.283,.443],"i5":[.267,.304,.494,.639,.646,.993,.653,.313,.369,.369,.521,.667,.303,.462,.303,.37,.646,.415,.616,.627,.656,.603,.63,.571,.629,.63,.303,.315,.667,.667,.667,.527,.982,.709,.657,.733,.722,.603,.589,.748,.745,.272,.575,.688,.565,.913,.756,.767,.642,.769,.648,.646,.653,.74,.709,1.003,.701,.696,.641,.369,.37,.369,.477,.463,.337,.568,.618,.577,.618,.587,.379,.62,.602,.252,.252,.559,.252,.888,.602,.604,.618,.618,.387,.539,.34,.602,.575,.829,.557,.575,.559,.44,.346,.44,.667],"i6":[.252,.321,.523,.644,.65,1.004,.663,.326,.373,.373,.54,.673,.319,.465,.319,.379,.66,.423,.623,.636,.666,.612,.64,.576,.64,.64,.319,.329,.673,.673,.673,.543,.999,.728,.659,.737,.722,.605,.588,.749,.746,.277,.58,.703,.565,.922,.759,.769,.645,.773,.652,.65,.66,.736,.728,1.02,.72,.713,.652,.373,.379,.373,.481,.469,.351,.574,.624,.583,.624,.591,.389,.625,.612,.262,.262,.569,.262,.9,.612,.609,.624,.624,.397,.549,.353,.612,.587,.839,.569,.588,.566,.455,.359,.455,.673]};
@@ -109,7 +128,7 @@
  <div class="thumb">${vialSVG(v?{...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]}:p)}</div>
  <div><h4><a href="${esc(p.url||"#")}">${esc(p.name)}</a></h4><div class="variant">${esc(v?v.strength:p.strength)}</div>
   <div class="qty"><button data-dec aria-label="Decrease">−</button><input type="number" value="${it.quantity}" min="1" max="10" aria-label="Quantity"><button data-inc aria-label="Increase">+</button></div></div>
- <div class="line-price">${money(cents(it.totals.line_total,mi))}<button class="remove" data-remove>Remove</button></div>
+ <div class="line-price">${(()=>{ const sub=cents(it.totals.line_subtotal,mi), tot=cents(it.totals.line_total,mi); return (cartData.coupons||[]).some(c=>Offer.isLab(c.code))&&sub>tot?`<span><del class="was">${money(sub)}</del> <ins class="now">${money(tot)}</ins></span>`:money(tot); })()}<button class="remove" data-remove>Remove</button></div>
 </div>`;
   }
   function render(){
@@ -120,7 +139,7 @@
     body.innerHTML=cartData.items.map(lineHTML).join("");
     const P=CONFIG.promises||{};
     foot.innerHTML=`<div class="ship-bar">${thr>0?(left>0?`You're <b>${money(left)}</b> away from free shipping`:`🎉 You've unlocked <b>free shipping</b>`):`<b>Free next-day shipping</b> on every order${P.sameDay?` · same-day ${esc(P.sameDayArea)} before ${esc(P.sameDayCutoff)}`:""}`}${thr>0?`<div class="track"><div class="fill" style="width:${Math.min(100,((sub-disc)/thr)*100)}%">`:""}${SD.link()}</div>
-<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>Volume discount</span><b>−${money(disc)}</b></div>`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div></div>
+<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${(()=>{ const lab=(cartData.coupons||[]).find(c=>Offer.isLab(c.code)); return lab?Offer.label(lab.code):"Volume discount"; })()}</span><b>−${money(disc)}</b></div>`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div></div>
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Checkout</a>
 <a class="btn btn-ghost btn-block" href="${CONFIG.urls.cart}" style="margin-top:.3rem">View full cart</a>`;
   }
@@ -132,7 +151,7 @@
     const ship=thr>0&&(sub-disc)<thr?8:0; const coupon=(cartData.coupons||[])[0]; const P=CONFIG.promises||{};
     list.innerHTML=cartData.items.map(lineHTML).join("");
     sum.innerHTML=`<div class="promo"><input id="promoIn" placeholder="Promo code" value="${coupon?esc(coupon.code):""}" aria-label="Promo code"><button class="btn btn-dark btn-sm" id="promoBtn">${coupon?"Remove":"Apply"}</button></div><div class="promo-msg" id="promoMsg"></div>
-<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?"Promo "+esc(coupon.code):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>${thr>0?"Standard shipping":"Next-day shipping"}</span><b>${ship?money(ship):"Free"}</b></div>${P.sameDay?`<div style="font-size:.78rem;color:var(--muted);padding:0 0 .4rem">${esc(P.sameDayPromise)}</div>${SD.widget(true)}`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
+<div class="totals"><div><span>Subtotal</span><b>${money(sub)}</b></div>${disc?`<div class="discount"><span>${coupon?(Offer.isLab(coupon.code)?Offer.label(coupon.code):"Promo "+esc(coupon.code)):"Volume discount"}</span><b>−${money(disc)}</b></div>`:""}<div><span>${thr>0?"Standard shipping":"Next-day shipping"}</span><b>${ship?money(ship):"Free"}</b></div>${P.sameDay?`<div style="font-size:.78rem;color:var(--muted);padding:0 0 .4rem">${esc(P.sameDayPromise)}</div>${SD.widget(true)}`:""}<div><span>Sales tax</span><b>Calculated at checkout</b></div><div class="grand"><span>Estimated total</span><b>${money(sub-disc+ship)}</b></div></div>
 <a class="btn btn-primary btn-block" href="${CONFIG.urls.checkout}">Proceed to checkout</a>
 <div class="secure"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Secure checkout · All sales final on shipped goods</div>`;
     $("#promoBtn").onclick=async()=>{ const m=$("#promoMsg"); const code=$("#promoIn").value.trim();
@@ -155,6 +174,7 @@
   /* ---------- Boot ---------- */
   document.addEventListener("DOMContentLoaded",()=>{
     Cart.refresh();
+    Offer.bar(); Offer.sync();
     $("#cartBtn").addEventListener("click",openDrawer);
     $("#closeDrawer").addEventListener("click",closeDrawer);
     $("#overlay").addEventListener("click",closeDrawer);
@@ -216,11 +236,11 @@
     return `<article class="card reveal${oos?" oos":""}" data-pid="${p.id}"${v0?` data-variant="${v0.key}"`:""}>
  ${oos?`<span class="badge soft">Waitlist</span>`:(p.badge?`<span class="badge">${p.badge}</span>`:"")}
  <a class="stretch" href="${esc(p.url)}${v0?"?size="+v0.key:""}" aria-label="${esc(p.name)}"></a>
- <div class="card-vial">${vialSVG(v0?{...p,strength:strength,label:[p.label[0],v0.key.toUpperCase()]}:p)}</div>
+ <div class="card-vial">${Offer.pill((v0||p).wc_id)}${vialSVG(v0?{...p,strength:strength,label:[p.label[0],v0.key.toUpperCase()]}:p)}</div>
  <h3>${esc(p.name)}</h3>
  <div class="strength"><span class="card-strength">${esc(strength)}</span>${oos?' · <span class="oos-text">Out of stock</span>':''}</div>
  ${sizes}
- <div class="price"><span class="card-price">${money(price)}</span> <small>/ vial</small></div>
+ <div class="price"><span class="card-price">${Offer.html(price,(v0||p).wc_id)}</span> <small>/ vial</small></div>
  <div class="card-actions">${oos?`<button class="btn btn-outline btn-sm" data-waitlist="${p.id}">Join the waitlist</button>`:`<button class="btn btn-outline btn-sm" data-add="${p.id}" data-plan="once"${v0?` data-variant="${v0.key}"`:""}>Add to cart</button>`}</div>
 </article>`;
   };
@@ -230,9 +250,9 @@
     const v=p.variants.find(x=>x.key===b.dataset.size); if(!v) return;
     card.dataset.variant=v.key;
     card.querySelectorAll(".card-size").forEach(x=>{ const on=x===b; x.classList.toggle("is-on",on); x.setAttribute("aria-pressed",on); });
-    card.querySelector(".card-price").textContent=money(v.once);
+    card.querySelector(".card-price").innerHTML=Offer.html(v.once,v.wc_id);
     card.querySelector(".card-strength").textContent=v.strength;
-    card.querySelector(".card-vial").innerHTML=vialSVG({...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]});
+    card.querySelector(".card-vial").innerHTML=Offer.pill(v.wc_id)+vialSVG({...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]});
     const add=card.querySelector("[data-add]"); if(add){ add.dataset.variant=v.key; add.disabled=v.stock==="out"; add.textContent=v.stock==="out"?"Out of stock":"Add to cart"; }
     card.querySelector("a.stretch").href=`${p.url}?size=${v.key}`;
   });
@@ -260,7 +280,21 @@
       const img=box.querySelector("img"); if(img) img.remove();
       box.insertAdjacentHTML("beforeend", vialSVG(v?{...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]}:p));
     }); };
-    paint(); new MutationObserver(paint).observe(document.body,{childList:true,subtree:true});
+    /* New-lab discount in the order summary: named line, "Next-day delivery FREE", savings under the total. */
+    const setText=(el,t)=>{ if(el&&el.textContent!==t) el.textContent=t; };
+    const offer=()=>{ const W=window.wp&&wp.data&&wp.data.select&&wp.data.select("wc/store/cart"); if(!W||!W.getCartData) return;
+      const cart=W.getCartData(), lab=(cart.coupons||[]).find(c=>Offer.isLab(c.code)), t=cart.totals||{}, mi=t.currency_minor_unit;
+      const save=document.querySelector(".lab-save");
+      if(!lab){ if(save) save.remove(); return; }
+      setText(document.querySelector(".wc-block-components-totals-discount .wc-block-components-totals-item__label"),Offer.label(lab.code));
+      document.querySelectorAll(".wc-block-components-totals-shipping .wc-block-components-totals-item__label").forEach(l=>{ if(/^next-day/i.test(l.textContent)) setText(l,"Next-day delivery"); });
+      document.querySelectorAll(".wc-block-components-totals-shipping .wc-block-components-totals-item__value strong").forEach(v=>{ if(/^free$/i.test(v.textContent)) setText(v,"FREE"); });
+      const amt=cents(lab.totals&&lab.totals.total_discount,mi), foot=document.querySelector(".wc-block-components-totals-footer-item"); if(!foot||!(amt>0)) return;
+      const txt=`You're saving $${amt.toFixed(2)} on this order`;
+      if(save){ setText(save,txt); if(save.previousElementSibling!==foot) foot.after(save); } else { const d=document.createElement("div"); d.className="lab-save"; d.textContent=txt; foot.after(d); }
+    };
+    const run=()=>{ paint(); offer(); };
+    run(); new MutationObserver(run).observe(document.body,{childList:true,subtree:true});
   })();
   document.addEventListener("submit",async e=>{
     const f=e.target; if(f.id!=="contactForm") return; e.preventDefault();

@@ -196,15 +196,67 @@ class Lots {
 		];
 	}
 
-	private static function rate_limited(): bool {
-		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'x';
-		$key = 'luma_lookup_' . md5( $ip );
+	/** Visitor IP. Cloudflare sits in front of the server, so prefer its client header. */
+	public static function client_ip(): string {
+		foreach ( [ 'HTTP_CF_CONNECTING_IP', 'REMOTE_ADDR' ] as $h ) {
+			$ip = isset( $_SERVER[ $h ] ) ? trim( sanitize_text_field( wp_unslash( $_SERVER[ $h ] ) ) ) : '';
+			if ( $ip && filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+				return $ip;
+			}
+		}
+		return 'x';
+	}
+
+	/** Per-IP counter: true once $max hits land inside $window seconds. Shared by lot lookup and the /labs/ claim. */
+	public static function rate_limited( string $bucket = 'lookup', int $max = 10, int $window = MINUTE_IN_SECONDS ): bool {
+		$key = 'luma_' . $bucket . '_' . md5( self::client_ip() );
 		$n   = (int) get_transient( $key );
-		if ( $n >= 10 ) {
+		if ( $n >= $max ) {
 			return true;
 		}
-		set_transient( $key, $n + 1, MINUTE_IN_SECONDS );
+		set_transient( $key, $n + 1, $window );
 		return false;
+	}
+
+	/**
+	 * Released lots that are the current lot of a published product, best purity first.
+	 * The /labs/ proof strip and its average purity read only this (CLAUDE.md rule 11).
+	 *
+	 * @return array<int, array{lot:string, purity:float, product:\WC_Product, lab:string, labeled_qty:string, url:string}>
+	 */
+	public static function current_pass(): array {
+		$out  = [];
+		$lots = get_posts( [
+			'post_type'   => self::CPT,
+			'post_status' => 'publish',
+			'numberposts' => 200,
+			'meta_key'    => '_lot_status', // phpcs:ignore WordPress.DB.SlowDBQuery
+			'meta_value'  => 'PASS', // phpcs:ignore WordPress.DB.SlowDBQuery
+		] );
+		foreach ( $lots as $lot ) {
+			$pid = (int) get_post_meta( $lot->ID, '_lot_variation_id', true ) ?: (int) get_post_meta( $lot->ID, '_lot_product_id', true );
+			if ( ! $pid || (int) get_post_meta( $pid, '_luma_current_lot', true ) !== $lot->ID ) {
+				continue;
+			}
+			$prod = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
+			if ( ! $prod || 'publish' !== get_post_status( $prod->get_parent_id() ?: $pid ) ) {
+				continue;
+			}
+			if ( ! preg_match( '/\d+(?:\.\d+)?/', (string) get_post_meta( $lot->ID, '_lot_purity', true ), $m ) || (float) $m[0] <= 0 ) {
+				continue;
+			}
+			$coa   = (int) get_post_meta( $lot->ID, '_lot_coa_id', true );
+			$out[] = [
+				'lot'         => $lot->post_title,
+				'purity'      => (float) $m[0],
+				'product'     => $prod,
+				'lab'         => (string) get_post_meta( $lot->ID, '_lot_lab', true ),
+				'labeled_qty' => (string) get_post_meta( $lot->ID, '_lot_labeled_qty', true ),
+				'url'         => $coa ? (string) wp_get_attachment_url( $coa ) : add_query_arg( 'lot', rawurlencode( $lot->post_title ), home_url( '/testing/' ) ),
+			];
+		}
+		usort( $out, fn( $a, $b ) => $b['purity'] <=> $a['purity'] );
+		return $out;
 	}
 
 	public static function shortcode_lookup(): string {

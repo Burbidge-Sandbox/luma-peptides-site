@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded",()=>{
    {k:"Free delivery",t:P.nextDay?"Free next-day<br>shipping, always":"Free US<br>shipping",d:P.sameDay?`<a class="sd-link" href="${C.urls.shipping||"/shipping-returns/"}#same-day">Check your ZIP for same-day delivery →</a>`:""},
    P.deliveryPromiseDays?{k:"Guaranteed",t:`Arrives in ${P.deliveryPromiseDays} business days or we reship free`,d:"If a standard order isn't delivered within "+P.deliveryPromiseDays+" business days of shipment, a replacement ships at no charge."}:{k:"Tracked",t:"Track every<br>order",d:`<a class="sd-link" href="${C.urls.track}">Track an order →</a>`}
  ]; document.getElementById("promiseStrip").innerHTML=tiles.map(x=>`<div class="promise-tile"><span class="promise-kicker">${x.k}</span><b>${x.t}</b>${x.d?`<p>${x.d}</p>`:""}</div>`).join(""); })();
- (function(){ /* Best sellers v2 (A9): in-stock only, name on photo, price + current lot below, purity from the lot record */
+ (function bestSellers(){ /* Best sellers v2 (A9): in-stock only, name on photo, price + current lot below, purity from the lot record */
   const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const money=n=>"$"+(Math.round(n*100)/100).toFixed(2);
   const short={"bpc-157-ghk-cu-tb-500-blend":"Glow Blend"};
@@ -71,15 +71,16 @@ document.addEventListener("DOMContentLoaded",()=>{
   const list=order.map(id=>window.LUMA_PRODUCTS.find(p=>p.id===id)).filter(p=>p&&p.stock==="in").slice(0,4);
   document.getElementById("topSellers").innerHTML=list.map(p=>{
    const v=(p.variants||[]).find(x=>x.stock==="in")||null;
-   const price=v?v.once:p.once, lot=(v?v.lot:p.lot)||"", pur=pct(v?v.lotPurity:p.lotPurity);
+   const price=v?v.once:p.once, lot=(v?v.lot:p.lot)||"", pur=pct(v?v.lotPurity:p.lotPurity), O=window.LumaOffer, wid=(v||p).wc_id, now=O?O.now(wid):null;
    const sizes=p.variants?p.variants.filter(x=>x.stock==="in").map(x=>x.label.toUpperCase()).join(" · "):(p.strength||"").replace(/ (blend )?vial$/,"").toUpperCase();
    const vp=v?{...p,strength:v.strength,label:[p.label[0],v.key.toUpperCase()]}:p;
    const name=short[p.id]||p.name;
    return `<article class="bs9-card" data-pid="${esc(p.id)}">
-  <div class="bs9-media"><a class="bs9-link" href="${esc(p.url)}${v?"?size="+v.key:""}" aria-label="${esc(p.name)}">${vialSVG(vp)}<span class="bs9-ov"><h3>${esc(name)}</h3><small>${esc(sizes)}</small></span></a>
+  <div class="bs9-media">${O?O.pill(wid):""}<a class="bs9-link" href="${esc(p.url)}${v?"?size="+v.key:""}" aria-label="${esc(p.name)}">${vialSVG(vp)}<span class="bs9-ov"><h3>${esc(name)}</h3><small>${esc(sizes)}</small></span></a>
    <button class="bs9-plus" type="button" data-add="${esc(p.id)}" data-plan="once"${v?` data-variant="${esc(v.key)}"`:""} aria-label="Add ${esc(p.name)}${v?" "+esc(v.label):""} to cart">+</button></div>
-  <div class="bs9-foot"><span class="bs9-price">${money(price)}${lot?`<small>Lot ${esc(lot)}</small>`:""}</span>${pur?`<a class="bs9-pur" href="${esc(V)}?lot=${encodeURIComponent(lot)}" aria-label="${pur} purity — view certificate for lot ${esc(lot)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>${pur}</a>`:""}</div>
+  <div class="bs9-foot"><span class="bs9-price">${now==null?money(price):`<del class="was">${money(price)}</del> <ins class="now">${money(now)}</ins>`}${lot?`<small>Lot ${esc(lot)}</small>`:""}</span>${pur?`<a class="bs9-pur" href="${esc(V)}?lot=${encodeURIComponent(lot)}" aria-label="${pur} purity — view certificate for lot ${esc(lot)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>${pur}</a>`:""}</div>
  </article>`;}).join("");
+  if(!bestSellers.hooked){ bestSellers.hooked=1; document.addEventListener("luma:offer",bestSellers); }
  })();
 });
 </script>

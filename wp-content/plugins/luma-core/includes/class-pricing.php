@@ -52,13 +52,15 @@ class Pricing {
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}
+		/* No stacking: a new-lab (LAB) coupon replaces quantity-break tiers while it is in the cart. */
+		$tiers = ! LabOffer::in_cart( $cart );
 		foreach ( $cart->get_cart() as $item ) {
 			/** @var \WC_Product $product */
 			$product = $item['data'];
 			if ( ! $product || $product->get_regular_price() === '' ) {
 				continue;
 			}
-			$product->set_price( (string) self::unit_price( $product, (int) $item['quantity'] ) );
+			$product->set_price( (string) self::unit_price( $product, $tiers ? (int) $item['quantity'] : 1 ) );
 		}
 	}
 
@@ -67,7 +69,7 @@ class Pricing {
 		if ( ! $product instanceof \WC_Product ) {
 			return $html;
 		}
-		$pct = self::pct_for_qty( (int) $item['quantity'] );
+		$pct = LabOffer::in_cart() ? 0 : self::pct_for_qty( (int) $item['quantity'] );
 		if ( $pct > 0 ) {
 			$html .= ' <small class="mono">(' . esc_html( (string) $pct ) . '% volume price)</small>';
 		}

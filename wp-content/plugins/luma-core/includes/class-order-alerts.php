@@ -88,9 +88,13 @@ class OrderAlerts {
 		return [ $title, implode( "\n", $lines ) ];
 	}
 
-	public static function push( string $title, string $msg, string $url = '', string $url_title = '' ): bool {
+	/** $priority overrides the saved priority for this message (e.g. 0 for lead alerts that should not repeat). */
+	public static function push( string $title, string $msg, string $url = '', string $url_title = '', ?int $priority = null ): bool {
 		$o  = self::opts();
 		$ok = false;
+		if ( null !== $priority ) {
+			$o['priority'] = (string) max( -2, min( 2, $priority ) );
+		}
 		foreach ( preg_split( '/\s+/', $o['users'], -1, PREG_SPLIT_NO_EMPTY ) as $user ) {
 			$body = [
 				'token'     => $o['token'],
