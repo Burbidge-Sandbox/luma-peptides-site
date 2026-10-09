@@ -25,12 +25,10 @@ body.labs{background:var(--cream);color:var(--ink);font-family:var(--sans);line-
 /* Header: logo + phone only */
 .lb-head{padding:18px 0}
 .lb-head .lb-wrap{display:flex;justify-content:space-between;align-items:center}
-.lb-head .lb-logo{color:var(--terra);font-size:1.7rem;line-height:1;padding:0;white-space:nowrap}
+.lb-head .lb-logo{color:var(--terra);font-size:3.4rem;line-height:1;padding:0;white-space:nowrap}
 .lb-head .lb-logo span{display:inline}
 .lb-head .lb-logo span+span{margin-left:.3em}
-@media(max-width:480px){.lb-head .lb-logo{font-size:1.45rem}}
-.lb-tel{font-size:.9rem;color:var(--ink-2);text-decoration:none}
-.lb-tel:hover{color:var(--terra)}
+@media(max-width:480px){.lb-head .lb-logo{font-size:2.9rem}}
 
 /* Hero: the whole pitch */
 .lb-hero{padding:28px 0 56px}
@@ -59,20 +57,6 @@ body.labs{background:var(--cream);color:var(--ink);font-family:var(--sans);line-
 .lb-err{color:var(--terra);font-size:.8rem;margin:-.2rem 0 .6rem;display:none}
 .lb-err.show{display:block}
 
-/* Proof: one dark strip, numbers only */
-.lb-proof{background:var(--panel);color:var(--panel-ink);padding:40px 0}
-.lb-proof .lb-wrap{display:grid;gap:22px}
-@media(min-width:960px){.lb-proof .lb-wrap{grid-template-columns:260px minmax(0,1fr);align-items:center}}
-.lb-proof h2{font-size:1.9rem;color:var(--panel-ink)}
-.lb-proof h2 span{display:block;font-family:var(--sans);font-size:.8rem;color:var(--panel-muted);margin-top:.5rem;line-height:1.4}
-.lb-lots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-@media(min-width:700px){.lb-lots{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.lb-lot{border:1px solid var(--panel-line);border-radius:10px;padding:12px 14px;text-decoration:none;color:inherit;transition:border-color .15s}
-.lb-lot:hover,.lb-lot:focus-visible{border-color:var(--ok);outline:0}
-.lb-lot b{display:block;font-family:var(--mono);font-size:1.25rem;font-weight:500}
-.lb-lot span{font-size:.78rem;color:var(--panel-muted)}
-.lb-lot i{font-style:normal;color:var(--ok)}
-
 /* Guarantee + one button */
 .lb-close{padding:56px 0 64px;text-align:center}
 .lb-close h2{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:.6rem}
@@ -86,4 +70,4 @@ body.labs{background:var(--cream);color:var(--ink);font-family:var(--sans);line-
 .lb-sticky.show{transform:none}
 .lb-sticky .lb-btn{width:100%}
 @media(min-width:960px){.lb-sticky{display:none}}
-@media(prefers-reduced-motion:reduce){.lb-sticky,.lb-btn,.lb-lot{transition:none}html{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){.lb-sticky,.lb-btn{transition:none}html{scroll-behavior:auto}}

@@ -2,9 +2,8 @@
 /**
  * Template Name: Research labs
  *
- * /labs/ — new-lab discount landing page. Three sections (hero + form,
- * proof strip, guarantee + button), logo and phone only, no nav, no cart, no
- * gate. Every number is live: the discount and expiry from Luma Core settings,
+ * /labs/ — new-lab discount landing page. Two sections (hero + form,
+ * guarantee + button), logo only, no nav, no cart, no gate. Every number is live: the discount and expiry from Luma Core settings,
  * purity from released lots (CLAUDE.md rule 11). Styles: labs.css.
  */
 
@@ -17,18 +16,6 @@ $lots     = class_exists( 'Luma\\Core\\Lots' ) ? Luma\Core\Lots::current_pass() 
 $avg      = $lots ? number_format( array_sum( array_column( $lots, 'purity' ) ) / count( $lots ), 1 ) : '';
 $sameday  = class_exists( 'Luma\\Core\\Settings' ) && '1' === (string) Settings::get( 'ships_same_day' );
 $guaranty = class_exists( 'Luma\\Core\\Settings' ) && '1' === (string) Settings::get( 'purity_guarantee' );
-$labs     = array_values( array_unique( array_filter( array_column( $lots, 'lab' ) ) ) );
-$short    = [ 'bpc-157-ghk-cu-tb-500-blend' => 'Glow' ];
-$lot_name = function ( array $l ) use ( $short ): string {
-	$p      = $l['product'];
-	$parent = $p->get_parent_id() ? wc_get_product( $p->get_parent_id() ) : $p;
-	$name   = $short[ $parent->get_slug() ] ?? $parent->get_name();
-	$qty    = strtolower( str_replace( ' ', '', $l['labeled_qty'] ) );
-	if ( ! $qty && preg_match( '/(\d+(?:\.\d+)?)\s?(mg|ml)/i', (string) $p->get_meta( '_luma_strength' ) . ' ' . $p->get_name(), $m ) ) {
-		$qty = $m[1] . strtolower( $m[2] );
-	}
-	return trim( $name . ' ' . $qty );
-};
 $nonce    = wp_create_nonce( 'luma_claim' );
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -44,7 +31,6 @@ $nonce    = wp_create_nonce( 'luma_claim' );
 
 <header class="lb-head"><div class="lb-wrap">
  <span class="logo lb-logo" aria-label="Luma Peptides Co."><span>luma</span><span>peptides</span><span>co.</span></span>
- <a class="lb-tel" href="sms:+13855215259" aria-label="Text (385) 521-5259">(385) 521-5259</a>
 </div></header>
 
 <main id="main">
@@ -81,18 +67,6 @@ $nonce    = wp_create_nonce( 'luma_claim' );
  </div>
 </section>
 
-<?php if ( $lots ) : ?>
-<section class="lb-proof" aria-label="Certificates of analysis">
- <div class="lb-wrap">
-  <h2>Don't trust us. Check the lab.<span><?php echo esc_html( implode( ' · ', $labs ) ); ?><?php echo $labs ? ' · ' : ''; ?>HPLC + LC-MS · tap any lot for its COA</span></h2>
-  <div class="lb-lots">
-   <?php foreach ( $lots as $l ) : ?>
-   <a class="lb-lot" href="<?php echo esc_url( $l['url'] ); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr( sprintf( '%s, lot %s, %.2f%% purity: open certificate', $lot_name( $l ), $l['lot'], $l['purity'] ) ); ?>"><b><?php echo esc_html( number_format( $l['purity'], 2 ) ); ?>%</b><span><?php echo esc_html( $lot_name( $l ) ); ?> <i aria-hidden="true">✓</i></span></a>
-   <?php endforeach; ?>
-  </div>
- </div>
-</section>
-<?php endif; ?>
 
 <section class="lb-close">
  <div class="lb-wrap">
