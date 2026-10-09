@@ -241,6 +241,7 @@ class Leads {
 			$c->set_billing_phone( $phone );
 			$c->set_shipping_first_name( $first );
 			$c->set_shipping_last_name( $last );
+			$c->set_shipping_phone( $phone ); // block checkout shows the shipping form (billing = shipping by default)
 			$c->save();
 		}
 		LabOffer::apply( $coupon );
