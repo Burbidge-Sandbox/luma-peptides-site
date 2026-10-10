@@ -29,6 +29,7 @@ class LabDomain {
 		}
 		if ( self::is_lab_host() ) {
 			add_filter( 'option_home', [ __CLASS__, 'lab_home' ] );
+			add_filter( 'admin_url', [ __CLASS__, 'lab_ajax_url' ], 10, 2 ); // PixelYourSite etc. call admin-ajax; keep it same-origin
 			add_filter( 'redirect_canonical', '__return_false' );
 			add_filter( 'request', [ __CLASS__, 'route' ] );
 			add_action( 'template_redirect', [ __CLASS__, 'lab_template_redirect' ], 1 );
@@ -68,6 +69,10 @@ class LabDomain {
 	public static function store_shop_url( array $args = [] ): string {
 		$path = (string) wp_parse_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '/shop/', PHP_URL_PATH );
 		return add_query_arg( $args, self::store_url( $path ?: '/shop/' ) );
+	}
+
+	public static function lab_ajax_url( $url, $path ) {
+		return 0 === strpos( ltrim( (string) $path, '/' ), 'admin-ajax.php' ) ? self::lab_home() . '/wp-admin/' . ltrim( (string) $path, '/' ) : $url;
 	}
 
 	public static function lab_home(): string {
