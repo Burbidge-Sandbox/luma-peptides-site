@@ -39,7 +39,8 @@ class Settings {
 			'lab_offer_pct'         => '25',
 			'lab_offer_days'        => '14',
 			'ships_same_day'        => '0', // off: landing subhead says "Shipped within 1 business day"
-			'purity_guarantee'      => '0', // off: landing section 3 shows only the button
+			'purity_guarantee'      => '0', // off: no guarantee line on the landing page
+			'lab_domain'            => 'lumapeptidelabs.com', // landing page domain (Cloudways alias); '' = /labs/ on the store
 		];
 	}
 
@@ -91,6 +92,7 @@ class Settings {
 		$out['lab_offer_days']         = (string) max( 1, min( 90, (int) ( $in['lab_offer_days'] ?? 14 ) ) );
 		$out['ships_same_day']         = empty( $in['ships_same_day'] ) ? '0' : '1';
 		$out['purity_guarantee']       = empty( $in['purity_guarantee'] ) ? '0' : '1';
+		$out['lab_domain']             = strtolower( preg_replace( '#^(https?://)?(www\.)?#i', '', trim( sanitize_text_field( $in['lab_domain'] ?? '' ), " /" ) ) );
 		$out['same_day_lat']           = $prev['same_day_lat'];
 		$out['same_day_lng']           = $prev['same_day_lng'];
 		if ( $out['same_day_origin'] && $out['same_day_origin'] !== $prev['same_day_origin'] ) {
@@ -215,6 +217,10 @@ class Settings {
 					<tr>
 						<th scope="row">Same-day dispatch</th>
 						<td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[ships_same_day]" value="1" <?php checked( '1', $o['ships_same_day'] ); ?>> Every order ships the same day it is placed</label><p class="description">Off: the landing page says "Shipped within 1 business day".</p></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="luma_lab_domain">Landing page domain</label></th>
+						<td><input type="text" id="luma_lab_domain" name="<?php echo esc_attr( self::OPTION ); ?>[lab_domain]" value="<?php echo esc_attr( $o['lab_domain'] ); ?>" class="regular-text" placeholder="lumapeptidelabs.com"><p class="description">The domain must be added in Cloudways (Domain Management) and point at this server. Its homepage shows the landing page; /labs/ on the store redirects there. Leave empty to keep the page at /labs/.</p></td>
 					</tr>
 					<tr>
 						<th scope="row">Purity guarantee</th>

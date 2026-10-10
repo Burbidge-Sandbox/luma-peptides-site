@@ -33,6 +33,7 @@ class Leads {
 		add_action( 'init', [ __CLASS__, 'register' ] );
 		add_action( 'rest_api_init', [ __CLASS__, 'routes' ] );
 		add_action( 'woocommerce_order_status_changed', [ __CLASS__, 'on_order' ], 15, 4 );
+		add_action( 'wp_loaded', [ __CLASS__, 'consume_handoff' ], 20 ); // before LabOffer::on_request (30)
 
 		/* Admin list: WooCommerce → Lab leads. */
 		add_filter( 'manage_' . self::CPT . '_posts_columns', [ __CLASS__, 'columns' ] );
@@ -149,7 +150,7 @@ class Leads {
 		$phone           = self::e164( $digits );
 		[ $first, $last ] = self::split_name( $name );
 		$src             = self::source( (array) ( $p['src'] ?? [] ) );
-		$shop            = wc_get_page_permalink( 'shop' );
+		$shop            = LabDomain::store_shop_url(); // the store, even when the form is on the landing domain
 
 		/* Repeat claim: same email or phone reuses that lead's code; no second coupon. */
 		$lead = self::find( $email, $phone );
@@ -161,14 +162,14 @@ class Leads {
 			self::notify_owner( $lead->ID, $name, $email, $phone, $coupon, $src, 'ok' === $state ? 'repeat claim, same code' : 'repeat claim, code ' . $state );
 			if ( 'ok' !== $state ) {
 				LabOffer::clear_cookie();
-				return rest_ensure_response( [ 'redirect' => add_query_arg( 'offer', 'used', $shop ) ] );
+				return rest_ensure_response( [ 'redirect' => LabDomain::store_shop_url( [ 'offer' => 'used' ] ) ] );
 			}
 			$same_email = $email === strtolower( (string) get_post_meta( $lead->ID, '_lead_email', true ) );
-			self::start_session( $coupon, $first, $last, $email, $phone, ! $same_email );
+			$next       = self::handoff_url( $coupon, $first, $last, $email, $phone, ! $same_email );
 			if ( $same_email && strtotime( (string) get_post_meta( $lead->ID, '_lead_code_sent', true ) ) < time() - DAY_IN_SECONDS ) {
 				self::email_code( $lead->ID, $coupon, $first, $email );
 			}
-			return rest_ensure_response( [ 'redirect' => $shop ] );
+			return rest_ensure_response( [ 'redirect' => $next ] );
 		}
 
 		/* 1. Save the lead first. */
@@ -201,10 +202,11 @@ class Leads {
 
 		/* 2. Coupon. */
 		$coupon = LabOffer::create_coupon( $email, $lead_id, $name );
+		$next   = $shop;
 		if ( $coupon ) {
 			update_post_meta( $lead_id, '_lead_coupon', strtoupper( $coupon->get_code() ) );
-			/* 3 + 4. Session, cookie, checkout prefill. */
-			self::start_session( $coupon, $first, $last, $email, $phone, false );
+			/* 3 + 4. Session, cookie and checkout prefill happen on the store via a one-time handoff. */
+			$next = self::handoff_url( $coupon, $first, $last, $email, $phone, false );
 		}
 
 		/* Notifications never block the redirect. */
@@ -218,11 +220,48 @@ class Leads {
 		}
 
 		/* 5. Where the browser goes next. */
-		return rest_ensure_response( [ 'redirect' => $shop ] );
+		return rest_ensure_response( [ 'redirect' => $next ] );
+	}
+
+	/**
+	 * Sessions don't cross domains: park the claim server-side for 15 minutes and
+	 * send the browser to the store with a one-time token (nothing personal in the URL).
+	 */
+	public static function handoff_url( \WC_Coupon $coupon, string $first, string $last, string $email, string $phone, bool $mask ): string {
+		$token = wp_generate_password( 32, false, false );
+		set_transient( 'luma_ho_' . hash( 'sha256', $token ), [
+			'code'  => $coupon->get_code(),
+			'first' => $first,
+			'last'  => $last,
+			'email' => $email,
+			'phone' => $phone,
+			'mask'  => $mask,
+		], 15 * MINUTE_IN_SECONDS );
+		return LabDomain::store_shop_url( [ 'luma_handoff' => $token ] );
+	}
+
+	/** Store side of the handoff: apply the code, set the cookie, prefill checkout, then drop the token from the URL. */
+	public static function consume_handoff(): void {
+		if ( empty( $_GET['luma_handoff'] ) || is_admin() || wp_doing_ajax() || LabDomain::is_lab_host() ) { // phpcs:ignore WordPress.Security.NonceVerification
+			return;
+		}
+		$token = preg_replace( '/[^A-Za-z0-9]/', '', (string) wp_unslash( $_GET['luma_handoff'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$key   = 'luma_ho_' . hash( 'sha256', $token );
+		$d     = get_transient( $key );
+		delete_transient( $key ); // single use
+		if ( is_array( $d ) ) {
+			$c = LabOffer::from_code( (string) $d['code'] );
+			if ( $c && 'ok' === LabOffer::usable( $c ) ) {
+				self::start_session( $c, (string) $d['first'], (string) $d['last'], (string) $d['email'], (string) $d['phone'], ! empty( $d['mask'] ) );
+			}
+		}
+		nocache_headers();
+		wp_safe_redirect( remove_query_arg( 'luma_handoff' ) );
+		exit;
 	}
 
 	/** Apply the code, set the cookie, and prefill checkout from the claim (guests only). */
-	private static function start_session( \WC_Coupon $coupon, string $first, string $last, string $email, string $phone, bool $mask ): void {
+	public static function start_session( \WC_Coupon $coupon, string $first, string $last, string $email, string $phone, bool $mask ): void {
 		if ( ! LabOffer::load_cart() ) {
 			return;
 		}
@@ -346,7 +385,7 @@ class Leads {
 		$code   = strtoupper( $coupon->get_code() );
 		$pct    = $coupon->get_amount() + 0;
 		$exp    = LabOffer::expires_label( $coupon );
-		$url    = add_query_arg( 'coupon', rawurlencode( $code ), wc_get_page_permalink( 'shop' ) );
+		$url    = LabDomain::store_shop_url( [ 'coupon' => rawurlencode( $code ) ] );
 		$mailer = WC()->mailer();
 		$body   = '<p class="luma-eyebrow">New lab discount</p>'
 			. '<p>' . ( $first ? 'Hi ' . esc_html( $first ) . ',' : 'Hello,' ) . '</p>'
