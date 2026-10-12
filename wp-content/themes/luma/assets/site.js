@@ -87,13 +87,28 @@
   window.vialSVG=vialSVG;
 
   /* ---------- Cart (WooCommerce Store API) ---------- */
-  const API=CONFIG.storeApi; let nonce=null; let cartData=null;
-  async function api(path,opts={}){
+  const API=CONFIG.storeApi; let nonce=null; let cartData=null; let nonceReq=null;
+  /* The Store API needs a Nonce header on every cart change. It arrives with the first GET /cart;
+     a shopper who taps "Add to cart" before that returns (slow mobile, ad traffic) or after it
+     expires (tab left open) would otherwise get "Missing the Nonce header". So: fetch one first
+     when we have none, and on a nonce error fetch a fresh one and retry once. */
+  function freshNonce(){
+    if(!nonceReq) nonceReq=fetch(API+"cart",{credentials:"same-origin",cache:"no-store"})
+      .then(r=>{ const n=r.headers.get("Nonce"); if(n) nonce=n; return r.json().then(j=>{ if(j&&j.items) cartData=j; }).catch(()=>{}); })
+      .catch(()=>{}).finally(()=>{ nonceReq=null; });
+    return nonceReq;
+  }
+  async function api(path,opts={},retried=false){
+    const write=opts.method&&opts.method!=="GET";
+    if(write&&!nonce) await freshNonce();
     const h={"Content-Type":"application/json"}; if(nonce) h["Nonce"]=nonce;
-    const r=await fetch(API+path,{credentials:"same-origin",headers:h,...opts});
+    const r=await fetch(API+path,{credentials:"same-origin",cache:"no-store",headers:h,...opts});
     const n=r.headers.get("Nonce"); if(n) nonce=n;
     const j=await r.json().catch(()=>null);
-    if(!r.ok) throw new Error((j&&j.message)||"Cart error");
+    if(!r.ok){
+      if(write&&!retried&&j&&/nonce/i.test(String(j.code||""))){ nonce=null; await freshNonce(); return api(path,opts,true); }
+      throw new Error((j&&j.message)||"Cart error");
+    }
     return j;
   }
   function variantOf(p,key){

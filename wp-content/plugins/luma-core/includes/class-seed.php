@@ -178,7 +178,7 @@ class Seed {
 		}
 		if ( ! $dry ) {
 			wc_delete_product_transients();
-			wp_cache_delete( 'luma_catalogue_json', 'luma' );
+			function_exists( 'luma_catalogue_json_flush' ) ? luma_catalogue_json_flush() : wp_cache_delete( 'luma_catalogue_json', 'luma' );
 		}
 		return implode( "\n", $out );
 	}
@@ -356,7 +356,7 @@ class Seed {
 		}
 
 		wc_delete_product_transients();
-		wp_cache_delete( 'luma_catalogue_json', 'luma' );
+		function_exists( 'luma_catalogue_json_flush' ) ? luma_catalogue_json_flush() : wp_cache_delete( 'luma_catalogue_json', 'luma' );
 		return implode( "\n", $out );
 	}
 

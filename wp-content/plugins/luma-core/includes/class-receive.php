@@ -282,7 +282,7 @@ class Receive {
 		if ( 'FAIL' === $status ) {
 			update_post_meta( $lot->ID, '_lot_qty_remaining', 0 );
 		}
-		wp_cache_delete( 'luma_catalogue_json', 'luma' );
+		function_exists( 'luma_catalogue_json_flush' ) ? luma_catalogue_json_flush() : wp_cache_delete( 'luma_catalogue_json', 'luma' );
 		set_transient( 'luma_receive_log', sprintf( 'Certificate filed for <b>%s</b> — %s. <a href="%s" target="_blank" rel="noopener">View public certificate</a>', esc_html( $lot->post_title ), esc_html( $status ), esc_url( home_url( '/testing/?lot=' . rawurlencode( $lot->post_title ) ) ) ), 300 );
 		wp_safe_redirect( $back );
 		exit;
@@ -382,7 +382,7 @@ class Receive {
 		$msg .= $coa_id ? ' COA filed.' : ' No COA yet — the lot shows "Testing in progress" until one is added.';
 		$msg .= ' <a href="' . esc_url( get_edit_post_link( $lot_id, 'raw' ) ) . '">Edit lot</a> · <a href="' . esc_url( home_url( '/testing/?lot=' . rawurlencode( $number ) ) ) . '" target="_blank" rel="noopener">View public certificate</a>';
 		wc_delete_product_transients( $prod->get_id() );
-		wp_cache_delete( 'luma_catalogue_json', 'luma' );
+		function_exists( 'luma_catalogue_json_flush' ) ? luma_catalogue_json_flush() : wp_cache_delete( 'luma_catalogue_json', 'luma' );
 		set_transient( 'luma_receive_log', $msg, 300 );
 		wp_safe_redirect( $back );
 		exit;

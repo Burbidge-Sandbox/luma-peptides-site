@@ -12,7 +12,10 @@ function luma_assets_url( string $rel = '' ): string {
 }
 
 function luma_catalogue_json(): array {
-	$cached = wp_cache_get( 'luma_catalogue_json', 'luma' );
+	/* Keyed by domain: the landing domain (lumapeptidelabs.com) has its own home_url(), and its
+	 * URLs must never end up in store pages via the shared object cache. */
+	$key    = 'luma_catalogue_json_' . md5( home_url() );
+	$cached = wp_cache_get( $key, 'luma' );
 	if ( is_array( $cached ) ) {
 		return $cached;
 	}
@@ -115,7 +118,7 @@ function luma_catalogue_json(): array {
 			'ajax'              => admin_url( 'admin-ajax.php' ),
 		],
 	];
-	wp_cache_set( 'luma_catalogue_json', $out, 'luma', 300 );
+	wp_cache_set( $key, $out, 'luma', 300 );
 	return $out;
 }
 
@@ -135,7 +138,17 @@ function luma_label_lines( string $name, string $strength ): array {
 	return $lines;
 }
 
-add_action( 'woocommerce_update_product', fn() => wp_cache_delete( 'luma_catalogue_json', 'luma' ) );
-add_action( 'woocommerce_product_set_stock', fn() => wp_cache_delete( 'luma_catalogue_json', 'luma' ) );
+function luma_catalogue_json_flush(): void {
+	$homes = [ untrailingslashit( (string) get_option( 'home' ) ) ];
+	if ( class_exists( 'Luma\\Core\\LabDomain' ) && Luma\Core\LabDomain::host() ) {
+		$homes[] = 'https://' . Luma\Core\LabDomain::host();
+		$homes[] = untrailingslashit( Luma\Core\LabDomain::store_url( '' ) );
+	}
+	foreach ( array_unique( $homes ) as $h ) {
+		wp_cache_delete( 'luma_catalogue_json_' . md5( $h ), 'luma' );
+	}
+}
+add_action( 'woocommerce_update_product', 'luma_catalogue_json_flush' );
+add_action( 'woocommerce_product_set_stock', 'luma_catalogue_json_flush' );
 /* Delivery promises are read from Luma Core settings; drop the cached JSON when they change. */
-add_action( 'update_option_luma_core_settings', fn() => wp_cache_delete( 'luma_catalogue_json', 'luma' ) );
+add_action( 'update_option_luma_core_settings', 'luma_catalogue_json_flush' );
