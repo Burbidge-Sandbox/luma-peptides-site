@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.10.0
+Version: 0.10.1
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -623,4 +623,12 @@ body.luma-ack-off .checkout-page .wc-block-components-express-payment__content::
   .checkout-page .wc-block-checkout__main{padding:1.1rem}
   .checkout-page .wc-block-components-checkout-step{padding-bottom:1rem;margin-bottom:1rem}
   .woo-page.checkout-page{padding-top:.8rem!important}
+}
+/* 0.10.1 — tablet/laptop polish: room between the acknowledgement and the wallets; a narrow sidebar summary no longer breaks words. */
+.checkout-page .wc-block-checkout__order-fields{margin-bottom:1.5rem!important}
+.checkout-page .wc-block-components-order-summary-item__description .wc-block-components-product-metadata{display:none}
+@media(max-width:1100px){
+  .checkout-page .wc-block-components-sidebar{padding:1.1rem}
+  .checkout-page .wc-block-components-order-summary-item__image{width:48px;flex:0 0 48px}
+  .checkout-page .wc-block-components-order-summary-item__description .wc-block-components-product-name{word-break:normal;overflow-wrap:normal;white-space:nowrap}
 }
