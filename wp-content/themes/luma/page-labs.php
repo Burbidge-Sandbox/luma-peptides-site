@@ -2,7 +2,8 @@
 /**
  * Template Name: Research labs
  *
- * /labs/ — new-lab discount landing page. One centered stack (kicker +
+ * /labs/ — new-lab discount landing page, in four test versions
+ * (Luma\Core\Variants: 25% or 10%, with or without the lead form). One centered stack (kicker +
  * headline, subhead, tiles, form), plus the guarantee line when that setting
  * is on. Logo only, no nav, no cart, no gate. Every number is live: the discount and expiry from Luma Core settings,
  * purity from released lots (CLAUDE.md rule 11). Styles: labs.css.
@@ -12,7 +13,13 @@ defined( 'ABSPATH' ) || exit;
 
 use Luma\Core\Settings;
 
-$pct      = class_exists( 'Luma\\Core\\LabOffer' ) ? Luma\Core\LabOffer::pct() : 25;
+$variant  = class_exists( 'Luma\\Core\\Variants' ) ? Luma\Core\Variants::current() : [ 'key' => 'claim-25', 'pct' => 25, 'form' => true ];
+$pct      = (int) $variant['pct'];
+$has_form = ! empty( $variant['form'] );
+$days     = class_exists( 'Luma\\Core\\LabOffer' ) ? Luma\Core\LabOffer::days() : 14;
+if ( class_exists( 'Luma\\Core\\Variants' ) ) {
+	Luma\Core\Variants::count_view( $variant['key'] );
+}
 $lots     = class_exists( 'Luma\\Core\\Lots' ) ? Luma\Core\Lots::current_pass() : [];
 $avg      = $lots ? number_format( array_sum( array_column( $lots, 'purity' ) ) / count( $lots ), 1 ) : '';
 $sameday  = class_exists( 'Luma\\Core\\Settings' ) && '1' === (string) Settings::get( 'ships_same_day' );
@@ -39,7 +46,7 @@ $nonce    = wp_create_nonce( 'luma_claim' );
  <div class="lb-wrap lb-grid">
   <div>
    <span class="lb-kicker">For research labs · New accounts</span>
-   <h1>Claim <?php echo (int) $pct; ?>% off.<br><em>Plus free delivery.</em></h1>
+   <h1><?php echo $has_form ? 'Claim' : 'Take'; ?> <?php echo (int) $pct; ?>% off.<br><em>Plus free delivery.</em></h1>
    <p class="lb-sub"><?php echo $avg ? 'Lab-verified ' . esc_html( $avg ) . '% purity. ' : ''; ?><?php echo $sameday ? 'Shipped the same day you order.' : 'Shipped within 1 business day.'; ?></p>
    <div class="lb-three<?php echo $avg ? '' : ' lb-two'; ?>">
     <div><b><?php echo (int) $pct; ?>% off</b><span>first order</span></div>
@@ -48,6 +55,15 @@ $nonce    = wp_create_nonce( 'luma_claim' );
    </div>
   </div>
 
+  <?php if ( ! $has_form ) : ?>
+  <div class="lb-card lb-go" id="claim">
+   <h2>Your <?php echo (int) $pct; ?>% off is ready</h2>
+   <p class="lb-lede">No sign-up and no code to type. Tap below and every price in the shop already includes it.</p>
+   <p class="lb-err" id="lbErr" role="alert"></p>
+   <button class="lb-btn" type="button" id="lbGo">Shop with <?php echo (int) $pct; ?>% off</button>
+   <small>First order only. No minimum. Good for <?php echo (int) $days; ?> days after you tap.</small>
+  </div>
+  <?php else : ?>
   <div class="lb-card" id="claim">
    <form id="lbForm" novalidate>
     <h2>Claim your <?php echo (int) $pct; ?>% off</h2>
@@ -65,6 +81,7 @@ $nonce    = wp_create_nonce( 'luma_claim' );
     <small class="lb-consent"><?php echo esc_html( class_exists( 'Luma\\Core\\Leads' ) ? Luma\Core\Leads::CONSENT : '' ); ?></small>
    </form>
   </div>
+  <?php endif; ?>
  </div>
 </section>
 
@@ -80,7 +97,7 @@ $nonce    = wp_create_nonce( 'luma_claim' );
 </main>
 
 <footer class="lb-foot"><div class="lb-wrap">For laboratory research use only. Not for human or veterinary use. Not a drug, food or supplement. © <?php echo esc_html( wp_date( 'Y' ) ); ?> Luma Peptides Co. LLC</div></footer>
-<div class="lb-sticky" id="lbSticky"><a class="lb-btn" href="#claim" data-claim>Claim <?php echo (int) $pct; ?>% off + free delivery</a></div>
+<div class="lb-sticky" id="lbSticky"><a class="lb-btn" href="#claim" data-claim><?php echo $has_form ? 'Claim' : 'Shop with'; ?> <?php echo (int) $pct; ?>% off + free delivery</a></div>
 
 <script>
 (function(){
@@ -91,8 +108,32 @@ $nonce    = wp_create_nonce( 'luma_claim' );
  if(!src.referrer && document.referrer && document.referrer.indexOf(location.host)<0) src.referrer=document.referrer;
  try{ sessionStorage.setItem(KEY,JSON.stringify(src)); }catch(e){}
 
+ var api=<?php echo wp_json_encode( esc_url_raw( rest_url( 'luma/v1/' ) ) ); ?>, variant=<?php echo wp_json_encode( $variant['key'] ); ?>;
+ var st=document.getElementById("lbSticky"), card=document.getElementById("claim");
+ if("IntersectionObserver" in window){ new IntersectionObserver(function(es){ st.classList.toggle("show",!es[0].isIntersecting&&scrollY>200); }).observe(card); }
+
+ var go=document.getElementById("lbGo");
+ if(go){
+  var label=go.textContent, gerr=document.getElementById("lbErr");
+  async function shop(){
+   if(go.disabled) return;
+   go.disabled=true; go.textContent="Applying…"; gerr.classList.remove("show");
+   try{
+    var r=await fetch(api+"go",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({variant:variant,src:src})});
+    var j=await r.json().catch(function(){return {};});
+    if(!r.ok||!j.redirect){ throw new Error(j.message||"Something went wrong. Please try again."); }
+    if(typeof window.fbq==="function"){ try{ fbq("trackCustom","OfferApplied",{variant:variant}); }catch(x){} }
+    try{ sessionStorage.removeItem(KEY); }catch(x){}
+    location.href=j.redirect;
+   }catch(x){ gerr.textContent=x.message; gerr.classList.add("show"); go.disabled=false; go.textContent=label; }
+  }
+  go.addEventListener("click",shop);
+  document.querySelectorAll("[data-claim]").forEach(function(a){ a.addEventListener("click",function(e){ e.preventDefault(); shop(); }); });
+  return;
+ }
+
  var f=document.getElementById("lbForm"), E=f.elements, err=document.getElementById("lbErr"), btn=document.getElementById("lbSubmit");
- var api=<?php echo wp_json_encode( esc_url_raw( rest_url( 'luma/v1/' ) ) ); ?>, rest=<?php echo wp_json_encode( wp_create_nonce( 'wp_rest' ) ); ?>, nonce=<?php echo wp_json_encode( $nonce ); ?>;
+ var rest=<?php echo wp_json_encode( wp_create_nonce( 'wp_rest' ) ); ?>, nonce=<?php echo wp_json_encode( $nonce ); ?>;
  function show(msg){ err.textContent=msg; err.classList.add("show"); }
  function send(body){ return fetch(api+"claim",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-WP-Nonce":rest},body:JSON.stringify(body)}); }
  f.addEventListener("submit",async function(e){
@@ -101,7 +142,7 @@ $nonce    = wp_create_nonce( 'luma_claim' );
   var ok=nm.length>1&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)&&ph.length>=10;
   err.classList.toggle("show",!ok); if(!ok){ err.textContent="Please enter your name, a valid email and phone number."; (nm.length>1?(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)?E.phone:E.email):E.name).focus(); return; }
   btn.disabled=true; btn.textContent="Claiming…";
-  var body={name:nm,email:em,phone:E.phone.value,website:E.website.value,nonce:nonce,src:src};
+  var body={name:nm,email:em,phone:E.phone.value,website:E.website.value,nonce:nonce,src:src,variant:variant};
   try{
    var r=await send(body);
    if(r.status===403){ var n=await fetch(api+"claim-nonce?cb="+Date.now(),{credentials:"same-origin",headers:{"X-WP-Nonce":rest}}).then(function(x){return x.json();}); body.nonce=nonce=n.nonce; r=await send(body); }
@@ -115,8 +156,6 @@ $nonce    = wp_create_nonce( 'luma_claim' );
 
  document.querySelectorAll("[data-claim]").forEach(function(a){ a.addEventListener("click",function(e){ e.preventDefault(); var card=document.getElementById("claim"); card.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"}); setTimeout(function(){ E.name.focus({preventScroll:true}); },matchMedia("(prefers-reduced-motion: reduce)").matches?0:450); }); });
 
- var st=document.getElementById("lbSticky");
- if("IntersectionObserver" in window){ new IntersectionObserver(function(es){ st.classList.toggle("show",!es[0].isIntersecting&&scrollY>200); }).observe(document.getElementById("claim")); }
 })();
 </script>
 <?php wp_footer(); ?>

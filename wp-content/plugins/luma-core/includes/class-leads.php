@@ -150,6 +150,10 @@ class Leads {
 		$phone           = self::e164( $digits );
 		[ $first, $last ] = self::split_name( $name );
 		$src             = self::source( (array) ( $p['src'] ?? [] ) );
+		$variant         = Variants::get( sanitize_key( (string) ( $p['variant'] ?? '' ) ) );
+		if ( ! $variant['form'] ) {
+			$variant = Variants::get( 'claim-25' );
+		}
 		$shop            = LabDomain::store_shop_url(); // the store, even when the form is on the landing domain
 
 		/* Repeat claim: same email or phone reuses that lead's code; no second coupon. */
@@ -194,6 +198,7 @@ class Leads {
 			'_lead_user_id'      => get_current_user_id(),
 			'_lead_source'       => $src,
 			'_lead_claims'       => 1,
+			'_lead_variant'      => $variant['key'],
 			'_lead_last_claim'   => gmdate( 'c' ),
 		];
 		foreach ( $meta as $k => $v ) {
@@ -201,7 +206,7 @@ class Leads {
 		}
 
 		/* 2. Coupon. */
-		$coupon = LabOffer::create_coupon( $email, $lead_id, $name );
+		$coupon = LabOffer::create_coupon( $email, $lead_id, $name, (int) $variant['pct'], $variant['key'] );
 		$next   = $shop;
 		if ( $coupon ) {
 			update_post_meta( $lead_id, '_lead_coupon', strtoupper( $coupon->get_code() ) );

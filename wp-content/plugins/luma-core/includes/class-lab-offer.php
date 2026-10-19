@@ -72,12 +72,17 @@ class LabOffer {
 		return ( new \DateTimeImmutable( 'today', wp_timezone() ) )->modify( '+' . self::days() . ' days' )->setTime( 23, 59, 59 )->getTimestamp();
 	}
 
-	public static function create_coupon( string $email, int $lead_id, string $who ): ?\WC_Coupon {
-		$pct      = self::pct();
+	/**
+	 * One visitor's code. With an email (form pages): LAB{pct}-XXXX, only for that email.
+	 * Without (no-form pages): GO{pct}-XXXX, single use, first order only (Coupons::FIRST).
+	 */
+	public static function create_coupon( string $email, int $lead_id, string $who, int $pct = 0, string $variant = 'claim-25' ): ?\WC_Coupon {
+		$pct      = $pct > 0 ? max( 1, min( 90, $pct ) ) : self::pct();
+		$prefix   = '' === $email ? 'GO' : 'LAB';
 		$alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 		$code     = '';
 		for ( $try = 0; $try < 10; $try++ ) {
-			$code = 'LAB' . $pct . '-';
+			$code = $prefix . $pct . '-';
 			for ( $i = 0; $i < 4; $i++ ) {
 				$code .= $alphabet[ random_int( 0, strlen( $alphabet ) - 1 ) ];
 			}
@@ -92,15 +97,25 @@ class LabOffer {
 		$c->set_individual_use( true );
 		$c->set_usage_limit( 1 );
 		$c->set_usage_limit_per_user( 1 );
-		$c->set_email_restrictions( [ strtolower( $email ) ] );
+		if ( '' !== $email ) {
+			$c->set_email_restrictions( [ strtolower( $email ) ] );
+		} else {
+			$c->update_meta_data( Coupons::FIRST, 'yes' ); // no email to tie it to: first orders only
+		}
 		$c->set_date_expires( self::expiry_ts() );
 		$c->set_minimum_amount( '' );
 		$c->set_free_shipping( false ); // delivery is already free on every order
 		$c->set_excluded_product_categories( self::excluded_cat_ids() );
-		$c->set_description( sprintf( 'New-lab discount for %s <%s>. Created by the /labs/ page.', $who, $email ) );
+		$c->set_description( '' !== $email
+			? sprintf( 'New-lab discount for %s <%s>. Created by the landing page (%s).', $who, $email, $variant )
+			: sprintf( 'No-form landing page (%s): one visitor, first order only.', $variant ) );
 		$c->update_meta_data( self::META, 'yes' );
 		$c->update_meta_data( self::LEAD, $lead_id );
+		$c->update_meta_data( Variants::META, $variant );
 		$c->save();
+		if ( $c->get_id() ) {
+			Variants::count_issued( $variant );
+		}
 		return $c->get_id() ? $c : null;
 	}
 
@@ -225,8 +240,13 @@ class LabOffer {
 			$lab = self::from_code( $param );
 			if ( $lab ) {
 				if ( 'ok' === self::usable( $lab ) ) {
-					self::apply( $lab );
-					self::set_cookie( $lab );
+					$ok = self::apply( $lab );
+					if ( $ok || $lab->get_email_restrictions() ) {
+						self::set_cookie( $lab );
+					} else {
+						self::clear_cookie(); // first-order code on a returning customer: no strike-through prices
+						$_GET['offer'] = 'used';
+					}
 				} else {
 					self::clear_cookie();
 					$_GET['offer'] = 'used';
@@ -242,8 +262,8 @@ class LabOffer {
 			return;
 		}
 		$applied = WC()->cart->get_applied_coupons();
-		if ( ! $applied ) {
-			self::apply( $lab ); // session lost the code (expired session, new device tab): put it back
+		if ( ! $applied && ! self::apply( $lab ) && ! $lab->get_email_restrictions() ) {
+			self::clear_cookie(); // session lost the code and it no longer applies (e.g. first order already placed)
 		}
 	}
 
@@ -370,7 +390,7 @@ class LabOffer {
 	}
 
 	public static function coupon_label( $label, $coupon ) {
-		return self::is_lab( $coupon ) ? sprintf( 'New lab discount (%s%%)', $coupon->get_amount() + 0 ) : $label;
+		return self::is_lab( $coupon ) ? sprintf( '%s (%s%% off)', $coupon->get_email_restrictions() ? 'New lab discount' : 'First-order discount', $coupon->get_amount() + 0 ) : $label;
 	}
 
 	/** Email mismatch at checkout: say how to keep the discount instead of WooCommerce's generic line. */

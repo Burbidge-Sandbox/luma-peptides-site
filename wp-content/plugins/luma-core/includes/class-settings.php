@@ -208,7 +208,7 @@ class Settings {
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row"><label for="luma_lab_pct">Discount (%)</label></th>
-						<td><input type="number" id="luma_lab_pct" name="<?php echo esc_attr( self::OPTION ); ?>[lab_offer_pct]" value="<?php echo esc_attr( $o['lab_offer_pct'] ); ?>" min="1" max="90" class="small-text"><p class="description">Applies to codes created after saving; codes already sent keep their amount.</p></td>
+						<td><input type="number" id="luma_lab_pct" name="<?php echo esc_attr( self::OPTION ); ?>[lab_offer_pct]" value="<?php echo esc_attr( $o['lab_offer_pct'] ); ?>" min="1" max="90" class="small-text"><p class="description">Not used while the landing-page test runs: each page sets its own amount (25% or 10%, see WooCommerce → Landing tests). Codes already sent keep their amount.</p></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="luma_lab_days">Code valid for (days)</label></th>

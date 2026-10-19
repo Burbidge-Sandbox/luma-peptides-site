@@ -98,9 +98,8 @@ class LabDomain {
 
 	/** Landing domain "/" → the Research labs page. */
 	public static function route( array $vars ): array {
-		$path = trim( self::path(), '/' );
-		$id   = self::page_id();
-		if ( '' === $path && $id ) {
+		$id = self::page_id();
+		if ( $id && null !== Variants::for_path( self::path() ) ) { // "/", /claim-10, /offer-25, /offer-10
 			return [ 'page_id' => $id ];
 		}
 		return $vars;
@@ -109,7 +108,7 @@ class LabDomain {
 	/** Landing domain: anything but the landing page goes to the store. */
 	public static function lab_template_redirect(): void {
 		$id = self::page_id();
-		if ( $id && is_page( $id ) && '' === trim( self::path(), '/' ) ) {
+		if ( $id && is_page( $id ) && null !== Variants::for_path( self::path() ) ) {
 			return;
 		}
 		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
