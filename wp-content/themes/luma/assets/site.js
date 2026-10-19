@@ -118,14 +118,16 @@
   }
   const Cart={
     async refresh(){ try{ cartData=await api("cart"); }catch(e){ cartData=null; } render(); return cartData; },
-    async add(id,plan,qty=1,variant=null){
+    async add(id,plan,qty=1,variant=null,opts={}){
       const p=byId(id); if(!p) return;
       const v=variantOf(p,variant);
       if(p.stock==="out"||v.stock==="out"){ toast(`<b>${esc(p.name)}${v.key?" "+esc(v.label):""}</b> is currently out of stock.`); return; }
       try{ cartData=await api("cart/add-item",{method:"POST",body:JSON.stringify({id:v.wc_id,quantity:qty})}); }
       catch(e){ toast(esc(e.message)); return; }
       render(); track("add_to_cart",{id,qty});
-      toast(`<b>${esc(p.name)}${v.key?" "+esc(v.label):""}</b> added to your cart. <a href="${CONFIG.urls.cart}">View cart</a>`); openDrawer();
+      if(opts.buyNow){ location.href=CONFIG.urls.checkout; return; }
+      /* The drawer itself confirms the add; a toast would sit on top of its Checkout button. */
+      if($("#drawer")) openDrawer(); else toast(`<b>${esc(p.name)}${v.key?" "+esc(v.label):""}</b> added to your cart. <a href="${CONFIG.urls.cart}">View cart</a>`);
     },
     async setQty(key,qty){ qty=Math.max(0,Math.min(10,qty|0)); try{ cartData=qty?await api("cart/update-item",{method:"POST",body:JSON.stringify({key,quantity:qty})}):await api("cart/remove-item",{method:"POST",body:JSON.stringify({key})}); }catch(e){ toast(esc(e.message)); } render(); },
     async remove(key){ try{ cartData=await api("cart/remove-item",{method:"POST",body:JSON.stringify({key})}); }catch(e){} render(); },
@@ -317,4 +319,14 @@
     try{ await fetch(CONFIG.ajax,{method:"POST",credentials:"same-origin",body:fd}); toast("Message sent. A reply will follow within one business day."); f.reset(); }
     catch(x){ toast("Could not send. Email info@lumaresearchco.com instead."); }
   });
+
+  /* Checkout: Apple Pay / Google Pay stay locked until the RUO acknowledgement (rendered above them) is ticked. */
+  (function(){
+    if(!document.querySelector(".wp-block-woocommerce-checkout")) return;
+    const sync=()=>{ const box=document.querySelector(".wc-block-checkout__order-fields input[type=checkbox]");
+      document.body.classList.toggle("luma-ack-off", !!box && !box.checked); };
+    document.addEventListener("change",e=>{ if(e.target.closest&&e.target.closest(".wc-block-checkout__order-fields")) sync(); },true);
+    new MutationObserver(()=>sync()).observe(document.body,{childList:true,subtree:true});
+    sync();
+  })();
 })();

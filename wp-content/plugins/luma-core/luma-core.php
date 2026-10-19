@@ -3,7 +3,7 @@
  * Plugin Name: Luma Core
  * Plugin URI:  https://lumaresearchco.com
  * Description: Luma Peptides Co. store logic — RUO acknowledgement gate, catalogue rules, lots & certificates of analysis, operational facts. Enforces CLAUDE.md; not optional.
- * Version:     0.10.2
+ * Version:     0.11.0
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Author:      Luma Peptides Co.
@@ -13,10 +13,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'LUMA_CORE_VERSION', '0.10.2' );
+define( 'LUMA_CORE_VERSION', '0.11.0' );
 define( 'LUMA_CORE_FILE', __FILE__ );
 define( 'LUMA_CORE_DIR', plugin_dir_path( __FILE__ ) );
-define( 'LUMA_CORE_TERMS_VERSION', '2026-09-14' ); // bump when RUO terms wording changes
+define( 'LUMA_CORE_TERMS_VERSION', '2026-10-19' ); // bump when RUO terms wording changes
 
 require_once LUMA_CORE_DIR . 'includes/class-settings.php';
 require_once LUMA_CORE_DIR . 'includes/class-catalogue-rules.php';
@@ -41,6 +41,7 @@ require_once LUMA_CORE_DIR . 'includes/class-order-alerts.php';
 require_once LUMA_CORE_DIR . 'includes/class-lab-offer.php';
 require_once LUMA_CORE_DIR . 'includes/class-leads.php';
 require_once LUMA_CORE_DIR . 'includes/class-lab-domain.php';
+require_once LUMA_CORE_DIR . 'includes/class-checkout-flow.php';
 
 add_action( 'plugins_loaded', function () {
 	Luma\Core\Settings::init();
@@ -73,6 +74,7 @@ add_action( 'plugins_loaded', function () {
 	Luma\Core\LabOffer::init();
 	Luma\Core\Leads::init();
 	Luma\Core\LabDomain::init();
+	Luma\Core\CheckoutFlow::init();
 } );
 
 /* Rewrite flush without relying on activation hooks (the plugin may be loaded by luma-bootstrap). */

@@ -3,7 +3,7 @@ Theme Name: Luma
 Theme URI: https://lumaresearchco.com
 Author: Luma Peptides Co.
 Description: Faithful port of the lumaresearchco.com storefront onto WooCommerce. The legacy stylesheet (repo css/styles.css) is loaded verbatim; this file holds only WooCommerce-page overrides.
-Version: 0.9.3
+Version: 0.10.0
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -577,3 +577,50 @@ ins.now{color:var(--terra);font-weight:600;text-decoration:none}
 .bs9-media .off-pill{z-index:3}
 .line-price del.was{display:block;font-size:.8rem}
 .lab-save{margin-top:.8rem;background:var(--terra-soft);color:var(--terra);border-radius:8px;padding:.55rem .8rem;font-weight:600;text-align:center;font-size:.92rem}
+
+/* ===== 0.10.0 — Simpler mobile buying (2026-10-19) ===== */
+/* Product page: Buy now beside Add to cart; on phones both are pinned to the bottom of the screen. */
+.buy-row{flex-wrap:wrap}
+.buy-row #buyNow{flex:1 1 100%}
+.btn.is-busy{opacity:.7;pointer-events:none}
+.pdp-sticky{display:none}
+@media(max-width:760px){
+  .pdp-sticky:not([hidden]){display:flex;gap:.6rem;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:.7rem 4% calc(.7rem + env(safe-area-inset-bottom));background:rgba(251,249,246,.97);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(42,37,35,.08)}
+  .pdp-sticky .btn{flex:1;min-height:50px;padding-inline:.6rem;font-size:.78rem}
+  .pdp-sticky .btn-primary{flex:1.5}
+  body.has-pdp-sticky{padding-bottom:84px}
+  body.has-pdp-sticky .toast{bottom:96px}
+}
+
+/* Checkout: shorter page, one obvious path. */
+.checkout-page .wc-block-checkout__create-account,
+.checkout-page .wc-block-checkout__guest-checkout-notice,
+.checkout-page .wc-block-components-address-form__country,
+.checkout-page .wc-block-checkout__contact-fields .wc-block-components-checkout-step__content>div:has(#subscribe-to-newsletter),
+.checkout-page .wp-block-woocommerce-checkout-order-note-block,
+.checkout-page .wc-block-checkout__order-notes,
+.checkout-page .checkout-order-summary-block-fill-wrapper{display:none!important}
+/* RUO acknowledgement now sits first, above the wallet buttons: no step heading, compact. */
+.checkout-page .wc-block-checkout__order-fields{border:0;margin:0 0 1rem;padding:0}
+.checkout-page .wc-block-checkout__order-fields .wc-block-components-checkout-step__heading-container,
+.checkout-page .wc-block-checkout__order-fields .wc-block-components-checkout-step__heading{display:none}
+.checkout-page .wc-block-checkout__order-fields .wc-block-components-checkbox{margin:0;padding:.85rem 1rem;border:1.5px solid var(--terra);border-radius:10px;background:var(--terra-soft)}
+.checkout-page .wc-block-checkout__order-fields .wc-block-components-checkbox__label{color:var(--ink);font-size:.88rem}
+/* Wallet buttons wait for the acknowledgement. */
+body.luma-ack-off .checkout-page .wc-block-components-express-payment__event-buttons{opacity:.35;pointer-events:none;filter:grayscale(1)}
+body.luma-ack-off .checkout-page .wc-block-components-express-payment__content::after{content:"Tick the box above to pay with Apple Pay or Google Pay";display:block;text-align:center;font-size:.8rem;color:var(--muted);margin-top:.6rem}
+/* Side-by-side fields. */
+.checkout-page .wc-block-components-address-form{display:flex;flex-wrap:wrap;column-gap:10px}
+.checkout-page .wc-block-components-address-form>*{flex:1 1 100%}
+.checkout-page .wc-block-components-address-form__first_name,
+.checkout-page .wc-block-components-address-form__last_name,
+.checkout-page .wc-block-components-address-form__state,
+.checkout-page .wc-block-components-address-form__postcode{flex:1 1 calc(50% - 5px)!important;width:auto!important;min-width:0}
+@media(max-width:760px){
+  /* Slim header and no title block on checkout: the form gets the screen. */
+  .woocommerce-checkout .header{position:relative}
+  .checkout-page-head{display:none}
+  .checkout-page .wc-block-checkout__main{padding:1.1rem}
+  .checkout-page .wc-block-components-checkout-step{padding-bottom:1rem;margin-bottom:1rem}
+  .woo-page.checkout-page{padding-top:.8rem!important}
+}

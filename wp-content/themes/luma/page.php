@@ -14,7 +14,7 @@
 </div>
 
 <?php elseif ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) : $u = luma_catalogue_json()['config']['urls']; ?>
-<div class="wrap page-head"><div class="breadcrumb"><a href="<?php echo esc_url( $u['cart'] ); ?>">Cart</a> › Checkout</div><h1>Checkout</h1>
+<div class="wrap page-head checkout-page-head"><div class="breadcrumb"><a href="<?php echo esc_url( $u['cart'] ); ?>">Cart</a> › Checkout</div><h1>Checkout</h1>
  <div class="steps-bar"><span>Cart</span><span><b>Information &amp; payment</b></span><span>Confirmation</span></div></div>
 <div class="wrap woo-page checkout-page" style="padding-top:0;padding-bottom:5rem">
 	<?php while ( have_posts() ) : the_post(); the_content(); endwhile; ?>

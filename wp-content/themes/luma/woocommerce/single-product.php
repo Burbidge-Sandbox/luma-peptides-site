@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  <form id="buyForm">
   <div class="buy-row">
    <div class="qty"><button type="button" id="dec" aria-label="Decrease">−</button><input id="qtyInput" type="number" value="1" min="1" max="10" aria-label="Quantity"><button type="button" id="inc" aria-label="Increase">+</button></div>
-   ${oos?`<button type="button" class="btn btn-primary" data-waitlist="${p.id}">Join the waitlist</button>`:`<button type="submit" class="btn btn-primary">Add to cart</button>`}
+   ${oos?`<button type="button" class="btn btn-primary" data-waitlist="${p.id}">Join the waitlist</button>`:`<button type="submit" class="btn btn-outline">Add to cart</button><button type="button" class="btn btn-primary" id="buyNow">Buy now</button>`}
   </div>
  </form>
  <div class="pdp-meta">
@@ -77,6 +77,18 @@ document.addEventListener("DOMContentLoaded",()=>{
     document.getElementById("inc").onclick=()=>qty.value=Math.min(10,+qty.value+1);
     document.getElementById("dec").onclick=()=>qty.value=Math.max(1,+qty.value-1);
     form.addEventListener("submit",e=>{e.preventDefault(); if(oos){joinWaitlist(p.id);return;} Cart.add(p.id,"once",+qty.value,dose);});
+    const buy=btn=>{ if(oos) return; btn.disabled=true; btn.classList.add("is-busy"); Cart.add(p.id,"once",+qty.value,dose,{buyNow:true}).finally(()=>{ btn.disabled=false; btn.classList.remove("is-busy"); }); };
+    const bn=document.getElementById("buyNow"); if(bn) bn.onclick=()=>buy(bn);
+    /* Mobile: Add to cart / Buy now pinned to the bottom of the screen (lives on <body> so no transformed ancestor can unpin it). */
+    let st=document.getElementById("pdpSticky");
+    if(!st){ st=document.createElement("div"); st.id="pdpSticky"; st.className="pdp-sticky"; st.innerHTML=`<button type="button" class="btn btn-outline" data-sticky-add>Add to cart</button><button type="button" class="btn btn-primary" data-sticky-buy>Buy now · <span id="stickyPrice"></span></button>`; document.body.appendChild(st); }
+    st.hidden=oos; document.body.classList.toggle("has-pdp-sticky",!oos);
+    if(!oos){
+      const off=window.LumaOffer?LumaOffer.now(v.wc_id):null, unit=off!=null?off:v.once;
+      document.getElementById("stickyPrice").textContent=money(unit);
+      st.querySelector("[data-sticky-add]").onclick=()=>Cart.add(p.id,"once",+qty.value,dose);
+      st.querySelector("[data-sticky-buy]").onclick=e=>buy(e.currentTarget);
+    }
     if(oos){ form.querySelectorAll("input,#inc,#dec").forEach(el=>el.disabled=true); }
     document.querySelector(".tab-list").addEventListener("click",e=>{const b=e.target.closest("[role=tab]"); if(!b) return;
       document.querySelectorAll("[role=tab]").forEach(t=>t.setAttribute("aria-selected",t===b));

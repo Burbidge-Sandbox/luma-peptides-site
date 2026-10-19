@@ -34,7 +34,7 @@ class RuoGate {
 	}
 
 	public static function label(): string {
-		return __( 'I confirm I am 21 or older, ordering on behalf of a laboratory or research organization, and that these materials are for in-vitro research only and will not be administered to any human or animal. I accept the Terms.', 'luma-core' );
+		return __( 'I’m 21+, ordering for a research lab, and these materials will not be given to any human or animal. I accept the Terms.', 'luma-core' );
 	}
 
 	private static function stamp(): string {
